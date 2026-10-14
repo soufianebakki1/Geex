@@ -1,0 +1,270 @@
+/*---------------------------------------
+#. DarkMode
+---------------------------------------*/
+
+
+html[data-theme="dark"] {
+    body,
+    .geex-content__authentication,
+    .geex-content__section .geex-transaction-tab .filter-popup, 
+    .geex-content__section .geex-transaction-filter .filter-popup,
+    .geex-content__toggle__content,
+    .geex-content__core__nav__link.active, 
+    .geex-content__core__nav__link:hover {
+        background: var(--dark-color);
+    }
+    body,
+    h1, h2, h3, h4, h5, h6,
+    .geex-content__transaction .transaction-content .transaction-type__single__content__title {
+        color: var(--gray-color);
+    }
+
+    .logo-dark {
+        display: block;
+    }
+    .logo-lite {
+        display: none;
+    }
+
+    a {
+        color: var(--sec-color);
+        &:hover {
+            color: var(--primary-color);
+        }
+    }
+
+    .geex-btn {
+        color: var(--gray-color);
+        background-color: #222222;
+        &:hover {
+            color: var(--white-color);
+            background-color: var(--primary-color);
+        }
+    }
+    .geex-btn__customizer,
+    .geex-content__widget__summary,
+    .geex-content__invoice__chat__content,
+    .geex-content__widget__trading__single,
+    .geex-content__market__single {
+        background: #222222;
+    }
+    .geex-customizer .geex-btn__customizer-close {
+        background-color: var(--dark-color);
+        svg path {
+            fill: var(--gray-color);
+        }
+    }
+    .geex-label {
+        color: var(--sec-color);
+    }
+    .geex-content__header__quickaction__link svg {
+        stroke: var(--sec-color);
+    }
+    .geex-sidebar__footer__title,
+    .geex-btn--transparent i,
+    .geex-btn--dark-transparent i,
+    .geex-content__core__nav__link,
+    .geex-content__feature__swiper-btn .swiper-btn i,
+    .geex-content__pricing__tag,
+    .geex-content__blog_details__comment__form input,
+    .geex-content__blog_details__comment__form textarea,
+    .geex-content__invoice .geex-content__todo__header__title h4,
+    .geex-content__invoice .geex-content__todo__list__single__subtitle,
+    .geex-content__invoice__chat__service select,
+    .geex-content__core__action__select select,
+    .geex-content__invoice__chat__amount input,
+    .geex-content__market__single__growth__amount,
+    .geex-content__core__content__info__title {
+        color: var(--white-color);
+    }
+
+    .geex-customizer {
+        background-color: #222222;
+    }
+
+    .apexcharts-gridline {
+        stroke: var(--dark-color) !important;
+    }
+
+    //Sidebar CSS      
+    .geex-sidebar {
+        border-color: var(--body-color);
+        background-image: linear-gradient(var(--dark-color), #222222);
+    }
+    .geex-sidebar__submenu {
+        background: #222222;
+    }
+    .geex-sidebar__menu__link,
+    .geex-content__visitor-count__number__desc,
+    .geex-content__visitor-count__number__subtitle,
+    .geex-content__review__single__content__text,
+    .geex-content__pricing__subtitle,
+    .geex-content__pricing__profit {
+        color: var(--sec-color);
+    }
+    #pie-chart .apexcharts-legend-text {
+        color: var(--sec-color) !important;
+    }
+
+    blockquote,
+    .geex-content__section,
+    .geex-content__feature__card,
+    .geex-content__todo__sidebar,
+    .geex-content__todo__list__single,
+    .geex-content__chat__sidebar,
+    .geex-content__chat__content,
+    .geex-content__chat__list__single,
+    .geex-content__chat__header__filter__content,
+    .geex-content__chat__sidebar__searchform__search,
+    .geex-content__calendar__sidebar,
+    .geex-content__calendar__content,
+    .geex-content__blog__single,
+    .geex-content__blog_details__comment__form input,
+    .geex-content__blog_details__comment__form textarea,
+    .geex-content__faq__accordion__item,
+    .geex-content__pricing__single,
+    .geex-content__testimonial__single,
+    .geex-content__authentication__content,
+    .geex-content__review__single,
+    .geex-content__header__popup,
+    .geex-content__modal__form {
+        background: #222222;
+    }
+
+    .geex-content__chat__list__single__msg,
+    .geex-content__chat__send__input input,
+    .geex-content__calendar__content .geex-calendar .fc-view-container .fc-head .ui-widget-header {
+        color: var(--sec-color);
+        background: var(--desc-color);
+    }
+
+    .geex-content__chat__list__single__title,
+    .geex-content__calendar__content .geex-calendar .fc-more,
+    .geex-content__calendar__content .geex-calendar .fc-popover .fc-title,
+    .geex-content__calendar__content .geex-calendar .fc-header-toolbar .fc-left .ui-button,
+    .geex-content__blog_details__description,
+    blockquote span,
+    .geex-content__blog_details__comment__subtitle,
+    .geex-content__faq__accordion__button,
+    .geex-content__authentication__form-group label,
+    .geex-content__authentication__form-footer,
+    .geex-content__authentication__form-group input::placeholder,
+    .geex-content__authentication__form-submit.return-btn,
+    .geex-content__authentication__desc .verification-number,
+    .geex-content__error__desc,
+    .geex-content__core__content__info__subtitle {
+        color: var(--sec-color);
+    }
+
+    .geex-content__chat__sidebar__tab .nav-item .nav-link.active, 
+    .geex-content__chat__sidebar__tab .nav-item .nav-link:hover,
+    .geex-content__invoice__chat__toggler,
+    .geex-content__core__nav__link,
+    .geex-content__feature__swiper-btn .swiper-btn {
+        background: var(--desc-color);
+    }
+
+    .load-more-btn,
+    .geex-content__calendar__content .geex-calendar .fc-popover .fc-header,
+    .geex-content__calendar__content .geex-calendar .fc-header-toolbar .fc-right .fc-button-group .ui-button,
+    .geex-content__form__single__box input, 
+    .geex-content__form__single__box textarea,
+    .geex-content__header__searchform,
+    .geex-content__authentication__form-group input,
+    .geex-content__header__popup__title,
+    .geex-content__header__popup__header,
+    .geex-content__header__popup__footer {
+        background: var(--dark-color);
+        color: var(--grayThree-color);
+        border-color: var(--desc-color);
+    }
+    .geex-content__invoice .geex-content__todo__list__single {
+        border-bottom-color: var(--desc-color);
+    }
+    .geex-content__transaction .geex-content__section__header,
+    .geex-content__chat__header,
+    .geex-content__chat__header__filter__content,
+    .geex-content__chat__sidebar__searchform__search,
+    .geex-content__calendar__sidebar__meeting__single,
+    .geex-content__form__single:not(:last-child),
+    .geex-content__market__single,
+    .geex-content__invoice__chat__amount,
+    .geex-content__core__content__info__single {
+        border-color: var(--desc-color);
+    }
+    .geex-content__header__popup:before {
+        border-bottom-color: #222222;
+    }
+
+    .geex-content__transaction .geex-transaction-tab .nav-item .nav-link ,
+    .geex-content__widget__categories__single i {
+        color: var(--sec-color);
+        background-color: var(--desc-color);
+    }
+
+    .geex-content__widget__single__progress__subtitle,
+    .geex-content__todo__header__filter select,
+    .geex-content__header__searchform input {
+        color: var(--sec-color);
+    }
+
+    .geex-content__todo__sidebar__tab .nav-item .nav-link,
+    .geex-content__todo__sidebar__text span,
+    .geex-content__todo__footer__text,
+    .geex-content__chat__sidebar__searchform__search input {
+        color: var(--sec-color);
+    }
+
+    .geex-content__chat__sidebar__tab .geex-chat-tab-single__title {
+        color: var(--sec-color);
+    }
+    .geex-content__chat__sidebar__tab .geex-chat-tab-single__subtitle {
+        color: var(--grayThree-color);
+    }
+
+    .geex-content__chat__header__filter li {
+        color: var(--gray-color);
+    }
+
+    .geex-content__pricing__feature__list,
+    .geex-content__calendar__content .geex-calendar .fc-view-container .fc-day-number {
+        color: var(--sec-color);
+    }
+
+    .geex-content__calendar__content .geex-calendar .fc-view-container .ui-widget-content {
+        border-color: var(--sec-color);
+    }
+
+    .geex-tooltip--white::after {
+        box-shadow: unset;
+    }
+
+    .geex-content__authentication__form-social__single svg path,
+    .geex-content__invoice__chat__toggler svg path {
+        fill: var(--white-color)
+    }
+
+    .geex-content__invoice__chat__toggler:hover svg path {
+        fill: var(--primary-color)
+    }
+
+
+    .geex-content__feature__swiper-btn .swiper-btn:hover {
+        background: var(--primary-color);
+    }
+
+    .ui-datepicker {
+        background: var(--dark-color);
+        border-color: var(--desc-color) !important;
+    }
+    .ui-datepicker th,
+    .ui-datepicker .ui-datepicker-title {
+        color: var(--sec-color);
+    }
+    .ui-state-default, 
+    .ui-widget-content .ui-state-default {
+        color: var(--sec-color);
+        background: #222222;
+        border-color: #222222;
+    }
+}

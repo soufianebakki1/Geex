@@ -1,0 +1,15 @@
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+[Dd]ebug/
+[Rr]elease/
+packages/
+node_modules/
+TestResults/
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Premium ASP.NET MVC 5 Admin & Dashboard Template" />
+    <meta name="author" content="themewant" />
+
+    <!-- Site Tiltle -->
+    <title>Geex - ASP.NET MVC (8.0) Admin & Dashboard Template</title>
+
+    <!-- Site favicon -->
+    <link rel="shortcut icon" href="assets/images/favicon.ico" />
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css" />
+</head>
+
+<body class="antialiased font-nunito text-black text-base">
+    <!-- Start Main Content -->
+    <div class="flex">
+        <!-- Start Sidebar -->
+        <nav class="sidebar fixed top-0 bottom-0 z-40 flex-none w-[240px] border-r border-black/10 transition-all duration-300 md:block hidden">
+            <div class="bg-white h-full">
+                <!-- Start Logo -->
+                <div class="flex px-4 py-4">
+                    <a href="../html/index.html" class="main-logo flex-1 w-full">
+                        <img src="assets/images/logo-dark.svg" class="h-7 mx-auto" alt="logo" />
+                    </a>
+                </div>
+                <!-- End Logo -->
+                <!-- Start Menu -->
+                <ul class="relative h-[calc(100vh-74px)] flex flex-col gap-1 overflow-y-auto overflow-x-hidden p-4 py-0" x-data="{ activeMenu: 'apps' }">
+                    <li>
+                        <a href="#intro"  class="mb-1 py-1 flex items-center overflow-hidden whitespace-nowrap rounded-md gap-1 text-black px-2 hover:bg-purple/10 hover:text-purple">Introduction</a>
+                     </li>
+                     <li>
+                        <a href="#changelogo"  class="mb-1 py-1 flex items-center overflow-hidden whitespace-nowrap rounded-md gap-1 text-black px-2 hover:bg-purple/10 hover:text-purple">Change Logo</a>
+                     </li>
+                     <li>
+                        <a href="#title"  class="mb-1 py-1 flex items-center overflow-hidden whitespace-nowrap rounded-md gap-1 text-black px-2 hover:bg-purple/10 hover:text-purple">Title & Favicon</a>
+                     </li>
+                     <li>
+                        <a href="#headermenu"  class="mb-1 py-1 flex items-center overflow-hidden whitespace-nowrap rounded-md gap-1 text-black px-2 hover:bg-purple/10 hover:text-purple">Header Menu</a>
+                     </li>
+                     <li>
+                        <a href="#sidebarmenu"  class="mb-1 py-1 flex items-center overflow-hidden whitespace-nowrap rounded-md gap-1 text-black px-2 hover:bg-purple/10 hover:text-purple">Sidebar Menu</a>
+                     </li>
+                     <li>
+                        <a href="#header"  class="mb-1 py-1 flex items-center overflow-hidden whitespace-nowrap rounded-md gap-1 text-black px-2 hover:bg-purple/10 hover:text-purple">Header</a>
+                     </li>
+                     <li>
+                        <a href="#footer"  class="mb-1 py-1 flex items-center overflow-hidden whitespace-nowrap rounded-md gap-1 text-black px-2 hover:bg-purple/10 hover:text-purple">Footer</a>
+                     </li>
+                     <li>
+                        <a href="#globalcolor"  class="mb-1 py-1 flex items-center overflow-hidden whitespace-nowrap rounded-md gap-1 text-black px-2 hover:bg-purple/10 hover:text-purple">Global Color</a>
+                     </li>
+                     <li>
+                        <a href="#pagecontent"  class="mb-1 py-1 flex items-center overflow-hidden whitespace-nowrap rounded-md gap-1 text-black px-2 hover:bg-purple/10 hover:text-purple">Page Content</a>
+                     </li>
+                     <li>
+                        <a href="#partials"  class="mb-1 py-1 flex items-center overflow-hidden whitespace-nowrap rounded-md gap-1 text-black px-2 hover:bg-purple/10 hover:text-purple">Partials Pages</a>
+                     </li>
+                     <li>
+                        <a href="#chart"  class="mb-1 py-1 flex items-center overflow-hidden whitespace-nowrap rounded-md gap-1 text-black px-2 hover:bg-purple/10 hover:text-purple">Chart</a>
+                     </li>
+                     <li>
+                        <a href="#todo"  class="mb-1 py-1 flex items-center overflow-hidden whitespace-nowrap rounded-md gap-1 text-black px-2 hover:bg-purple/10 hover:text-purple">Todo</a>
+                     </li>
+                     <li>
+                        <a href="#features"  class="mb-1 py-1 flex items-center overflow-hidden whitespace-nowrap rounded-md gap-1 text-black px-2 hover:bg-purple/10 hover:text-purple">Features</a>
+                     </li>
+                     <li>
+                        <a href="#log"  class="mb-1 py-1 flex items-center overflow-hidden whitespace-nowrap rounded-md gap-1 text-black px-2 hover:bg-purple/10 hover:text-purple">Blog</a>
+                     </li>
+                </ul>
+                <!-- End Menu -->
+            </div>
+        </nav>
+        <!-- End sidebar -->
+
+        <!-- Start Content Area -->
+        <div class="flex-1 md:ml-[240px]">
+            <div class="border-b border-black/10 py-4 px-7 flex items-center justify-between">
+                <p class="font-bold text-lg">Geex ASP.NET MVC 5 Documentation 1.0.0</p>
+            </div>
+            <!-- Start Content -->
+            <div class="overflow-y-auto overflow-x-hidden">
+                <div class="p-4 sm:p-7 !pb-0 min-h-[calc(100vh-145px)]">
+                    <div class="grid grid-cols-1 gap-7">
+                        <div class="border border-black/10 p-5 rounded-md" id="intro">
+                            <div class="mb-5">
+                                <p class="text-xl font-semibold text-black">Thank you very much for your purchase!</p>
+                            </div>
+                            <div class="rounded bg-[#01ba9a]/10 px-6 py-3 text-[#01ba9a]">
+                                <p>If you have any questions that are beyond the scope of this documentation, please feel free to email or contact us via our Support Page : <a href = "https://themeforest.net/user/themewant"><b>Support</b></a></p>
+                            </div>
+                        </div>
+
+                        <div class="border border-black/10 p-5 rounded-md" id="changelogo">
+                            <div class="mb-5">
+                                <p class="text-xl font-semibold text-black">Change Logo</p>
+                            </div>
+                            <div>
+                                <p class="text-base font-semibold">To change your Site Logo, open the Geex in your editor and go to the location by following screenshot which are given bellow.</p>
+                                <ul>
+                                    <img src="assets/images/doc/changelogo.png" alt="doc">
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="border border-black/10 p-5 rounded-md" id="title">
+                            <div class="mb-5">
+                                <p class="text-xl font-semibold text-black">Title & Favicon</p>
+                            </div>
+                            <div>
+                                <p class="text-base font-semibold">To change your Site title and Favicon, open the Geex in your editor and go to the location by following screenshot which are given bellow.</p>
+                                <ul>
+                                    <img src="assets/images/doc/title.png" alt="doc">
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="border border-black/10 p-5 rounded-md" id="headermenu">
+                            <div class="mb-5">
+                                <p class="text-xl font-semibold text-black">Header Menu</p>
+                            </div>
+                            <div>
+                                <p class="text-base font-semibold">To customize your Header Menu, open the Geex in your editor and go to the location by following screenshot which are given bellow.</p>
+                                <ul>
+                                    <img src="assets/images/doc/headerMenu.png" alt="doc">
+                                </ul>
+                            </div>
+                        </div> 
+
+                        <div class="border border-black/10 p-5 rounded-md" id="sidebarmenu">
+                            <div class="mb-5">
+                                <p class="text-xl font-semibold text-black">Sidebar Menu</p>
+                            </div>
+                            <div>
+                                <p class="text-base font-semibold">To customize your Sidebar Menu, open the Geex in your editor and go to the location by following screenshot which are given bellow.</p>
+                                <ul>
+                                    <img src="assets/images/doc/sidebarMenu.png" alt="doc">
+                                </ul>
+                            </div>
+                        </div> 
+
+                        <div class="border border-black/10 p-5 rounded-md" id="header">
+                            <div class="mb-5">
+                                <p class="text-xl font-semibold text-black">Header</p>
+                            </div>
+                            <div>
+                                <p class="text-base font-semibold">From the located file in the image you can customize you site header layout</p>
+                                <ul>
+                                    <img src="assets/images/doc/header.png" alt="doc">
+                                </ul>
+                            </div>
+                        </div>
+
+
+                        <div class="border border-black/10 p-5 rounded-md" id="footer">
+                            <div class="mb-5">
+                                <p class="text-xl font-semibold text-black">Footer</p>
+                            </div>
+                            <div>
+                                <p class="text-base font-semibold">Here is the file where you can customize your footer</p>
+                                <ul>
+                                    <img src="assets/images/doc/Footer.png" alt="doc">
+                                </ul>
+                            </div>
+                        </div>
+    
+                        <div class="border border-black/10 p-5 rounded-md" id="globalcolor">
+                            <div class="mb-5">
+                                <p class="text-xl font-semibold text-black">Global Color</p>
+                            </div>
+                            <div>
+                                <p class="text-base font-semibold">To change Geex Global Color</p>
+                                <ul>
+                                    <img src="assets/images/doc/GlobalColor.png" alt="doc">
+                                </ul>
+                            </div>
+                        </div>
+    
+                        <div class="border border-black/10 p-5 rounded-md" id="pagecontent">
+                            <div class="mb-5">
+                                <p class="text-xl font-semibold text-black">Page Content</p>
+                            </div>
+                            <div>
+                                <p class="text-base font-semibold">To customize your Site layout Content open the Geex in your editor and go to the location by following screenshot which are given bellow.</p>
+                                <ul>
+                                    <img src="assets/images/doc/PageContent.png" alt="doc">
+                                </ul>
+                            </div>
+                        </div> 
+                        
+                        <div class="border border-black/10 p-5 rounded-md" id="partials">
+                            <div class="mb-5">
+                                <p class="text-xl font-semibold text-black">Partials</p>
+                            </div>
+                            <div>
+                                <p class="text-base font-semibold">Thease all are partials you can modify look of template from these files.</p>
+                                <ul>
+                                    <img src="assets/images/doc/partials.png" alt="doc">
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="border border-black/10 p-5 rounded-md" id="chart">
+                            <div class="mb-5">
+                                <p class="text-xl font-semibold text-black">Chart</p>
+                            </div>
+                                <p class="text-base font-semibold">To customize your Site Chart open the Geex in your editor and go to the location by following screenshot which are given bellow.                                </p>
+                                <ul>
+                                    <img src="assets/images/doc/Chart.png" alt="doc"></ul></br>
+                                </ul>
+                                <ul>
+                                    <img src="assets/images/doc/Chart1.png" alt="doc">
+                                </ul>
+                        </div>
+
+
+                        <div class="border border-black/10 p-5 rounded-md" id="todo">
+                            <div class="mb-5">
+                                <p class="text-xl font-semibold text-black">Todo</p>
+                            </div>
+                                <p class="text-base font-semibold">To customize your Site Todo App open the Geex in your editor and go to the location by following screenshot which are given bellow.</p>
+                                <ul>
+                                    <img src="assets/images/doc/Todo.png" alt="doc"></ul></br>
+                                </ul>
+                        </div>
+
+                        <div class="border border-black/10 p-5 rounded-md" id="features">
+                            <div class="mb-5">
+                                <p class="text-xl font-semibold text-black">Features</p>
+                            </div>
+                                <p class="text-base font-semibold">To customize your Site Features (Badge, Button, Color, Form, Icon, Navigation, Typography etc) open the Geex in your editor and go to the location by following screenshot which are given bellow.</p>
+                                <ul>
+                                    <img src="assets/images/doc/badge.png" alt="doc"></ul></br>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="border border-black/10 p-5 rounded-md" id="log">
+                            <div class="mb-5">
+                                <p class="text-xl font-semibold text-black">Blog</p>
+                            </div>
+                                <p class="text-base font-semibold">To customize your Site Blog open the Geex in your editor and go to the location by following screenshot which are given bellow.                                </p>
+                                <ul>
+                                    <img src="assets/images/doc/Blog.png" alt="doc"></ul></br>
+                                </ul>
+                            </div>
+                        </div>                       
+
+                    </div>
+                </div>
+            </div>
+            <!-- End Content -->
+        </div>
+        <!-- End Content Area -->
+    </div>
+    <!-- End Main Content -->
+</body>
+
+</html>

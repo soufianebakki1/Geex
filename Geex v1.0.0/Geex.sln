@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geex", "Geex.csproj", "{EE623024-08B9-41B8-932F-B2795604A25F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EE623024-08B9-41B8-932F-B2795604A25F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE623024-08B9-41B8-932F-B2795604A25F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE623024-08B9-41B8-932F-B2795604A25F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE623024-08B9-41B8-932F-B2795604A25F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2170E5D1-F1AA-4C8C-8ED5-1117EEC6FEA1}
+	EndGlobalSection
+EndGlobal

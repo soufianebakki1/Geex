@@ -1,0 +1,207 @@
+/*---------------------------------------
+#. Header
+---------------------------------------*/
+/* BEM Element and Modifier */
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  99% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  99% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+.geex-header {
+  display: none;
+  padding: 20px 0 30px;
+}
+
+.geex-header__wrapper {
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 0 22px;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.geex-header__logo-wrapper {
+  max-width: 310px;
+}
+
+.geex-header__logo {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.geex-header__logo img {
+  max-height: 50px;
+  max-width: 100%;
+}
+
+.geex-header__menu-wrapper {
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  -webkit-margin-start: 50px;
+          margin-inline-start: 50px;
+}
+
+.geex-header__menu {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 30px;
+}
+
+.geex-header__menu__item {
+  position: relative;
+}
+
+.geex-header__menu__item a {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 10px;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  color: var(--body-color);
+  padding: 10px 15px;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.geex-header__menu__item a svg {
+  width: 20px;
+  height: 20px;
+}
+
+.geex-header__menu__item a svg path {
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.geex-header__menu__item a.active, .geex-header__menu__item a:hover {
+  color: var(--primary-color);
+}
+
+.geex-header__menu__item a.active svg path, .geex-header__menu__item a:hover svg path {
+  fill: var(--primary-color);
+}
+
+.geex-header__menu__item:hover .geex-header__submenu {
+  height: auto;
+  opacity: 1;
+  visibility: visible;
+  -webkit-transform: translateY(0);
+          transform: translateY(0);
+}
+
+.geex-header__menu li {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.geex-header__submenu {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 100%;
+  width: 100%;
+  min-width: 200px;
+  padding: 15px 0;
+  background-color: var(--white-color);
+  border-radius: 8px;
+  -webkit-box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  height: 0;
+  opacity: 0;
+  visibility: hidden;
+  -webkit-transform: translateY(-10px);
+          transform: translateY(-10px);
+  -webkit-transition: -webkit-transform 0.3s ease;
+  transition: -webkit-transform 0.3s ease;
+  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, -webkit-transform 0.3s ease;
+}
+
+.geex-header__submenu .geex-header__menu__link {
+  width: 100%;
+  padding: 10px 25px;
+}
+
+.geex-header__submenu .geex-header__menu__link.active {
+  color: var(--primary-color);
+}
+
+.geex-header__action {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 20px;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.geex-header__action__btn {
+  padding: 8px 20px;
+  color: #000;
+  background: #c4bebe;
+  border-radius: 5px;
+  border: none;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.geex-header__action__btn:hover {
+  background: #ccc4c4;
+}
+
+html[data-nav="top"] .geex-header {
+  display: block;
+}
+
+html[data-nav="top"] .geex-content__header .geex-content__header__customizer {
+  display: none;
+}
+
+html[data-nav="top"] .geex-sidebar {
+  display: none;
+}
+
+@media only screen and (max-width: 1199px) {
+  html[data-nav="top"] .geex-header {
+    display: none;
+  }
+  html[data-nav="top"] .geex-content__header .geex-content__header__customizer {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+  html[data-nav="top"] .geex-sidebar {
+    display: block;
+  }
+}

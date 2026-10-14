@@ -1,0 +1,309 @@
+/*---------------------------------  
+Sidebar
+---------------------------------------*/
+/* BEM Element and Modifier */
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  99% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  99% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+.geex-sidebar {
+  position: fixed;
+  top: 22px;
+  inset-inline-start: 22px;
+  min-width: 310px;
+  max-width: 20%;
+  padding: 38px 29px;
+  border-radius: 33px;
+  height: 100%;
+  max-height: calc(100vh - 44px);
+  overflow-y: auto;
+  scrollbar-width: none;
+  border: 1px solid var(--white-color);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(var(--sectionThree-color)), to(var(--sectionTwo-color)));
+  background-image: linear-gradient(var(--sectionThree-color), var(--sectionTwo-color));
+  /* Scrollbar Width */
+}
+
+.geex-sidebar::-webkit-scrollbar {
+  width: 0;
+}
+
+@media only screen and (max-width: 1440px) {
+  .geex-sidebar {
+    min-width: 280px;
+  }
+}
+
+@media only screen and (max-width: 1199px) {
+  .geex-sidebar {
+    top: 0;
+    width: 0;
+    inset-inline-start: 0;
+    border-radius: 0;
+    max-height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 575px) {
+  .geex-sidebar {
+    padding: 35px 20px;
+  }
+}
+
+.geex-sidebar__wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 40px;
+  min-height: 100%;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.geex-sidebar__logo {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.geex-sidebar__logo img {
+  max-height: 50px;
+  max-width: 100%;
+}
+
+.geex-sidebar__close {
+  position: absolute;
+  top: 20px;
+  inset-inline-end: 20px;
+  color: var(--body-color);
+  display: none;
+}
+
+.geex-sidebar__close:hover {
+  color: var(--danger-color);
+}
+
+@media only screen and (max-width: 1199px) {
+  .geex-sidebar__close {
+    display: block;
+  }
+}
+
+.geex-sidebar__menu-wrapper {
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+}
+
+.geex-sidebar__menu {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.geex-sidebar__menu__item {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.geex-sidebar__menu__item:first-child {
+  margin-top: 15px;
+}
+
+.geex-sidebar__menu__item:last-child {
+  margin-bottom: 15px;
+}
+
+.geex-sidebar__menu__link {
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 15px;
+  color: var(--body-color);
+  padding: 16px 25px;
+  font-size: 16px;
+  line-height: 24px;
+  border-radius: 18px;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+@media only screen and (max-width: 575px) {
+  .geex-sidebar__menu__link {
+    gap: 10px;
+    font-size: 14px;
+    padding: 12px 25px;
+  }
+}
+
+.geex-sidebar__menu__link i {
+  font-size: 23px;
+  color: var(--grayThree-color);
+}
+
+@media only screen and (max-width: 575px) {
+  .geex-sidebar__menu__link i {
+    font-size: 20px;
+  }
+}
+
+.geex-sidebar__menu__link svg path {
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.geex-sidebar__menu__link.default-active, .geex-sidebar__menu__link.active, .geex-sidebar__menu__link:hover {
+  color: var(--primary-color) !important;
+  background: rgba(171, 84, 219, 0.15);
+}
+
+.geex-sidebar__menu__link.default-active i, .geex-sidebar__menu__link.active i, .geex-sidebar__menu__link:hover i {
+  color: var(--primary-color);
+}
+
+.geex-sidebar__menu__link.default-active svg path, .geex-sidebar__menu__link.active svg path, .geex-sidebar__menu__link:hover svg path {
+  fill: var(--primary-color);
+}
+
+.geex-sidebar__submenu {
+  display: none;
+  width: 100%;
+  -webkit-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(var(--sectionThree-color)), to(var(--sectionTwo-color)));
+  background-image: linear-gradient(var(--sectionThree-color), var(--sectionTwo-color));
+  z-index: 1;
+  border-radius: 18px;
+  -webkit-transition: padding 0.3s ease;
+  transition: padding 0.3s ease;
+}
+
+.geex-sidebar__submenu .geex-sidebar__menu__link {
+  cursor: pointer;
+  padding: 8px 25px;
+  background: transparent;
+}
+
+.geex-sidebar__footer__title {
+  display: inline-block;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 600;
+  color: var(--body-color);
+  margin-bottom: 10px;
+}
+
+.geex-sidebar__customize-btn {
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 22px;
+}
+
+.geex-sidebar__footer__copyright {
+  margin-bottom: 18px;
+}
+
+.geex-sidebar__footer__author {
+  margin: 0;
+}
+
+.geex-sidebar__footer__author .heart-icon {
+  color: var(--danger-color);
+}
+
+.geex-sidebar__footer p {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: var(--sec-color);
+}
+
+.geex-sidebar__action__btn {
+  padding: 8px 20px;
+  color: #000;
+  background: #c4bebe;
+  border-radius: 5px;
+  border: none;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.geex-sidebar__action__btn:hover {
+  background: #ccc4c4;
+}
+
+/* Desktop compact mode. The toggle button switches between this state and
+   the normal expanded sidebar without affecting the mobile drawer. */
+@media only screen and (min-width: 1200px) {
+  html.geex-sidebar-collapsed .geex-sidebar {
+    min-width: 82px;
+    width: 82px;
+    max-width: 82px;
+    padding-inline: 14px;
+  }
+
+  html.geex-sidebar-collapsed .geex-sidebar__logo {
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  html.geex-sidebar-collapsed .geex-sidebar__logo img {
+    max-width: 42px;
+    object-fit: cover;
+    object-position: left center;
+  }
+
+  html.geex-sidebar-collapsed .geex-sidebar__menu__link {
+    justify-content: center;
+    gap: 0;
+    padding-inline: 12px;
+  }
+
+  html.geex-sidebar-collapsed .geex-sidebar__menu__link span,
+  html.geex-sidebar-collapsed .geex-sidebar__submenu,
+  html.geex-sidebar-collapsed .geex-sidebar__footer {
+    display: none;
+  }
+
+  html.geex-sidebar-collapsed .geex-sidebar__menu__link svg {
+    flex: 0 0 auto;
+  }
+}

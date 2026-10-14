@@ -1,0 +1,35 @@
+﻿<!doctype html>
+<html lang="en" dir="ltr">
+
+
+<partial name="~/Views/Shared/Partials/_Head.cshtml" />
+
+<body class="geex-dashboard">
+
+
+    <partial name="~/Views/Shared/Partials/_Header.cshtml" />
+
+    <main class="geex-main-content">
+
+        <partial name="~/Views/Shared/Partials/_Sidebar.cshtml" />
+
+        <partial name="~/Views/Shared/Partials/_Customizer.cshtml" />
+        
+
+        <div class="geex-content">
+            <partial name="~/Views/Shared/Partials/_ContentHeader.cshtml" />
+            @RenderBody()
+
+        </div>
+    </main>
+
+    <!-- JAVASCRIPTS START -->
+    
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.27.0/dist/apexcharts.min.js"></script>
+    <script src="~/js/main.js"></script>
+
+    <!-- JAVASCRIPTS END -->
+</body>
+
+</html>
