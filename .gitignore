@@ -1,15 +1,6 @@
-[Bb]in/
-[Oo]bj/
-.vs/
-*.user
-*.suo
-*.userosscache
-*.sln.docstates
-[Dd]ebug/
-[Rr]elease/
-packages/
 node_modules/
-TestResults/
+client/dist/
+client/.env.local
 *.log
 .DS_Store
 Thumbs.db
