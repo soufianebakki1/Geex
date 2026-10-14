@@ -80,7 +80,8 @@ export function createSeed() {
   const firstNames = ["Amine", "Sara", "Mehdi", "Imane", "Karim", "Hajar", "Othmane", "Zineb", "Reda", "Salma", "Anas", "Ghita", "Hamza", "Yasmine", "Adil", "Nisrine", "Tarik", "Loubna", "Ilyas", "Meryem", "Soufiane", "Houda", "Khalid", "Fatima Zahra", "Rachid", "Asmae", "Driss"];
   const lastNames = ["Benjelloun", "El Idrissi", "Alami", "Benkirane", "Berrada", "Sqalli", "Lahlou", "Tazi", "Chaoui", "El Fassi", "Kettani", "Bennis", "Squalli", "Mernissi", "Guessous", "Ouazzani", "Naciri", "Belhaj", "Skalli", "Amrani", "Cherkaoui", "Filali", "Hajji", "Rami", "Zniber", "Bouzidi", "Tahiri"];
   const cities = ["Casablanca", "Rabat", "Marrakech", "Tanger", "Bouskoura", "Mohammedia", "Paris", "Bruxelles"];
-  const sources = ["Site web", "Salon immobilier", "Recommandation", "Réseaux sociaux", "Appel entrant", "Panneau chantier"];
+  const sources = ["Facebook", "Instagram", "TikTok", "LinkedIn", "Panneau publicitaire", "Kakémono", "Emailing / SMS", "Évènementiel", "Brochure / Flyer", "Réseau Konouz", "Site web", "Appel entrant"];
+  const streets = ["Rue Ibn Battouta", "Boulevard Zerktouni", "Avenue Mohammed V", "Rue Al Massira", "Boulevard Ghandi", "Avenue Hassan II", "Rue des Orangers"];
   const stagePlan = [
     ...Array(5).fill("nouveau"),
     ...Array(4).fill("contacte"),
@@ -95,13 +96,15 @@ export function createSeed() {
     const firstName = firstNames[index];
     const lastName = lastNames[index];
     const createdDaysAgo = stage === "nouveau" ? between(0, 6) : between(20, 240);
+    const city = pick(cities);
     return {
       id: `L${String(index + 1).padStart(2, "0")}`,
       firstName,
       lastName,
       phone: `+212 6 ${between(10, 79)} ${between(10, 99)} ${between(10, 99)} ${between(10, 99)}`,
       email: `${slug(firstName)}.${slug(lastName)}@gmail.com`,
-      city: pick(cities),
+      address: `${between(1, 180)} ${pick(streets)}, ${city}`,
+      city,
       source: pick(sources),
       budget: roundTo(between(1_200_000, 6_500_000), 50_000),
       projectId: pick(["PJ1", "PJ2", "PJ3"]),
@@ -176,7 +179,8 @@ export function createSeed() {
       leadId: lead.id,
       lotId: lot.id,
       deposit,
-      validityDays,
+      depositMethod: "Virement",
+      validityHours: validityDays * 24,
       createdAt,
       expiresAt: new Date(new Date(createdAt).getTime() + validityDays * DAY).toISOString(),
       status,
@@ -256,6 +260,8 @@ export function createSeed() {
       confirmedBy: confirmedAt ? lead.agentId : null,
       bulletinNumber: null,
       bulletinGeneratedAt: null,
+      blocked: false,
+      blockedReason: null,
     };
     reservations.push(reservation);
     addActivity({ type: "reservation", leadId: lead.id, userId: lead.agentId, at: createdAt, message: `Réservation ${reservation.number} créée` });

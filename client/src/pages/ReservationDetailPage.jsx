@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { BadgeCheck, CalendarClock, FileText, Printer, Wallet } from "lucide-react";
+import { BadgeCheck, CalendarClock, FileText, Lock, Printer, Wallet } from "lucide-react";
 import { api } from "../api/index.js";
 import { errorMessage } from "../api/errors.js";
 import { useAsync } from "../hooks/useAsync.js";
@@ -181,6 +181,7 @@ export default function ReservationDetailPage() {
   const data = reservation.data;
   const confirmed = data.status === "confirmee";
   const paidPct = percent(data.totals.paid, data.price);
+  const docsToValidate = data.dossier ? data.dossier.state.required - data.dossier.state.validated : 0;
 
   return (
     <>
@@ -202,6 +203,7 @@ export default function ReservationDetailPage() {
               <Button
                 variant="primary"
                 icon={BadgeCheck}
+                disabled={docsToValidate > 0}
                 onClick={() => {
                   setError(null);
                   setConfirmOpen(true);
@@ -211,7 +213,7 @@ export default function ReservationDetailPage() {
               </Button>
             )}
             {confirmed && canConfirm && (
-              <Button variant={data.bulletinNumber ? "secondary" : "primary"} icon={FileText} onClick={generateBulletin} loading={busy === "bulletin"}>
+              <Button variant={data.bulletinNumber ? "secondary" : "primary"} icon={FileText} onClick={generateBulletin} loading={busy === "bulletin"} disabled={data.blocked}>
                 {data.bulletinNumber ? "Régénérer le bulletin" : "Générer le bulletin"}
               </Button>
             )}
@@ -228,7 +230,18 @@ export default function ReservationDetailPage() {
         <div className="callout callout--warning" style={{ marginBottom: 20 }}>
           <BadgeCheck size={16} />
           <span>
-            Cette réservation attend sa confirmation. La confirmation passe le lot {data.lot?.ref} en « Réservé », le client en « Gagné » et génère l'échéancier de paiement.
+            {docsToValidate > 0
+              ? `Confirmation impossible : ${docsToValidate} pièce(s) obligatoire(s) du dossier doivent encore être validées par la comptabilité.`
+              : `Cette réservation attend sa confirmation. La confirmation passe le lot ${data.lot?.ref} en « Réservé », le client en « Gagné », génère l'échéancier et transmet l'acompte à la comptabilité pour validation.`}
+          </span>
+        </div>
+      )}
+
+      {data.blocked && (
+        <div className="callout callout--danger" style={{ marginBottom: 20 }}>
+          <Lock size={16} />
+          <span>
+            Dossier bloqué : {data.blockedReason}. Relancez le client et enregistrez un nouveau paiement ; le dossier se débloque dès sa validation par la comptabilité.
           </span>
         </div>
       )}

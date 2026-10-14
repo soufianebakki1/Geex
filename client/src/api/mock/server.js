@@ -12,7 +12,7 @@ import {
   uid,
 } from "./logic.js";
 
-const STORAGE_KEY = "konouz.mock-db.v1";
+const STORAGE_KEY = "konouz.mock-db.v2";
 
 let db = load();
 
@@ -126,7 +126,21 @@ function log(activity) {
 }
 
 function notify(notification) {
-  db.notifications.push({ id: uid("N"), at: now(), readBy: [], roles: null, ...notification });
+  db.notifications.push({ id: uid("N"), at: now(), readBy: [], roles: null, userIds: null, ...notification });
+}
+
+const isCommercial = (user) => user.role === "commercial";
+const ownsLead = (user, lead) => !isCommercial(user) || lead?.agentId === user.id;
+const ownsLeadId = (user, leadId) => ownsLead(user, byId(db.leads, leadId));
+
+function mustFindLead(user, id) {
+  const lead = mustFind(db.leads, id, "Lead");
+  if (!ownsLead(user, lead)) fail(404, "Lead introuvable.");
+  return lead;
+}
+
+function assertOwns(user, leadId) {
+  if (!ownsLeadId(user, leadId)) fail(403, "Ce client est suivi par un autre commercial.");
 }
 
 const STAGE_LABEL = {
@@ -139,6 +153,7 @@ const STAGE_LABEL = {
   perdu: "Perdu",
 };
 const STAGES = Object.keys(STAGE_LABEL);
+const PAYMENT_METHODS = ["Virement", "Chèque", "Chèque certifié", "Versement bancaire", "Espèces", "Paiement électronique"];
 const ENGAGED_STAGES = ["pre_reserve", "gagne"];
 const CONTACT_LABEL = { appel: "Appel", email: "Email", whatsapp: "WhatsApp", visite: "Visite", rdv: "Rendez-vous" };
 
@@ -152,7 +167,7 @@ function expirePreReservations() {
     const lead = byId(db.leads, pre.leadId);
     if (lead?.stage === "pre_reserve") lead.stage = "negociation";
     log({ type: "pre_reservation", leadId: pre.leadId, userId: null, message: `Pré-réservation du lot ${lot?.ref ?? ""} expirée — lot remis en vente` });
-    notify({ type: "danger", title: "Pré-réservation expirée", message: `${leadName(lead)} — lot ${lot?.ref ?? ""} est de nouveau disponible.`, link: "/pre-reservations", roles: ["admin", "commercial"] });
+    notify({ type: "danger", title: "Pré-réservation expirée", message: `${leadName(lead)} — lot ${lot?.ref ?? ""} est de nouveau disponible.`, link: "/pre-reservations", roles: ["admin"], userIds: lead ? [lead.agentId] : null });
   }
 }
 
@@ -221,6 +236,7 @@ function preReservationView(pre) {
     lead: lead ? { id: lead.id, name: leadName(lead), phone: lead.phone } : null,
     lot: lot ? { id: lot.id, ref: lot.ref, type: lot.type, surface: lot.surface, price: lot.price, project: projectRef(lot.projectId) } : null,
     createdByUser: userSummary(pre.createdBy),
+    cancelledByUser: userSummary(pre.cancelledBy),
     dossierId: dossier?.id ?? null,
   };
 }
@@ -239,6 +255,9 @@ function dossierView(dossier, { detailed = false } = {}) {
     preReservationId: dossier.preReservationId,
     reservation: reservation ? { id: reservation.id, number: reservation.number, status: reservation.status } : null,
     state: dossierState(dossier),
+    cancelReason: dossier.cancelReason ?? null,
+    cancelledAt: dossier.cancelledAt ?? null,
+    cancelledByUser: userSummary(dossier.cancelledBy),
   };
   if (detailed) {
     view.documents = dossier.documents.map((doc) => ({
@@ -316,7 +335,9 @@ function paymentView(payment) {
 }
 
 function notificationVisible(notification, user) {
-  return !notification.roles || notification.roles.includes(user.role);
+  const { roles: targetRoles, userIds } = notification;
+  if (!targetRoles && !userIds) return true;
+  return Boolean(targetRoles?.includes(user.role) || userIds?.includes(user.id));
 }
 
 /* ------------------------------------------------------------------ */
@@ -417,9 +438,10 @@ route("GET", "/dashboard", () => {
 /* Leads                                                               */
 /* ------------------------------------------------------------------ */
 
-route("GET", "/leads", ({ query }) => {
+route("GET", "/leads", ({ query, user }) => {
   const q = (query.q ?? "").trim().toLowerCase();
   return db.leads
+    .filter((lead) => ownsLead(user, lead))
     .filter((lead) => !query.stage || lead.stage === query.stage)
     .filter((lead) => !query.projectId || lead.projectId === query.projectId)
     .filter((lead) => !query.agentId || lead.agentId === query.agentId)
@@ -432,43 +454,52 @@ function validateLead(data) {
   required(data.firstName, "Le prénom est obligatoire.");
   required(data.lastName, "Le nom est obligatoire.");
   required(data.phone, "Le téléphone est obligatoire.");
+  required(data.address, "L'adresse est obligatoire.");
+  required(data.source, "La source du lead est obligatoire.");
+  required(data.projectId, "Le projet concerné est obligatoire.");
   if (data.email && !/^\S+@\S+\.\S+$/.test(data.email)) fail(422, "L'adresse email est invalide.");
-  if (data.projectId && !byId(db.projects, data.projectId)) fail(422, "Projet inconnu.");
+  if (!byId(db.projects, data.projectId)) fail(422, "Projet inconnu.");
+  const agent = byId(db.users, data.agentId);
+  if (!agent || !agent.active || !["admin", "commercial"].includes(agent.role)) fail(422, "Le commercial assigné est invalide.");
 }
 
-const LEAD_FIELDS = ["firstName", "lastName", "phone", "email", "city", "source", "budget", "projectId", "agentId", "notes"];
+const LEAD_FIELDS = ["firstName", "lastName", "phone", "email", "address", "city", "source", "budget", "projectId", "agentId", "notes"];
 const pickFields = (data, fields) => Object.fromEntries(fields.filter((key) => key in data).map((key) => [key, data[key]]));
 
+function notifyAssignment(lead, actor) {
+  if (lead.agentId === actor.id) return;
+  notify({ type: "info", title: "Nouveau lead assigné", message: `${leadName(lead)} vous a été assigné par ${actor.name}.`, link: `/leads/${lead.id}`, userIds: [lead.agentId] });
+}
+
 route("POST", "/leads", ({ body, user }) => {
-  validateLead(body);
   const lead = {
     id: uid("L"),
     firstName: "",
     lastName: "",
     phone: "",
     email: "",
+    address: "",
     city: "",
     source: "Appel entrant",
     budget: null,
     projectId: null,
     notes: "",
     ...pickFields(body, LEAD_FIELDS),
-    agentId: body.agentId || user.id,
+    agentId: isCommercial(user) ? user.id : body.agentId || user.id,
     budget: body.budget ? Number(body.budget) : null,
     stage: "nouveau",
     createdAt: now(),
     lastContactAt: null,
   };
+  validateLead(lead);
   db.leads.push(lead);
   log({ type: "lead_created", leadId: lead.id, userId: user.id, message: `Lead créé (source : ${lead.source})` });
-  if (lead.agentId !== user.id) {
-    notify({ type: "info", title: "Nouveau lead assigné", message: `${leadName(lead)} vous a été assigné.`, link: `/leads/${lead.id}`, roles: ["admin", "commercial"] });
-  }
+  notifyAssignment(lead, user);
   return leadView(lead);
 }, { roles: roles("leads.write") });
 
-route("GET", "/leads/:id", ({ params }) => {
-  const lead = mustFind(db.leads, params.id, "Lead");
+route("GET", "/leads/:id", ({ params, user }) => {
+  const lead = mustFindLead(user, params.id);
   const preReservations = db.preReservations
     .filter((pre) => pre.leadId === lead.id)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
@@ -478,9 +509,14 @@ route("GET", "/leads/:id", ({ params }) => {
 }, { roles: roles("leads") });
 
 route("PATCH", "/leads/:id", ({ params, body, user }) => {
-  const lead = mustFind(db.leads, params.id, "Lead");
+  const lead = mustFindLead(user, params.id);
   const next = { ...lead, ...pickFields(body, LEAD_FIELDS) };
+  if (isCommercial(user)) next.agentId = lead.agentId;
   validateLead(next);
+  const reassigned = next.agentId !== lead.agentId;
+  if (reassigned) {
+    log({ type: "assignment", leadId: lead.id, userId: user.id, message: `Lead réaffecté : ${userSummary(lead.agentId)?.name ?? "—"} → ${userSummary(next.agentId)?.name}` });
+  }
   if (body.budget !== undefined) next.budget = body.budget ? Number(body.budget) : null;
 
   if (body.stage && body.stage !== lead.stage) {
@@ -493,11 +529,12 @@ route("PATCH", "/leads/:id", ({ params, body, user }) => {
   }
 
   Object.assign(lead, next);
+  if (reassigned) notifyAssignment(lead, user);
   return leadView(lead);
 }, { roles: roles("leads.write") });
 
-route("GET", "/leads/:id/contacts", ({ params }) => {
-  mustFind(db.leads, params.id, "Lead");
+route("GET", "/leads/:id/contacts", ({ params, user }) => {
+  mustFindLead(user, params.id);
   return db.contacts
     .filter((contact) => contact.leadId === params.id)
     .sort((a, b) => b.date.localeCompare(a.date))
@@ -505,7 +542,7 @@ route("GET", "/leads/:id/contacts", ({ params }) => {
 }, { roles: roles("leads") });
 
 route("POST", "/leads/:id/contacts", ({ params, body, user }) => {
-  const lead = mustFind(db.leads, params.id, "Lead");
+  const lead = mustFindLead(user, params.id);
   if (!CONTACT_LABEL[body.type]) fail(422, "Type de contact inconnu.");
   required(body.summary, "Le compte rendu est obligatoire.");
   const date = body.date ? new Date(body.date).toISOString() : now();
@@ -520,8 +557,8 @@ route("POST", "/leads/:id/contacts", ({ params, body, user }) => {
   return { ...contact, user: userSummary(user.id) };
 }, { roles: roles("leads.write") });
 
-route("GET", "/leads/:id/activities", ({ params }) => {
-  mustFind(db.leads, params.id, "Lead");
+route("GET", "/leads/:id/activities", ({ params, user }) => {
+  mustFindLead(user, params.id);
   return db.activities
     .filter((activity) => activity.leadId === params.id)
     .sort((a, b) => b.at.localeCompare(a.at))
@@ -600,24 +637,29 @@ route("PATCH", "/lots/:id", ({ params, body, user }) => {
 /* Pre-reservations                                                    */
 /* ------------------------------------------------------------------ */
 
-route("GET", "/pre-reservations", ({ query }) =>
+route("GET", "/pre-reservations", ({ query, user }) =>
   db.preReservations
+    .filter((pre) => ownsLeadId(user, pre.leadId))
     .filter((pre) => !query.status || pre.status === query.status)
     .filter((pre) => !query.leadId || pre.leadId === query.leadId)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
     .map(preReservationView),
 { roles: roles("preReservations", "leads") });
 
+const DEFAULT_VALIDITY_HOURS = 48;
+const MAX_VALIDITY_HOURS = 30 * 24;
+
 route("POST", "/pre-reservations", ({ body, user }) => {
-  const lead = mustFind(db.leads, body.leadId, "Lead");
+  const lead = mustFindLead(user, body.leadId);
   const lot = mustFind(db.lots, body.lotId, "Lot");
   if (lot.status !== "disponible") fail(409, `Le lot ${lot.ref} n'est plus disponible.`);
   if (["gagne", "perdu"].includes(lead.stage)) fail(409, "Ce lead ne peut pas faire l'objet d'une pré-réservation.");
   if (db.preReservations.some((pre) => pre.leadId === lead.id && pre.status === "active")) fail(409, "Ce lead a déjà une pré-réservation active.");
   const deposit = positiveNumber(body.deposit, "L'acompte doit être un montant positif.");
   if (deposit > lot.price) fail(422, "L'acompte ne peut pas dépasser le prix du lot.");
-  const validityDays = Number(body.validityDays);
-  if (!Number.isInteger(validityDays) || validityDays < 1 || validityDays > 30) fail(422, "La durée de validité doit être comprise entre 1 et 30 jours.");
+  if (!PAYMENT_METHODS.includes(body.depositMethod)) fail(422, "Mode de versement de l'acompte invalide.");
+  const validityHours = Number(body.validityHours ?? DEFAULT_VALIDITY_HOURS);
+  if (!Number.isInteger(validityHours) || validityHours < 1 || validityHours > MAX_VALIDITY_HOURS) fail(422, "La durée de validité doit être comprise entre 1 heure et 30 jours.");
 
   const createdAt = now();
   const pre = {
@@ -625,9 +667,10 @@ route("POST", "/pre-reservations", ({ body, user }) => {
     leadId: lead.id,
     lotId: lot.id,
     deposit,
-    validityDays,
+    depositMethod: body.depositMethod,
+    validityHours,
     createdAt,
-    expiresAt: new Date(Date.now() + validityDays * DAY).toISOString(),
+    expiresAt: new Date(Date.now() + validityHours * HOUR).toISOString(),
     status: "active",
     createdBy: user.id,
     note: String(body.note ?? "").trim(),
@@ -638,25 +681,32 @@ route("POST", "/pre-reservations", ({ body, user }) => {
     log({ type: "stage", leadId: lead.id, userId: user.id, message: `Étape : ${STAGE_LABEL[lead.stage]} → Pré-réservé` });
     lead.stage = "pre_reserve";
   }
-  log({ type: "pre_reservation", leadId: lead.id, userId: user.id, message: `Pré-réservation du lot ${lot.ref} (acompte ${deposit.toLocaleString("fr-FR")} MAD, ${validityDays} j)` });
-  notify({ type: "info", title: "Nouvelle pré-réservation", message: `${leadName(lead)} — lot ${lot.ref}, valable ${validityDays} jours.`, link: "/pre-reservations", roles: ["admin"] });
+  const validity = validityHours % 24 === 0 ? `${validityHours / 24} j` : `${validityHours} h`;
+  log({ type: "pre_reservation", leadId: lead.id, userId: user.id, message: `Pré-réservation du lot ${lot.ref} (acompte ${deposit.toLocaleString("fr-FR")} MAD, ${validity})` });
+  notify({ type: "info", title: "Nouvelle pré-réservation", message: `${leadName(lead)} — lot ${lot.ref}, valable ${validity}.`, link: "/pre-reservations", roles: ["admin"], userIds: [lead.agentId] });
   return preReservationView(pre);
 }, { roles: roles("preReservations.write") });
 
-route("POST", "/pre-reservations/:id/cancel", ({ params, user }) => {
+route("POST", "/pre-reservations/:id/cancel", ({ params, body, user }) => {
   const pre = mustFind(db.preReservations, params.id, "Pré-réservation");
+  assertOwns(user, pre.leadId);
   if (pre.status !== "active") fail(409, "Seule une pré-réservation active peut être annulée.");
+  required(body.reason, "Indiquez le motif de l'annulation.");
   pre.status = "annulee";
+  pre.cancelReason = String(body.reason).trim();
+  pre.cancelledAt = now();
+  pre.cancelledBy = user.id;
   const lot = byId(db.lots, pre.lotId);
   if (lot?.status === "pre_reserve") lot.status = "disponible";
   const lead = byId(db.leads, pre.leadId);
   if (lead?.stage === "pre_reserve") lead.stage = "negociation";
-  log({ type: "pre_reservation", leadId: pre.leadId, userId: user.id, message: `Pré-réservation du lot ${lot?.ref ?? ""} annulée` });
+  log({ type: "pre_reservation", leadId: pre.leadId, userId: user.id, message: `Pré-réservation du lot ${lot?.ref ?? ""} annulée — motif : ${pre.cancelReason}` });
   return preReservationView(pre);
 }, { roles: roles("preReservations.write") });
 
 route("POST", "/pre-reservations/:id/convert", ({ params, user }) => {
   const pre = mustFind(db.preReservations, params.id, "Pré-réservation");
+  assertOwns(user, pre.leadId);
   if (pre.status !== "active") fail(409, "Seule une pré-réservation active peut être convertie en dossier.");
   pre.status = "convertie";
   const dossier = { id: uid("DS"), preReservationId: pre.id, leadId: pre.leadId, lotId: pre.lotId, createdAt: now(), createdBy: user.id, documents: newDocuments() };
@@ -669,13 +719,40 @@ route("POST", "/pre-reservations/:id/convert", ({ params, user }) => {
 /* Dossiers                                                            */
 /* ------------------------------------------------------------------ */
 
-route("GET", "/dossiers", () =>
-  [...db.dossiers].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map((dossier) => dossierView(dossier)),
+route("GET", "/dossiers", ({ user }) =>
+  db.dossiers
+    .filter((dossier) => ownsLeadId(user, dossier.leadId))
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .map((dossier) => dossierView(dossier)),
 { roles: roles("dossiers") });
 
-route("GET", "/dossiers/:id", ({ params }) =>
-  dossierView(mustFind(db.dossiers, params.id, "Dossier"), { detailed: true }),
+function mustFindDossier(user, id) {
+  const dossier = mustFind(db.dossiers, id, "Dossier");
+  if (!ownsLeadId(user, dossier.leadId)) fail(404, "Dossier introuvable.");
+  return dossier;
+}
+
+route("GET", "/dossiers/:id", ({ params, user }) =>
+  dossierView(mustFindDossier(user, params.id), { detailed: true }),
 { roles: roles("dossiers") });
+
+route("POST", "/dossiers/:id/cancel", ({ params, body, user }) => {
+  const dossier = mustFindDossier(user, params.id);
+  if (dossier.status === "annule") fail(409, "Ce dossier est déjà annulé.");
+  const reservation = db.reservations.find((item) => item.dossierId === dossier.id && item.status !== "annulee");
+  if (reservation?.status === "confirmee") fail(409, "La réservation de ce dossier est confirmée : son annulation relève d'un désistement.");
+  required(body.reason, "Indiquez le motif de l'annulation.");
+  const reason = String(body.reason).trim();
+  Object.assign(dossier, { status: "annule", cancelReason: reason, cancelledAt: now(), cancelledBy: user.id });
+  if (reservation) reservation.status = "annulee";
+  const lot = byId(db.lots, dossier.lotId);
+  if (lot?.status === "pre_reserve") lot.status = "disponible";
+  const lead = byId(db.leads, dossier.leadId);
+  if (lead?.stage === "pre_reserve") lead.stage = "negociation";
+  log({ type: "dossier", leadId: dossier.leadId, userId: user.id, message: `Dossier annulé, lot ${lot?.ref ?? ""} remis en vente — motif : ${reason}` });
+  notify({ type: "warning", title: "Dossier annulé", message: `${leadName(lead)} — lot ${lot?.ref ?? ""} est de nouveau disponible. Motif : ${reason}`, link: `/dossiers/${dossier.id}`, roles: ["admin"], userIds: lead ? [lead.agentId] : null });
+  return dossierView(dossier, { detailed: true });
+}, { roles: roles("preReservations.write") });
 
 const MAX_UPLOAD = 10 * 1024 * 1024;
 const ACCEPTED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
@@ -685,12 +762,13 @@ function findDocument(dossier, key) {
 }
 
 function assertDossierEditable(dossier) {
-  const reservation = db.reservations.find((item) => item.dossierId === dossier.id);
+  if (dossier.status === "annule") fail(409, "Ce dossier est annulé.");
+  const reservation = db.reservations.find((item) => item.dossierId === dossier.id && item.status !== "annulee");
   if (reservation?.status === "confirmee") fail(409, "Le dossier d'une réservation confirmée ne peut plus être modifié.");
 }
 
 route("POST", "/dossiers/:id/documents/:key", ({ params, body, user }) => {
-  const dossier = mustFind(db.dossiers, params.id, "Dossier");
+  const dossier = mustFindDossier(user, params.id);
   assertDossierEditable(dossier);
   const doc = findDocument(dossier, params.key);
   const file = typeof body.get === "function" ? body.get("file") : null;
@@ -701,13 +779,14 @@ route("POST", "/dossiers/:id/documents/:key", ({ params, body, user }) => {
   log({ type: "dossier", leadId: dossier.leadId, userId: user.id, message: `Pièce reçue : ${doc.label}` });
   const state = dossierState(dossier);
   if (state.status === "complet" && state.received === state.required) {
-    notify({ type: "info", title: "Dossier complet", message: `Toutes les pièces obligatoires du dossier de ${leadName(byId(db.leads, dossier.leadId))} ont été reçues.`, link: `/dossiers/${dossier.id}`, roles: ["admin", "comptable", "commercial"] });
+    const lead = byId(db.leads, dossier.leadId);
+    notify({ type: "info", title: "Dossier complet", message: `Toutes les pièces obligatoires du dossier de ${leadName(lead)} ont été reçues et attendent la validation de la comptabilité.`, link: `/dossiers/${dossier.id}`, roles: ["admin", "comptable"], userIds: lead ? [lead.agentId] : null });
   }
   return dossierView(dossier, { detailed: true });
 }, { roles: roles("dossiers.upload") });
 
 route("DELETE", "/dossiers/:id/documents/:key", ({ params, user }) => {
-  const dossier = mustFind(db.dossiers, params.id, "Dossier");
+  const dossier = mustFindDossier(user, params.id);
   assertDossierEditable(dossier);
   const doc = findDocument(dossier, params.key);
   Object.assign(doc, { status: "manquant", fileName: null, fileSize: null, uploadedAt: null, uploadedBy: null, validatedAt: null, validatedBy: null });
@@ -732,23 +811,32 @@ route("PATCH", "/dossiers/:id/documents/:key", ({ params, body, user }) => {
 /* Reservations                                                        */
 /* ------------------------------------------------------------------ */
 
-route("GET", "/reservations", ({ query }) =>
-  [...db.reservations]
+route("GET", "/reservations", ({ query, user }) =>
+  db.reservations
+    .filter((item) => ownsLeadId(user, item.leadId))
     .filter((item) => !query.status || item.status === query.status)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
     .map((item) => reservationView(item)),
 { roles: roles("reservations", "payments", "schedule") });
 
-route("GET", "/reservations/:id", ({ params }) =>
-  reservationView(mustFind(db.reservations, params.id, "Réservation"), { detailed: true }),
+function mustFindReservation(user, id) {
+  const reservation = mustFind(db.reservations, id, "Réservation");
+  if (!ownsLeadId(user, reservation.leadId)) fail(404, "Réservation introuvable.");
+  return reservation;
+}
+
+route("GET", "/reservations/:id", ({ params, user }) =>
+  reservationView(mustFindReservation(user, params.id), { detailed: true }),
 { roles: roles("reservations") });
 
 route("POST", "/reservations", ({ body, user }) => {
-  const dossier = mustFind(db.dossiers, body.dossierId, "Dossier");
+  const dossier = mustFindDossier(user, body.dossierId);
+  if (dossier.status === "annule") fail(409, "Ce dossier est annulé.");
   if (db.reservations.some((item) => item.dossierId === dossier.id && item.status !== "annulee")) fail(409, "Une réservation existe déjà pour ce dossier.");
   const state = dossierState(dossier);
   if (state.received < state.required) fail(422, `Il manque ${state.required - state.received} pièce(s) obligatoire(s) au dossier.`);
   const lot = mustFind(db.lots, dossier.lotId, "Lot");
+  if (lot.status !== "pre_reserve") fail(409, `Le lot ${lot.ref} n'est plus bloqué pour ce client.`);
   const pre = byId(db.preReservations, dossier.preReservationId);
   db.counters.reservation += 1;
   const sequence = db.counters.reservation;
@@ -768,6 +856,8 @@ route("POST", "/reservations", ({ body, user }) => {
     confirmedBy: null,
     bulletinNumber: null,
     bulletinGeneratedAt: null,
+    blocked: false,
+    blockedReason: null,
   };
   db.reservations.push(reservation);
   log({ type: "reservation", leadId: reservation.leadId, userId: user.id, message: `Réservation ${reservation.number} créée` });
@@ -775,12 +865,15 @@ route("POST", "/reservations", ({ body, user }) => {
 }, { roles: roles("reservations.confirm") });
 
 route("POST", "/reservations/:id/confirm", ({ params, user }) => {
-  const reservation = mustFind(db.reservations, params.id, "Réservation");
+  const reservation = mustFindReservation(user, params.id);
   if (reservation.status !== "en_attente") fail(409, "Cette réservation n'est pas en attente de confirmation.");
   const lot = mustFind(db.lots, reservation.lotId, "Lot");
   if (lot.status !== "pre_reserve") fail(409, `Le lot ${lot.ref} n'est plus pré-réservé pour ce client.`);
+  const dossier = mustFind(db.dossiers, reservation.dossierId, "Dossier");
+  const state = dossierState(dossier);
+  if (state.validated < state.required) fail(422, `${state.required - state.validated} pièce(s) obligatoire(s) doivent encore être validées par la comptabilité.`);
   const project = mustFind(db.projects, reservation.projectId, "Projet");
-  const pre = db.preReservations.find((item) => item.id === byId(db.dossiers, reservation.dossierId)?.preReservationId);
+  const pre = byId(db.preReservations, dossier.preReservationId);
 
   reservation.status = "confirmee";
   reservation.confirmedAt = now();
@@ -798,27 +891,31 @@ route("POST", "/reservations/:id/confirm", ({ params, user }) => {
       id: uid("PAY"),
       reservationId: reservation.id,
       amount: reservation.deposit,
-      method: "Virement",
+      method: pre?.depositMethod ?? "Virement",
       reference: `ACOMPTE-${pre?.id ?? reservation.number}`,
       date: pre?.createdAt ?? reservation.confirmedAt,
-      status: "valide",
+      status: "en_attente",
       note: "Acompte versé à la pré-réservation",
       createdBy: user.id,
       createdAt: reservation.confirmedAt,
-      validatedBy: user.id,
-      validatedAt: reservation.confirmedAt,
+      validatedBy: null,
+      validatedAt: null,
       comment: "",
     });
   }
   recomputeReservation(db, reservation.id);
   log({ type: "reservation", leadId: reservation.leadId, userId: user.id, message: `Réservation ${reservation.number} confirmée — échéancier généré` });
   notify({ type: "success", title: "Réservation confirmée", message: `${reservation.number} — ${leadName(lead)}, lot ${lot.ref}. Échéancier généré.`, link: `/reservations/${reservation.id}`, roles: null });
+  if (reservation.deposit > 0) {
+    notify({ type: "info", title: "Acompte à valider", message: `Acompte de ${reservation.deposit.toLocaleString("fr-FR")} MAD pour ${reservation.number} (${leadName(lead)}).`, link: "/paiements", roles: ["admin", "comptable"] });
+  }
   return reservationView(reservation, { detailed: true });
 }, { roles: roles("reservations.confirm") });
 
 route("POST", "/reservations/:id/bulletin", ({ params, user }) => {
-  const reservation = mustFind(db.reservations, params.id, "Réservation");
+  const reservation = mustFindReservation(user, params.id);
   if (reservation.status !== "confirmee") fail(409, "Le bulletin ne peut être généré que pour une réservation confirmée.");
+  if (reservation.blocked) fail(409, `Dossier bloqué : ${reservation.blockedReason}`);
   if (!reservation.bulletinNumber) {
     db.counters.bulletin += 1;
     reservation.bulletinNumber = `BR-${new Date().getFullYear()}-${String(db.counters.bulletin).padStart(4, "0")}`;
@@ -833,11 +930,10 @@ route("POST", "/reservations/:id/bulletin", ({ params, user }) => {
 /* Payments & schedules                                                */
 /* ------------------------------------------------------------------ */
 
-const PAYMENT_METHODS = ["Virement", "Chèque", "Versement bancaire", "Espèces"];
-
-route("GET", "/payments", ({ query }) => {
+route("GET", "/payments", ({ query, user }) => {
   const q = (query.q ?? "").trim().toLowerCase();
   return db.payments
+    .filter((payment) => ownsLeadId(user, byId(db.reservations, payment.reservationId)?.leadId))
     .filter((payment) => !query.status || payment.status === query.status)
     .filter((payment) => !query.reservationId || payment.reservationId === query.reservationId)
     .map(paymentView)
@@ -846,7 +942,7 @@ route("GET", "/payments", ({ query }) => {
 }, { roles: roles("payments") });
 
 route("POST", "/payments", ({ body, user }) => {
-  const reservation = mustFind(db.reservations, body.reservationId, "Réservation");
+  const reservation = mustFindReservation(user, body.reservationId);
   if (reservation.status !== "confirmee") fail(409, "Les paiements ne peuvent être saisis que sur une réservation confirmée.");
   const amount = positiveNumber(body.amount, "Le montant doit être positif.");
   const { remaining, pending } = reservationTotals(reservation);
@@ -887,8 +983,17 @@ function decidePayment({ params, body, user }, status) {
   recomputeReservation(db, payment.reservationId);
   const reservation = byId(db.reservations, payment.reservationId);
   log({ type: "payment", leadId: reservation?.leadId, userId: user.id, message: `Paiement de ${payment.amount.toLocaleString("fr-FR")} MAD ${status === "valide" ? "validé" : "rejeté"} par la comptabilité` });
-  if (status === "rejete") {
-    notify({ type: "danger", title: "Paiement rejeté", message: `${payment.reference} (${reservation?.number}) : ${payment.comment}`, link: "/paiements", roles: ["admin", "commercial"] });
+  if (reservation && status === "rejete") {
+    reservation.blocked = true;
+    reservation.blockedReason = `paiement ${payment.reference} rejeté (${payment.comment})`;
+    const agentId = byId(db.leads, reservation.leadId)?.agentId;
+    log({ type: "reservation", leadId: reservation.leadId, userId: user.id, message: `Dossier ${reservation.number} bloqué — paiement rejeté, relance client nécessaire` });
+    notify({ type: "danger", title: "Paiement rejeté — dossier bloqué", message: `${payment.reference} (${reservation.number}) : ${payment.comment}. Relancez le client.`, link: `/reservations/${reservation.id}`, roles: ["admin"], userIds: [...new Set([payment.createdBy, agentId].filter(Boolean))] });
+  }
+  if (reservation?.blocked && status === "valide") {
+    reservation.blocked = false;
+    reservation.blockedReason = null;
+    log({ type: "reservation", leadId: reservation.leadId, userId: user.id, message: `Dossier ${reservation.number} débloqué — paiement validé` });
   }
   return paymentView(payment);
 }
@@ -896,8 +1001,9 @@ function decidePayment({ params, body, user }, status) {
 route("POST", "/payments/:id/validate", (ctx) => decidePayment(ctx, "valide"), { roles: roles("payments.validate") });
 route("POST", "/payments/:id/reject", (ctx) => decidePayment(ctx, "rejete"), { roles: roles("payments.validate") });
 
-route("GET", "/schedules", ({ query }) =>
+route("GET", "/schedules", ({ query, user }) =>
   db.installments
+    .filter((item) => ownsLeadId(user, byId(db.reservations, item.reservationId)?.leadId))
     .map(installmentView)
     .filter((item) => !query.status || item.status === query.status)
     .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
@@ -909,8 +1015,8 @@ route("GET", "/schedules", ({ query }) =>
     }),
 { roles: roles("schedule") });
 
-route("GET", "/schedules/:reservationId", ({ params }) => {
-  const reservation = mustFind(db.reservations, params.reservationId, "Réservation");
+route("GET", "/schedules/:reservationId", ({ params, user }) => {
+  const reservation = mustFindReservation(user, params.reservationId);
   const installments = db.installments
     .filter((item) => item.reservationId === reservation.id)
     .sort((a, b) => a.order - b.order)

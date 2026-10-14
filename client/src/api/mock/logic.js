@@ -35,6 +35,7 @@ export function dossierState(dossier) {
   const validated = required.filter((doc) => doc.status === "valide").length;
   let status = "incomplet";
   if (received === required.length) status = validated === required.length ? "valide" : "complet";
+  if (dossier.status === "annule") status = "annule";
   return { status, received, validated, required: required.length, total: dossier.documents.length };
 }
 
@@ -43,26 +44,32 @@ const round100 = (value) => Math.round(value / 100) * 100;
 export function buildSchedule({ reservationId, price, deposit, startAt, deliveryDate }) {
   const start = new Date(startAt).getTime();
   const delivery = Math.max(new Date(deliveryDate).getTime(), start + 300 * DAY);
-  const compromis = round100(price * 0.3) - deposit;
-  const grosOeuvre = round100(price * 0.3);
-  const finitions = round100(price * 0.2);
-  const cles = price - deposit - compromis - grosOeuvre - finitions;
+  const milestones = [
+    ["Signature du compromis de vente", round100(price * 0.3), start + 15 * DAY],
+    ["Achèvement du gros œuvre", round100(price * 0.6), start + 120 * DAY],
+    ["Achèvement des finitions", round100(price * 0.8), start + 240 * DAY],
+    ["Remise des clés", price, delivery],
+  ];
 
-  return [
-    ["Acompte de pré-réservation", deposit, start],
-    ["Signature du compromis de vente", compromis, start + 15 * DAY],
-    ["Achèvement du gros œuvre", grosOeuvre, start + 120 * DAY],
-    ["Achèvement des finitions", finitions, start + 240 * DAY],
-    ["Remise des clés", cles, delivery],
-  ].map(([label, amount, due], index) => ({
-    id: `${reservationId}-E${index + 1}`,
-    reservationId,
-    order: index + 1,
-    label,
-    amount,
-    dueDate: new Date(due).toISOString(),
-    paidAmount: 0,
-  }));
+  const rows = [["Acompte de pré-réservation", deposit, start]];
+  let covered = deposit;
+  for (const [label, cumulative, due] of milestones) {
+    const amount = Math.max(0, cumulative - covered);
+    if (amount > 0) rows.push([label, amount, due]);
+    covered = Math.max(covered, cumulative);
+  }
+
+  return rows
+    .filter(([, amount]) => amount > 0)
+    .map(([label, amount, due], index) => ({
+      id: `${reservationId}-E${index + 1}`,
+      reservationId,
+      order: index + 1,
+      label,
+      amount,
+      dueDate: new Date(due).toISOString(),
+      paidAmount: 0,
+    }));
 }
 
 export function installmentStatus(installment, now = Date.now()) {

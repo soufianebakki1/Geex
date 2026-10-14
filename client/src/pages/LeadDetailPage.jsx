@@ -227,6 +227,8 @@ export default function LeadDetailPage() {
               </dd>
               <dt>Email</dt>
               <dd>{data.email ? <a className="link" href={`mailto:${data.email}`}>{data.email}</a> : <span className="faint">—</span>}</dd>
+              <dt>Adresse</dt>
+              <dd>{data.address || <span className="faint">—</span>}</dd>
               <dt>Ville</dt>
               <dd>
                 {data.city ? (

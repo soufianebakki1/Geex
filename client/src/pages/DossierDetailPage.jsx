@@ -1,13 +1,13 @@
 import { useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { BadgeCheck, Check, CheckCheck, Circle, FilePen, FileText, RotateCcw, Trash2, Upload } from "lucide-react";
+import { Ban, BadgeCheck, Check, CheckCheck, Circle, FilePen, FileText, RotateCcw, Trash2, Upload } from "lucide-react";
 import { api } from "../api/index.js";
 import { errorMessage } from "../api/errors.js";
 import { useAsync } from "../hooks/useAsync.js";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { can } from "../auth/permissions.js";
 import { useToast } from "../components/Toast.jsx";
-import { Badge, Button, ButtonLink, Card, ErrorState, LoadingBlock, PageHeader, ProgressBar, StatusBadge } from "../components/ui.jsx";
+import { Badge, Button, ButtonLink, Card, ConfirmDialog, ErrorState, Field, LoadingBlock, PageHeader, ProgressBar, StatusBadge } from "../components/ui.jsx";
 import { formatDate, formatDateTime, formatFileSize, formatMAD } from "../utils/format.js";
 import { DOCUMENT_STATUS, DOSSIER_STATUS, RESERVATION_STATUS } from "../utils/status.js";
 
@@ -99,6 +99,26 @@ export default function DossierDetailPage() {
   const dossier = useAsync(() => api.dossiers.get(id), [id]);
   const [busy, setBusy] = useState({});
   const [creating, setCreating] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState(null);
+
+  async function cancelDossier() {
+    if (!cancelReason.trim()) return setCancelError("Indiquez le motif de l'annulation.");
+    setCancelling(true);
+    setCancelError(null);
+    try {
+      const updated = await api.dossiers.cancel(id, cancelReason.trim());
+      dossier.setData(updated);
+      setCancelOpen(false);
+      toast.success(`Dossier annulé, le lot ${updated.lot?.ref} est remis en vente.`);
+    } catch (error) {
+      setCancelError(errorMessage(error));
+    } finally {
+      setCancelling(false);
+    }
+  }
 
   const run = async (key, kind, action, successMessage) => {
     setBusy((prev) => ({ ...prev, [key]: kind }));
@@ -152,9 +172,12 @@ export default function DossierDetailPage() {
 
   const data = dossier.data;
   const { state } = data;
-  const locked = data.reservation?.status === "confirmee";
+  const cancelled = state.status === "annule";
+  const locked = cancelled || data.reservation?.status === "confirmee";
   const missing = data.documents.filter((doc) => doc.required && doc.status === "manquant");
-  const canCreate = can(user, "reservations.confirm") && !data.reservation && missing.length === 0;
+  const activeReservation = data.reservation && data.reservation.status !== "annulee" ? data.reservation : null;
+  const canCreate = can(user, "reservations.confirm") && !cancelled && !activeReservation && missing.length === 0;
+  const canCancel = can(user, "preReservations.write") && !locked;
 
   return (
     <>
@@ -169,19 +192,45 @@ export default function DossierDetailPage() {
           </>
         }
         actions={
-          data.reservation ? (
-            <ButtonLink to={`/reservations/${data.reservation.id}`} variant="dark" icon={FilePen}>
-              Réservation {data.reservation.number}
-            </ButtonLink>
-          ) : (
-            can(user, "reservations.confirm") && (
-              <Button variant="primary" icon={FilePen} onClick={createReservation} loading={creating} disabled={!canCreate}>
-                Créer la réservation
+          <>
+            {canCancel && (
+              <Button
+                variant="danger-ghost"
+                icon={Ban}
+                onClick={() => {
+                  setCancelReason("");
+                  setCancelError(null);
+                  setCancelOpen(true);
+                }}
+              >
+                Annuler le dossier
               </Button>
-            )
-          )
+            )}
+            {data.reservation ? (
+              <ButtonLink to={`/reservations/${data.reservation.id}`} variant="dark" icon={FilePen}>
+                Réservation {data.reservation.number}
+              </ButtonLink>
+            ) : (
+              can(user, "reservations.confirm") &&
+              !cancelled && (
+                <Button variant="primary" icon={FilePen} onClick={createReservation} loading={creating} disabled={!canCreate}>
+                  Créer la réservation
+                </Button>
+              )
+            )}
+          </>
         }
       />
+
+      {cancelled && (
+        <div className="callout callout--danger" style={{ marginBottom: 20 }}>
+          <Ban size={16} />
+          <span>
+            Dossier annulé le {formatDate(data.cancelledAt)}
+            {data.cancelledByUser ? ` par ${data.cancelledByUser.name}` : ""} — motif : {data.cancelReason}. Le lot a été remis en vente.
+          </span>
+        </div>
+      )}
 
       <div className="detail-grid detail-grid--wide-main">
         <div className="stack">
@@ -229,7 +278,7 @@ export default function DossierDetailPage() {
               <ProgressBar value={state.validated} max={state.required} tone="success" />
             </div>
             <div className="divider" />
-            {data.reservation ? (
+            {cancelled ? null : data.reservation ? (
               <div className="callout callout--success">
                 <BadgeCheck size={16} />
                 <span>
@@ -247,7 +296,7 @@ export default function DossierDetailPage() {
             ) : (
               <div className="callout callout--info">
                 <Check size={16} />
-                <span>Toutes les pièces obligatoires sont reçues. La réservation peut être créée.</span>
+                <span>Toutes les pièces obligatoires sont reçues. La réservation peut être créée ; sa confirmation exige la validation des pièces par la comptabilité.</span>
               </div>
             )}
           </Card>
@@ -273,6 +322,22 @@ export default function DossierDetailPage() {
           </ul>
         </Card>
       </div>
+
+      <ConfirmDialog
+        open={cancelOpen}
+        title="Annuler le dossier ?"
+        description={`Le lot ${data.lot?.ref} sera immédiatement remis en vente${activeReservation ? ` et la réservation ${activeReservation.number} sera annulée` : ""}. L'acompte de ${formatMAD(data.deposit)} devra être traité séparément.`}
+        confirmLabel="Annuler le dossier"
+        tone="danger"
+        busy={cancelling}
+        error={cancelError}
+        onClose={() => setCancelOpen(false)}
+        onConfirm={cancelDossier}
+      >
+        <Field label="Motif de l'annulation" required>
+          {(fieldId) => <textarea id={fieldId} className="textarea" rows={2} value={cancelReason} onChange={(event) => setCancelReason(event.target.value)} placeholder="Client renonce, dossier non constitué dans les délais…" />}
+        </Field>
+      </ConfirmDialog>
     </>
   );
 }

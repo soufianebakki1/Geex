@@ -11,9 +11,13 @@ import { useToast } from "../components/Toast.jsx";
 import Countdown from "../components/Countdown.jsx";
 import { Button, Card, ConfirmDialog, EmptyState, ErrorState, Field, FormError, LoadingBlock, PageHeader, ProgressBar, Segmented, StatusBadge } from "../components/ui.jsx";
 import { formatDate, formatDateTime, formatMAD, formatNumber, percent } from "../utils/format.js";
-import { PRE_RESERVATION_STATUS } from "../utils/status.js";
+import { PAYMENT_METHODS, PRE_RESERVATION_STATUS } from "../utils/status.js";
 
-const VALIDITY_OPTIONS = [3, 7, 15];
+const VALIDITY_OPTIONS = [
+  { hours: 48, label: "48 h" },
+  { hours: 72, label: "72 h" },
+  { hours: 168, label: "7 jours" },
+];
 const INELIGIBLE_STAGES = ["pre_reserve", "gagne", "perdu"];
 
 function PreReservationForm({ onCreated }) {
@@ -21,7 +25,7 @@ function PreReservationForm({ onCreated }) {
   const leads = useAsync(() => api.leads.list(), []);
   const lots = useAsync(() => api.lots.list({ status: "disponible" }), []);
   const projects = useAsync(() => api.projects.list(), []);
-  const [form, setForm] = useState({ leadId: params.get("leadId") ?? "", projectId: "", lotId: params.get("lotId") ?? "", deposit: "50000", validityDays: 7, note: "" });
+  const [form, setForm] = useState({ leadId: params.get("leadId") ?? "", projectId: "", lotId: params.get("lotId") ?? "", deposit: "50000", depositMethod: PAYMENT_METHODS[0], validityHours: 48, note: "" });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
@@ -54,7 +58,8 @@ function PreReservationForm({ onCreated }) {
         leadId: form.leadId,
         lotId: form.lotId,
         deposit: Number(form.deposit),
-        validityDays: Number(form.validityDays),
+        depositMethod: form.depositMethod,
+        validityHours: Number(form.validityHours),
         note: form.note.trim(),
       });
       onCreated(created);
@@ -136,19 +141,28 @@ function PreReservationForm({ onCreated }) {
                 </div>
               )}
             </Field>
-            <Field label="Validité" required>
+            <Field label="Mode de versement de l'acompte" required>
+              {(id) => (
+                <select id={id} className="select" value={form.depositMethod} onChange={set("depositMethod")} required>
+                  {PAYMENT_METHODS.map((method) => (
+                    <option key={method}>{method}</option>
+                  ))}
+                </select>
+              )}
+            </Field>
+            <Field label="Validité" required hint="48 h par défaut. Au-delà, le lot est automatiquement remis en vente.">
               {() => (
                 <div className="segmented segmented--full" role="radiogroup" aria-label="Durée de validité">
-                  {VALIDITY_OPTIONS.map((days) => (
+                  {VALIDITY_OPTIONS.map((option) => (
                     <button
-                      key={days}
+                      key={option.hours}
                       type="button"
                       role="radio"
-                      aria-checked={Number(form.validityDays) === days}
-                      className={`segmented__item ${Number(form.validityDays) === days ? "is-active" : ""}`}
-                      onClick={() => setForm((prev) => ({ ...prev, validityDays: days }))}
+                      aria-checked={Number(form.validityHours) === option.hours}
+                      className={`segmented__item ${Number(form.validityHours) === option.hours ? "is-active" : ""}`}
+                      onClick={() => setForm((prev) => ({ ...prev, validityHours: option.hours }))}
                     >
-                      {days} jours
+                      {option.label}
                     </button>
                   ))}
                 </div>
@@ -224,6 +238,7 @@ export default function PreReservationsPage() {
   const [tab, setTab] = useState("active");
   const [converting, setConverting] = useState(null);
   const [cancelling, setCancelling] = useState(null);
+  const [cancelReason, setCancelReason] = useState("");
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState(null);
   const canWrite = can(user, "preReservations.write");
@@ -241,7 +256,7 @@ export default function PreReservationsPage() {
         toast.success("Dossier ouvert. Ajoutez les pièces justificatives.");
         navigate(`/dossiers/${dossier.id}`);
       } else {
-        await api.preReservations.cancel(cancelling.id);
+        await api.preReservations.cancel(cancelling.id, cancelReason.trim());
         toast.success("Pré-réservation annulée, le lot est remis en vente.");
         setCancelling(null);
         refresh();
@@ -305,6 +320,7 @@ export default function PreReservationsPage() {
                   }}
                   onCancel={(item) => {
                     setActionError(null);
+                    setCancelReason("");
                     setCancelling(item);
                   }}
                 />
@@ -348,6 +364,7 @@ export default function PreReservationsPage() {
                               </Link>
                             )}
                           </div>
+                          {pre.cancelReason && <div className="cell-secondary">Motif : {pre.cancelReason}</div>}
                         </td>
                       </tr>
                     ))}
@@ -379,8 +396,12 @@ export default function PreReservationsPage() {
         busy={busy}
         error={actionError}
         onClose={() => setCancelling(null)}
-        onConfirm={() => runAction("cancel")}
-      />
+        onConfirm={() => (cancelReason.trim() ? runAction("cancel") : setActionError("Indiquez le motif de l'annulation."))}
+      >
+        <Field label="Motif de l'annulation" required>
+          {(id) => <textarea id={id} className="textarea" rows={2} value={cancelReason} onChange={(event) => setCancelReason(event.target.value)} placeholder="Client renonce, financement refusé, changement de lot…" />}
+        </Field>
+      </ConfirmDialog>
     </>
   );
 }

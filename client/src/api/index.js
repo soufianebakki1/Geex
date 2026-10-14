@@ -49,13 +49,14 @@ export const api = {
   preReservations: {
     list: (params) => request("GET", `/pre-reservations${qs(params)}`),
     create: (data) => request("POST", "/pre-reservations", data),
-    cancel: (id) => request("POST", `/pre-reservations/${id}/cancel`),
+    cancel: (id, reason) => request("POST", `/pre-reservations/${id}/cancel`, { reason }),
     convert: (id) => request("POST", `/pre-reservations/${id}/convert`),
   },
 
   dossiers: {
     list: (params) => request("GET", `/dossiers${qs(params)}`),
     get: (id) => request("GET", `/dossiers/${id}`),
+    cancel: (id, reason) => request("POST", `/dossiers/${id}/cancel`, { reason }),
     uploadDocument: (id, key, file) => {
       const form = new FormData();
       form.append("file", file);

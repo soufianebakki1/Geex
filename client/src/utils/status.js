@@ -12,7 +12,7 @@ export const LEAD_STAGES = [
 export const LEAD_STAGE = toMap(LEAD_STAGES);
 export const ENGAGED_STAGES = ["pre_reserve", "gagne"];
 
-export const LEAD_SOURCES = ["Site web", "Salon immobilier", "Recommandation", "Réseaux sociaux", "Appel entrant", "Panneau chantier"];
+export const LEAD_SOURCES = ["Facebook", "Instagram", "TikTok", "LinkedIn", "Panneau publicitaire", "Kakémono", "Emailing / SMS", "Évènementiel", "Brochure / Flyer", "Réseau Konouz", "Site web", "Appel entrant"];
 
 export const CONTACT_TYPES = [
   { value: "appel", label: "Appel" },
@@ -60,6 +60,7 @@ export const DOSSIER_STATUSES = [
   { value: "incomplet", label: "Incomplet", tone: "warning" },
   { value: "complet", label: "Complet", tone: "info" },
   { value: "valide", label: "Validé", tone: "success" },
+  { value: "annule", label: "Annulé", tone: "danger" },
 ];
 export const DOSSIER_STATUS = toMap(DOSSIER_STATUSES);
 
@@ -76,7 +77,7 @@ export const PAYMENT_STATUSES = [
   { value: "rejete", label: "Rejeté", tone: "danger" },
 ];
 export const PAYMENT_STATUS = toMap(PAYMENT_STATUSES);
-export const PAYMENT_METHODS = ["Virement", "Chèque", "Versement bancaire", "Espèces"];
+export const PAYMENT_METHODS = ["Virement", "Chèque", "Chèque certifié", "Versement bancaire", "Espèces", "Paiement électronique"];
 
 export const INSTALLMENT_STATUSES = [
   { value: "paye", label: "Réglée", tone: "success" },
