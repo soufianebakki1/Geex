@@ -8,6 +8,7 @@ import { useAuth } from "../auth/AuthContext.jsx";
 import { can } from "../auth/permissions.js";
 import { useToast } from "../components/Toast.jsx";
 import Logo from "../components/Logo.jsx";
+import { SourceMark, bankName } from "../components/payments/BankLogo.jsx";
 import { Button, ButtonLink, Card, ConfirmDialog, ErrorState, Field, LoadingBlock, PageHeader, ProgressBar, StatusBadge } from "../components/ui.jsx";
 import { formatDate, formatDateTime, formatMAD, formatNumber, percent } from "../utils/format.js";
 import { DOSSIER_CLIENT_TYPE, INSTALLMENT_STATUS, LOT_TYPE, PAYMENT_METHOD, PAYMENT_STATUS, RESERVATION_END_STATUSES, RESERVATION_STATUS } from "../utils/status.js";
@@ -446,10 +447,16 @@ export default function ReservationDetailPage() {
                       {data.payments.map((payment) => (
                         <tr key={payment.id}>
                           <td>
-                            <div className="cell-primary">{payment.reference}</div>
-                            <div className="cell-secondary">
-                              {PAYMENT_METHOD[payment.method]?.label ?? payment.method} · {formatDate(payment.date)}
-                              {payment.installment ? ` · ${payment.installment.label}` : ""}
+                            <div className="row" style={{ gap: 10, flexWrap: "nowrap" }}>
+                              <SourceMark payment={payment} size={28} />
+                              <div>
+                                <div className="cell-primary">{payment.reference}</div>
+                                <div className="cell-secondary">
+                                  {PAYMENT_METHOD[payment.method]?.label ?? payment.method} · {formatDate(payment.date)}
+                                  {payment.origin === "international" ? ` · ${payment.country}, ${payment.foreignAmount?.toLocaleString("fr-FR")} ${payment.currency}` : payment.bank ? ` · ${bankName(payment)}` : ""}
+                                  {payment.installment ? ` · ${payment.installment.label}` : ""}
+                                </div>
+                              </div>
                             </div>
                           </td>
                           <td className="align-right num nowrap">{formatMAD(payment.amount)}</td>

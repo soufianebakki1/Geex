@@ -1,17 +1,31 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { BadgeCheck, Ban, Landmark, Paperclip, Plus, Wallet } from "lucide-react";
+import { BadgeCheck, Ban, Check, Globe2, Landmark, Paperclip, Plus, Wallet } from "lucide-react";
 import { api } from "../api/index.js";
 import { errorMessage } from "../api/errors.js";
 import { useAsync } from "../hooks/useAsync.js";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { can } from "../auth/permissions.js";
 import { useToast } from "../components/Toast.jsx";
-import { Button, Card, EmptyState, ErrorState, Field, FormError, LoadingBlock, Modal, PageHeader, SearchInput, Segmented, StatusBadge } from "../components/ui.jsx";
+import { BankLogo, PaymentSource, bankName } from "../components/payments/BankLogo.jsx";
+import { Button, Card, EmptyState, ErrorState, Field, FormError, FormStep, LoadingBlock, Modal, PageHeader, SearchInput, Segmented, StatusBadge } from "../components/ui.jsx";
 import { formatDate, formatDateTime, formatFileSize, formatMAD, toDateInput } from "../utils/format.js";
-import { INSTALLMENT_STATUS, PAYMENT_METHOD, PAYMENT_METHODS, PAYMENT_STATUS, PENDING_PAYMENT_STATUSES } from "../utils/status.js";
+import {
+  BANK_METHODS,
+  BANK_REQUIRED_METHODS,
+  BANKS,
+  CURRENCIES,
+  INSTALLMENT_STATUS,
+  ORIGIN_COUNTRIES,
+  PAYMENT_METHOD,
+  PAYMENT_METHODS,
+  PAYMENT_ORIGINS,
+  PAYMENT_STATUS,
+  PENDING_PAYMENT_STATUSES,
+} from "../utils/status.js";
 
 const MAX_SIZE = 10 * 1024 * 1024;
+const EMPTY_FUNDS = { origin: "national", bank: "", bankOther: "", country: "", foreignBank: "", currency: "EUR", foreignAmount: "" };
 const CHEQUES = ["cheque", "cheque_certifie"];
 const methodLabel = (method) => PAYMENT_METHOD[method]?.label ?? method;
 
@@ -27,8 +41,13 @@ function PaymentForm({ open, initialReservationId, onClose, onSaved }) {
     if (!open) return;
     setError(null);
     setProof(null);
-    setForm({ reservationId: initialReservationId ?? "", installmentId: "", amount: "", method: "virement", reference: "", date: toDateInput(), note: "" });
+    setForm({ reservationId: initialReservationId ?? "", installmentId: "", amount: "", method: "virement", reference: "", date: toDateInput(), note: "", ...EMPTY_FUNDS });
   }, [open, initialReservationId]);
+
+  const usesBank = BANK_METHODS.includes(form.method);
+  const bankRequired = BANK_REQUIRED_METHODS.includes(form.method);
+  const international = form.origin === "international";
+  const rate = international && Number(form.amount) > 0 && Number(form.foreignAmount) > 0 ? Number(form.amount) / Number(form.foreignAmount) : null;
 
   const selected = reservations.data?.find((item) => item.id === form.reservationId);
   const payable = selected ? Math.max(selected.totals.remaining - selected.totals.pending, 0) : null;
@@ -70,6 +89,10 @@ function PaymentForm({ open, initialReservationId, onClose, onSaved }) {
         amount: Number(form.amount),
         reference: form.reference.trim(),
         note: form.note.trim(),
+        bankOther: form.bankOther.trim(),
+        country: form.country.trim(),
+        foreignBank: form.foreignBank.trim(),
+        foreignAmount: international ? Number(form.foreignAmount) : "",
         ...(proof ? { proof } : {}),
       });
       onSaved(created);
@@ -85,6 +108,7 @@ function PaymentForm({ open, initialReservationId, onClose, onSaved }) {
       open={open}
       onClose={onClose}
       busy={saving}
+      size="lg"
       title="Enregistrer un paiement"
       subtitle="Le paiement sera soumis à la validation de la comptabilité."
       footer={
@@ -98,7 +122,8 @@ function PaymentForm({ open, initialReservationId, onClose, onSaved }) {
         </>
       }
     >
-      <form id="payment-form" className="stack" onSubmit={submit}>
+      <form id="payment-form" className="pre-form" onSubmit={submit}>
+        <FormStep number="1" title="Réservation">
         <Field label="Réservation" required>
           {(id) => (
             <select id={id} className="select" value={form.reservationId ?? ""} onChange={(event) => setForm((prev) => ({ ...prev, reservationId: event.target.value, installmentId: "", amount: "" }))} required disabled={!reservations.data}>
@@ -137,8 +162,11 @@ function PaymentForm({ open, initialReservationId, onClose, onSaved }) {
             )}
           </Field>
         )}
+        </FormStep>
+
+        <FormStep number="2" title="Montant et mode de paiement">
         <div className="form-grid">
-          <Field label="Montant" required hint={payable != null ? `Maximum saisissable : ${formatMAD(payable)}` : undefined}>
+          <Field label={international ? "Montant reçu en dirhams" : "Montant"} required hint={payable != null ? `Maximum saisissable : ${formatMAD(payable)}` : undefined}>
             {(id) => (
               <div className="input-affix">
                 <input id={id} className="input num" type="number" min="1" max={payable ?? undefined} step="any" value={form.amount ?? ""} onChange={set("amount")} required />
@@ -163,6 +191,103 @@ function PaymentForm({ open, initialReservationId, onClose, onSaved }) {
           <Field label="Référence" required hint="N° de chèque, de virement ou de bordereau">
             {(id) => <input id={id} className="input" value={form.reference ?? ""} onChange={set("reference")} required />}
           </Field>
+        </div>
+        </FormStep>
+
+        <FormStep number="3" title="Origine des fonds">
+          <div className="origin-choice" role="radiogroup" aria-label="Origine des fonds">
+            {PAYMENT_ORIGINS.map((option) => {
+              const Icon = option.value === "international" ? Globe2 : Landmark;
+              return (
+                <label key={option.value} className={`origin-option ${form.origin === option.value ? "is-active" : ""}`}>
+                  <input type="radio" name="origin" value={option.value} checked={form.origin === option.value} onChange={set("origin")} />
+                  <span className="origin-option__icon">
+                    <Icon size={18} />
+                  </span>
+                  <span className="origin-option__text">
+                    <span className="origin-option__label">{option.label}</span>
+                    <span className="origin-option__hint">{option.hint}</span>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+
+          {!international && usesBank && (
+            <fieldset className="bank-picker">
+              <legend className="field__label">
+                Banque du client
+                {bankRequired ? <span className="req">*</span> : <span className="muted"> (facultatif)</span>}
+              </legend>
+              <div className="bank-picker__grid">
+                {BANKS.map((bank) => (
+                  <label key={bank.value} className={`bank-option ${form.bank === bank.value ? "is-active" : ""}`} title={bank.hint ? `${bank.label} (${bank.hint})` : bank.label}>
+                    <input type="radio" name="bank" value={bank.value} checked={form.bank === bank.value} onChange={set("bank")} required={bankRequired} />
+                    <BankLogo bank={bank.value} size={30} />
+                    <span className="bank-option__name">{bank.label}</span>
+                    <Check size={14} className="bank-option__check" />
+                  </label>
+                ))}
+              </div>
+              {form.bank === "autre" && (
+                <Field label="Nom de la banque" required>
+                  {(id) => <input id={id} className="input" value={form.bankOther} onChange={set("bankOther")} placeholder="Ex. : Bank Al Yousr" required />}
+                </Field>
+              )}
+            </fieldset>
+          )}
+
+          {!international && !usesBank && <p className="origin-note">Aucune banque à renseigner pour un paiement en espèces.</p>}
+
+          {international && (
+            <div className="form-grid">
+              <Field label="Pays d'envoi" required>
+                {(id) => (
+                  <>
+                    <input id={id} className="input" list="origin-countries" value={form.country} onChange={set("country")} placeholder="Ex. : France" required />
+                    <datalist id="origin-countries">
+                      {ORIGIN_COUNTRIES.map((country) => (
+                        <option key={country} value={country} />
+                      ))}
+                    </datalist>
+                  </>
+                )}
+              </Field>
+              {usesBank && (
+                <Field label="Banque émettrice" required={bankRequired}>
+                  {(id) => <input id={id} className="input" value={form.foreignBank} onChange={set("foreignBank")} placeholder="Ex. : BNP Paribas" required={bankRequired} />}
+                </Field>
+              )}
+              <Field label="Devise envoyée" required>
+                {(id) => (
+                  <select id={id} className="select" value={form.currency} onChange={set("currency")}>
+                    {CURRENCIES.map((currency) => (
+                      <option key={currency.value} value={currency.value}>
+                        {currency.value} — {currency.label}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </Field>
+              <Field label="Montant envoyé" required>
+                {(id) => (
+                  <div className="input-affix">
+                    <input id={id} className="input num" type="number" min="1" step="any" value={form.foreignAmount} onChange={set("foreignAmount")} required />
+                    <span className="input-affix__suffix">{form.currency}</span>
+                  </div>
+                )}
+              </Field>
+              {rate && (
+                <p className="origin-rate span-2">
+                  Taux constaté : <strong className="num">1 {form.currency} = {rate.toLocaleString("fr-FR", { maximumFractionDigits: 4 })} MAD</strong>
+                </p>
+              )}
+            </div>
+          )}
+        </FormStep>
+
+        <FormStep number="4" title="Justificatif et note">
+        <div className="form-grid">
           <Field label="Justificatif" className="span-2" hint={proof ? `${proof.name} · ${formatFileSize(proof.size)}` : "PDF, JPG ou PNG — 10 Mo maximum."}>
             {(id) => <input id={id} className="input" type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={pickProof} />}
           </Field>
@@ -170,6 +295,7 @@ function PaymentForm({ open, initialReservationId, onClose, onSaved }) {
             {(id) => <textarea id={id} className="textarea" rows={2} value={form.note ?? ""} onChange={set("note")} />}
           </Field>
         </div>
+        </FormStep>
         <FormError error={error ?? reservations.error ?? schedule.error} />
       </form>
     </Modal>
@@ -235,6 +361,28 @@ function DecisionModal({ decision, onClose, onDone }) {
             <dd>
               {methodLabel(payment.method)} · {payment.reference}
             </dd>
+            <dt>Provenance</dt>
+            <dd>
+              {payment.origin === "international" ? (
+                <>International — {[payment.country, payment.foreignBank].filter(Boolean).join(" · ")}</>
+              ) : payment.bank ? (
+                <span className="row" style={{ gap: 8 }}>
+                  <BankLogo bank={payment.bank} size={22} />
+                  {bankName(payment)}
+                </span>
+              ) : (
+                "National"
+              )}
+            </dd>
+            {payment.origin === "international" && payment.foreignAmount && (
+              <>
+                <dt>Montant envoyé</dt>
+                <dd className="num">
+                  {payment.foreignAmount.toLocaleString("fr-FR")} {payment.currency}
+                  <span className="muted"> · 1 {payment.currency} = {(payment.amount / payment.foreignAmount).toLocaleString("fr-FR", { maximumFractionDigits: 4 })} MAD</span>
+                </dd>
+              </>
+            )}
             {payment.installment && (
               <>
                 <dt>Échéance</dt>
@@ -294,7 +442,7 @@ export default function PaymentsPage() {
     const q = query.trim().toLowerCase();
     return (payments.data ?? [])
       .filter((item) => tab === "all" || (tab === "pending" ? PENDING_PAYMENT_STATUSES.includes(item.status) : item.status === tab))
-      .filter((item) => !q || `${item.lead?.name} ${item.reference} ${item.reservation?.number} ${item.lot?.ref}`.toLowerCase().includes(q));
+      .filter((item) => !q || `${item.lead?.name} ${item.reference} ${item.reservation?.number} ${item.lot?.ref} ${bankName(item) ?? ""} ${item.foreignBank ?? ""} ${item.country ?? ""}`.toLowerCase().includes(q));
   }, [payments.data, tab, query]);
 
   const replace = (updated) => payments.setData((items) => items.map((item) => (item.id === updated.id ? { ...item, ...updated } : item)));
@@ -360,7 +508,7 @@ export default function PaymentsPage() {
           ]}
         />
         <span className="toolbar__spacer" />
-        <SearchInput value={query} onChange={setQuery} placeholder="Client, référence, réservation…" />
+        <SearchInput value={query} onChange={setQuery} placeholder="Client, référence, banque…" />
       </div>
 
       <Card flush>
@@ -382,6 +530,7 @@ export default function PaymentsPage() {
                   <th>Réservation</th>
                   <th className="align-right">Montant</th>
                   <th>Mode · Référence</th>
+                  <th>Provenance</th>
                   <th>Statut</th>
                   {showActions && <th className="cell-actions">Validation</th>}
                 </tr>
@@ -416,6 +565,9 @@ export default function PaymentsPage() {
                           </span>
                         )}
                       </div>
+                    </td>
+                    <td>
+                      <PaymentSource payment={item} />
                     </td>
                     <td>
                       <StatusBadge map={PAYMENT_STATUS} value={item.status} />

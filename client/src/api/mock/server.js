@@ -12,7 +12,12 @@ import {
   LEAD_STAGE_ORDER,
   LOT_TYPE,
   MANUAL_STAGES,
+  BANK,
+  BANK_METHODS,
+  BANK_REQUIRED_METHODS,
+  CURRENCY,
   PAYMENT_METHOD,
+  PAYMENT_ORIGIN,
   PENDING_PAYMENT_STATUSES,
   PROJECT_TYPE,
   RESERVATION_END_STATUSES,
@@ -31,7 +36,7 @@ import {
   uid,
 } from "./logic.js";
 
-const STORAGE_KEY = "konouz.mock-db.v3";
+const STORAGE_KEY = "konouz.mock-db.v4";
 
 let db = load();
 
@@ -1301,6 +1306,13 @@ route("POST", "/reservations/:id/confirm", ({ params, user }) => {
       installmentId: schedule[0]?.id ?? null,
       amount: reservation.deposit,
       method: pre?.depositMethod ?? "virement",
+      origin: "national",
+      bank: null,
+      bankOther: "",
+      country: "",
+      foreignBank: "",
+      currency: null,
+      foreignAmount: null,
       reference: `ACOMPTE-${pre?.number ?? reservation.number}`,
       proofFileName: null,
       date: pre?.createdAt ?? reservation.signedAt,
@@ -1389,6 +1401,36 @@ route("GET", "/payments", ({ query, user }) => {
     .sort((a, b) => b.date.localeCompare(a.date));
 }, { roles: roles("payments") });
 
+function paymentFunds(body) {
+  const origin = body.origin || "national";
+  if (!PAYMENT_ORIGIN[origin]) fail(422, "Origine des fonds invalide.");
+  const usesBank = BANK_METHODS.includes(body.method);
+  const needsBank = BANK_REQUIRED_METHODS.includes(body.method);
+  const funds = { origin, bank: null, bankOther: "", country: "", foreignBank: "", currency: null, foreignAmount: null };
+
+  if (origin === "national") {
+    if (!usesBank) return funds;
+    if (isBlank(body.bank)) {
+      if (needsBank) fail(422, "Sélectionnez la banque du client.");
+      return funds;
+    }
+    if (!BANK[body.bank]) fail(422, "Banque invalide.");
+    if (body.bank === "autre") required(body.bankOther, "Précisez le nom de la banque.");
+    return { ...funds, bank: body.bank, bankOther: body.bank === "autre" ? text(body.bankOther) : "" };
+  }
+
+  required(body.country, "Indiquez le pays d'où proviennent les fonds.");
+  if (!CURRENCY[body.currency]) fail(422, "Sélectionnez la devise envoyée.");
+  if (needsBank) required(body.foreignBank, "Indiquez la banque émettrice à l'étranger.");
+  return {
+    ...funds,
+    country: text(body.country),
+    foreignBank: usesBank ? text(body.foreignBank) : "",
+    currency: body.currency,
+    foreignAmount: positiveNumber(body.foreignAmount, "Le montant en devise doit être positif."),
+  };
+}
+
 route("POST", "/payments", ({ body: raw, user }) => {
   const body = formData(raw);
   const reservation = mustFindReservation(user, body.reservationId);
@@ -1406,6 +1448,7 @@ route("POST", "/payments", ({ body: raw, user }) => {
     if (installment.cancelled || installment.paidAmount >= installment.amount) fail(409, "Cette échéance est déjà réglée.");
     installmentId = installment.id;
   }
+  const funds = paymentFunds(body);
   const proof = body.proof && typeof body.proof === "object" ? body.proof : null;
   if (proof) checkFile(proof);
   const payment = {
@@ -1414,6 +1457,7 @@ route("POST", "/payments", ({ body: raw, user }) => {
     installmentId,
     amount,
     method: body.method,
+    ...funds,
     reference: text(body.reference),
     proofFileName: proof?.name ?? null,
     date: new Date(body.date).toISOString(),
@@ -1429,7 +1473,8 @@ route("POST", "/payments", ({ body: raw, user }) => {
   db.payments.push(payment);
   const lead = byId(db.leads, reservation.leadId);
   const method = PAYMENT_METHOD[payment.method].label;
-  log({ type: "payment", leadId: reservation.leadId, userId: user.id, message: `Paiement de ${formatMoney(amount)} saisi (${method})` });
+  const source = payment.origin === "international" ? `${payment.country}, ${payment.foreignAmount.toLocaleString("fr-FR")} ${payment.currency}` : payment.bank && (payment.bankOther || BANK[payment.bank].label);
+  log({ type: "payment", leadId: reservation.leadId, userId: user.id, message: `Paiement de ${formatMoney(amount)} saisi (${[method, source].filter(Boolean).join(" · ")})` });
   notify({ type: "info", title: "Paiement à valider", message: `${method} de ${formatMoney(amount)} pour ${reservation.number} (${leadName(lead)}).`, link: "/paiements", roles: ["admin", "comptable"] });
   return paymentView(payment);
 }, { roles: roles("payments.create") });

@@ -45,6 +45,18 @@ export function StatusBadge({ map, value, dot = true }) {
   );
 }
 
+export function FormStep({ number, title, children }) {
+  return (
+    <section className="pre-step">
+      <header className="pre-step__head">
+        <span className="pre-step__number">{number}</span>
+        <h3 className="pre-step__title">{title}</h3>
+      </header>
+      <div className="pre-step__body">{children}</div>
+    </section>
+  );
+}
+
 export function Card({ title, subtitle, actions, children, footer, className = "", bodyClassName = "", flush = false }) {
   return (
     <section className={`card ${className}`}>

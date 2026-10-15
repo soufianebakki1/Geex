@@ -1,72 +1,17 @@
 import { Link } from "react-router-dom";
-import { ArrowUpRight, BellRing, CalendarClock, ChevronRight, Hourglass, Percent, PhoneCall, TrendingUp, UserPlus, UsersRound, Wallet } from "lucide-react";
+import { BellRing, CalendarClock, ChevronRight, Hourglass, Percent, PhoneCall, RefreshCw, TrendingUp, UserPlus, UsersRound, Wallet } from "lucide-react";
 import { api } from "../api/index.js";
 import { useAsync } from "../hooks/useAsync.js";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { can } from "../auth/permissions.js";
 import Countdown from "../components/Countdown.jsx";
-import { Avatar, Badge, Card, EmptyState, ErrorState, PageHeader, Skeleton, StatusBadge } from "../components/ui.jsx";
-import { daysUntil, formatCompactMAD, formatDate, formatLongDate, formatMAD, percent, timeAgo } from "../utils/format.js";
-import { INSTALLMENT_STATUS, LEAD_STAGE, LOT_STATUSES, PROJECT_TYPE } from "../utils/status.js";
-
-function Kpi({ icon: Icon, label, value, hint, to, tone }) {
-  const content = (
-    <>
-      <div className="kpi__top">
-        <span className="kpi__icon">
-          <Icon size={18} />
-        </span>
-        {to && <ArrowUpRight size={16} className="kpi__arrow" />}
-      </div>
-      <p className="kpi__label">{label}</p>
-      <p className={`kpi__value ${tone ? `kpi__value--${tone}` : ""}`}>{value}</p>
-      {hint && <p className="kpi__hint">{hint}</p>}
-    </>
-  );
-  return to ? (
-    <Link to={to} className="kpi kpi--link">
-      {content}
-    </Link>
-  ) : (
-    <div className="kpi">{content}</div>
-  );
-}
-
-function Funnel({ stages }) {
-  const max = Math.max(...stages.map((stage) => stage.count), 1);
-  return (
-    <ol className="funnel">
-      {stages.map((stage, index) => {
-        const previous = stages[index - 1];
-        const conversion = previous ? percent(stage.count, previous.count) : null;
-        return (
-          <li key={stage.stage} className="funnel__row">
-            <div className="funnel__label">
-              <span className="funnel__name">{stage.label}</span>
-              <span className="funnel__current xsmall faint">{stage.current} actuellement</span>
-            </div>
-            <div className="funnel__track">
-              <div className="funnel__bar" style={{ width: `${Math.max((stage.count / max) * 100, 4)}%`, background: LEAD_STAGE[stage.stage]?.color }}>
-                <span className="num">{stage.count}</span>
-              </div>
-            </div>
-            <span className="funnel__rate num">{conversion == null ? "" : `${conversion} %`}</span>
-          </li>
-        );
-      })}
-    </ol>
-  );
-}
-
-function StockBar({ stock }) {
-  return (
-    <div className="stock-bar" aria-hidden="true">
-      {LOT_STATUSES.map((status) =>
-        stock[status.value] ? <span key={status.value} style={{ flexGrow: stock[status.value], background: status.color }} title={`${status.label} : ${stock[status.value]}`} /> : null,
-      )}
-    </div>
-  );
-}
+import StatCard from "../components/dashboard/StatCard.jsx";
+import PipelineChart, { PipelineLegend } from "../components/dashboard/PipelineChart.jsx";
+import StockRings from "../components/dashboard/StockRings.jsx";
+import ProgramBubbles from "../components/dashboard/ProgramBubbles.jsx";
+import { Avatar, Button, Card, EmptyState, ErrorState, PageHeader, Skeleton, StatusBadge } from "../components/ui.jsx";
+import { daysUntil, formatCompactMAD, formatDate, formatLongDate, formatMAD, timeAgo } from "../utils/format.js";
+import { INSTALLMENT_STATUS, LEAD_STAGE } from "../utils/status.js";
 
 function attentionItems(kpis, user) {
   return [
@@ -85,19 +30,85 @@ function followUpHint(date) {
   return "Aujourd'hui";
 }
 
+function statCards(kpis, user) {
+  return [
+    {
+      icon: UsersRound,
+      label: "Leads actifs",
+      value: kpis.activeLeads,
+      hint: "nouveaux contacts ce mois-ci",
+      chip: { label: `+${kpis.newLeadsThisMonth}`, tone: "gold" },
+      to: can(user, "leads") ? "/leads" : undefined,
+      hero: true,
+    },
+    {
+      icon: Hourglass,
+      label: "Pré-réservations actives",
+      value: kpis.activePreReservations,
+      hint: kpis.expiringSoon ? "expirent sous 48 h" : "aucune échéance imminente",
+      chip: kpis.expiringSoon ? { label: `${kpis.expiringSoon} < 48 h`, tone: "warn" } : { label: "À jour", tone: "up" },
+      to: can(user, "preReservations") ? "/pre-reservations" : undefined,
+    },
+    {
+      icon: TrendingUp,
+      label: "Réservations du mois",
+      value: kpis.reservationsThisMonth,
+      hint: kpis.reservationsValueThisMonth ? "de chiffre d'affaires signé" : "aucune réservation signée",
+      chip: kpis.reservationsValueThisMonth ? { label: formatCompactMAD(kpis.reservationsValueThisMonth), tone: "up" } : null,
+      to: can(user, "reservations") ? "/reservations" : undefined,
+    },
+    {
+      icon: Wallet,
+      label: "Encaissé ce mois",
+      value: formatCompactMAD(kpis.collectedThisMonth),
+      hint: kpis.pendingPaymentsCount ? `${formatCompactMAD(kpis.pendingPaymentsAmount)} en attente de validation` : "aucun paiement en attente",
+      chip: kpis.pendingPaymentsCount ? { label: `${kpis.pendingPaymentsCount} à valider`, tone: "info" } : { label: "À jour", tone: "up" },
+      to: can(user, "payments") ? "/paiements" : undefined,
+    },
+  ];
+}
+
 function DashboardSkeleton() {
   return (
-    <div className="stack">
-      <div className="kpi-grid">
-        {Array.from({ length: 4 }, (_, index) => (
-          <Skeleton key={index} height={132} />
-        ))}
-      </div>
-      <div className="dash-grid">
-        <Skeleton height={340} />
-        <Skeleton height={340} />
+    <div className="dash">
+      <div className="dash-board">
+        <div className="dash-board__main">
+          <div className="dash-stats">
+            {Array.from({ length: 4 }, (_, index) => (
+              <Skeleton key={index} height={150} />
+            ))}
+          </div>
+          <Skeleton height={360} />
+        </div>
+        <div className="dash-board__side">
+          <Skeleton height={420} />
+          <Skeleton height={260} />
+        </div>
       </div>
     </div>
+  );
+}
+
+function AttentionList({ items }) {
+  if (items.length === 0) return <EmptyState compact title="Rien à signaler" description="Aucune action en attente." />;
+  return (
+    <ul className="attention">
+      {items.map((item) => (
+        <li key={item.label}>
+          <Link to={item.to} className="attention__row">
+            <span className={`attention__icon attention__icon--${item.tone}`}>
+              <item.icon size={16} />
+            </span>
+            <span className="attention__text">
+              <span className="attention__label">{item.label}</span>
+              {item.hint && <span className="attention__hint num">{item.hint}</span>}
+            </span>
+            <span className="attention__count num">{item.count}</span>
+            <ChevronRight size={15} className="attention__chevron" />
+          </Link>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -105,12 +116,22 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const { data, loading, error, reload } = useAsync(() => api.dashboard.summary(), []);
   const firstName = user.name.split(" ")[0];
-  const hour = new Date().getHours();
-  const greeting = hour < 18 ? "Bonjour" : "Bonsoir";
+  const greeting = new Date().getHours() < 18 ? "Bonjour" : "Bonsoir";
 
   return (
     <>
-      <PageHeader eyebrow={formatLongDate(new Date())} title={`${greeting}, ${firstName}`} description="Voici l'état de l'activité commerciale et des encaissements." />
+      <PageHeader
+        eyebrow={formatLongDate(new Date())}
+        title={`${greeting}, ${firstName}`}
+        description="Voici l'état de l'activité commerciale et des encaissements."
+        actions={
+          data && (
+            <Button variant="secondary" icon={RefreshCw} onClick={reload} loading={loading}>
+              Actualiser
+            </Button>
+          )
+        }
+      />
 
       {loading && !data ? (
         <DashboardSkeleton />
@@ -119,35 +140,39 @@ export default function DashboardPage() {
           <ErrorState error={error} onRetry={reload} />
         </div>
       ) : (
-        <div className="stack dashboard">
-          <div className="kpi-grid">
-            <Kpi icon={UsersRound} label="Leads actifs" value={data.kpis.activeLeads} hint={`${data.kpis.newLeadsThisMonth} nouveaux ce mois-ci`} to={can(user, "leads") ? "/leads" : undefined} />
-            <Kpi
-              icon={Hourglass}
-              label="Pré-réservations actives"
-              value={data.kpis.activePreReservations}
-              hint={data.kpis.expiringSoon ? `${data.kpis.expiringSoon} expirent sous 48 h` : "Aucune échéance imminente"}
-              tone={data.kpis.expiringSoon ? "warning" : undefined}
-              to={can(user, "preReservations") ? "/pre-reservations" : undefined}
-            />
-            <Kpi
-              icon={TrendingUp}
-              label="Réservations du mois"
-              value={data.kpis.reservationsThisMonth}
-              hint={data.kpis.reservationsValueThisMonth ? `${formatCompactMAD(data.kpis.reservationsValueThisMonth)} de chiffre d'affaires` : "Aucune réservation signée"}
-              to={can(user, "reservations") ? "/reservations" : undefined}
-            />
-            <Kpi
-              icon={Wallet}
-              label="Encaissé ce mois"
-              value={formatCompactMAD(data.kpis.collectedThisMonth)}
-              hint={data.kpis.pendingPaymentsCount ? `${data.kpis.pendingPaymentsCount} paiement(s) à valider · ${formatCompactMAD(data.kpis.pendingPaymentsAmount)}` : "Aucun paiement en attente"}
-              to={can(user, "payments") ? "/paiements" : undefined}
-            />
-          </div>
+        <div className="dash">
+          <section className="dash-board">
+            <div className="dash-board__main">
+              <div className="dash-stats">
+                {statCards(data.kpis, user).map((card) => (
+                  <StatCard key={card.label} {...card} />
+                ))}
+              </div>
 
-          <div className="dash-grid dash-grid--even">
+              <Card className="dash-card" title="Pipeline commercial" subtitle="Leads ayant atteint chaque étape, et leads qui s'y trouvent aujourd'hui." actions={<PipelineLegend />}>
+                <PipelineChart stages={data.funnel} />
+                {data.kpis.lostLeads > 0 && <p className="dash-foot">{data.kpis.lostLeads} lead(s) annulé(s) exclu(s) du pipeline.</p>}
+              </Card>
+
+              <Card className="dash-card" title="Points d'attention" subtitle="Actions en attente selon votre rôle">
+                <AttentionList items={attentionItems(data.kpis, user)} />
+              </Card>
+            </div>
+
+            <div className="dash-board__side">
+              <Card className="dash-card" title="Stock des lots" subtitle="Tous programmes confondus" actions={<Link to="/lots" className="link small">Lots</Link>}>
+                <StockRings projects={data.stock} />
+              </Card>
+
+              <Card className="dash-card" title="Programmes" subtitle="Lots disponibles et part commercialisée" actions={<Link to="/projets" className="link small">Projets</Link>}>
+                <ProgramBubbles projects={data.stock} />
+              </Card>
+            </div>
+          </section>
+
+          <section className="dash-row dash-row--two">
             <Card
+              className="dash-card"
               title="Relances à faire"
               subtitle="1re et 2e relances arrivées à échéance"
               actions={can(user, "leads") && data.followUps.length > 0 && <Link to="/leads?relances=dues" className="link small">Tout voir</Link>}
@@ -158,6 +183,7 @@ export default function DashboardPage() {
                 <ul className="watch-list">
                   {data.followUps.map((item) => (
                     <li key={`${item.leadId}-${item.slot}`} className="watch-list__item">
+                      <Avatar name={item.name} size="sm" />
                       <div className="grow">
                         <p className="strong truncate">
                           <Link to={`/leads/${item.leadId}`}>{item.name}</Link>
@@ -179,34 +205,68 @@ export default function DashboardPage() {
               )}
             </Card>
 
-            <Card title="Points d'attention" subtitle="Actions en attente selon votre rôle">
-              {attentionItems(data.kpis, user).length === 0 ? (
-                <EmptyState compact title="Rien à signaler" description="Aucune action en attente." />
+            <Card
+              className="dash-card"
+              title="Pré-réservations à surveiller"
+              subtitle="Triées par date d'expiration"
+              actions={can(user, "preReservations") && <Link to="/pre-reservations" className="link small">Tout voir</Link>}
+            >
+              {data.expiring.length === 0 ? (
+                <EmptyState compact icon={Hourglass} title="Aucune pré-réservation active" />
               ) : (
                 <ul className="watch-list">
-                  {attentionItems(data.kpis, user).map((item) => (
-                    <li key={item.label} className="watch-list__item watch-list__item--link">
-                      <Link to={item.to}>
-                        <item.icon size={16} className="faint" />
-                        <span className="grow strong small">{item.label}</span>
-                        {item.hint && <span className="xsmall muted num">{item.hint}</span>}
-                        <Badge tone={item.tone}>{item.count}</Badge>
-                        <ChevronRight size={14} className="faint" />
-                      </Link>
+                  {data.expiring.map((pre) => (
+                    <li key={pre.id} className="watch-list__item">
+                      <div className="grow">
+                        <p className="strong truncate">{pre.lead?.name}</p>
+                        <p className="xsmall muted truncate">
+                          Lot {pre.lot?.ref} · {pre.lot?.project?.name} · acompte {formatMAD(pre.deposit)}
+                        </p>
+                      </div>
+                      <Countdown to={pre.expiresAt} compact />
                     </li>
                   ))}
                 </ul>
               )}
             </Card>
-          </div>
+          </section>
 
-          <div className="dash-grid">
-            <Card title="Pipeline commercial" subtitle="Leads ayant atteint chaque étape, et taux de passage d'une étape à la suivante.">
-              <Funnel stages={data.funnel} />
-              {data.kpis.lostLeads > 0 && <p className="xsmall faint funnel__foot">{data.kpis.lostLeads} lead(s) annulé(s) exclu(s) du pipeline.</p>}
+          <section className="dash-row dash-row--two">
+            <Card
+              className="dash-card"
+              title="Échéances à suivre"
+              subtitle={data.kpis.overdueCount ? `${data.kpis.overdueCount} en retard · ${formatCompactMAD(data.kpis.overdueAmount)} à recouvrer` : "Retards et échéances des 45 prochains jours"}
+              actions={can(user, "schedule") && <Link to="/echeancier" className="link small">Échéancier</Link>}
+            >
+              {data.upcoming.length === 0 ? (
+                <EmptyState compact icon={CalendarClock} title="Aucune échéance proche" />
+              ) : (
+                <ul className="watch-list">
+                  {data.upcoming.map((item) => (
+                    <li key={item.id} className="watch-list__item">
+                      <span className="dash-date">
+                        <span className="dash-date__day num">{new Date(item.dueDate).getDate()}</span>
+                        <span className="dash-date__month">{new Date(item.dueDate).toLocaleDateString("fr-FR", { month: "short" })}</span>
+                      </span>
+                      <div className="grow">
+                        <p className="strong truncate">
+                          {item.leadName} <span className="faint">· {item.lotRef}</span>
+                        </p>
+                        <p className="xsmall muted truncate">
+                          {item.label} · {formatDate(item.dueDate)}
+                        </p>
+                      </div>
+                      <div className="watch-list__end">
+                        <span className="num strong small">{formatMAD(item.balance)}</span>
+                        <StatusBadge map={INSTALLMENT_STATUS} value={item.status} />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </Card>
 
-            <Card title="Activité récente" bodyClassName="activity-body">
+            <Card className="dash-card" title="Activité récente" bodyClassName="dash-feed-body">
               {data.activity.length === 0 ? (
                 <EmptyState compact title="Aucune activité" />
               ) : (
@@ -237,89 +297,7 @@ export default function DashboardPage() {
                 </ul>
               )}
             </Card>
-          </div>
-
-          <div className="dash-grid dash-grid--even">
-            <Card
-              title="Pré-réservations à surveiller"
-              subtitle="Triées par date d'expiration"
-              actions={can(user, "preReservations") && <Link to="/pre-reservations" className="link small">Tout voir</Link>}
-            >
-              {data.expiring.length === 0 ? (
-                <EmptyState compact icon={Hourglass} title="Aucune pré-réservation active" />
-              ) : (
-                <ul className="watch-list">
-                  {data.expiring.map((pre) => (
-                    <li key={pre.id} className="watch-list__item">
-                      <div className="grow">
-                        <p className="strong truncate">{pre.lead?.name}</p>
-                        <p className="xsmall muted truncate">
-                          Lot {pre.lot?.ref} · {pre.lot?.project?.name} · acompte {formatMAD(pre.deposit)}
-                        </p>
-                      </div>
-                      <Countdown to={pre.expiresAt} compact />
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Card>
-
-            <Card
-              title="Échéances à suivre"
-              subtitle={data.kpis.overdueCount ? `${data.kpis.overdueCount} en retard · ${formatCompactMAD(data.kpis.overdueAmount)} à recouvrer` : "Retards et échéances des 45 prochains jours"}
-              actions={can(user, "schedule") && <Link to="/echeancier" className="link small">Échéancier</Link>}
-            >
-              {data.upcoming.length === 0 ? (
-                <EmptyState compact icon={CalendarClock} title="Aucune échéance proche" />
-              ) : (
-                <ul className="watch-list">
-                  {data.upcoming.map((item) => (
-                    <li key={item.id} className="watch-list__item">
-                      <div className="grow">
-                        <p className="strong truncate">
-                          {item.leadName} <span className="faint">· {item.lotRef}</span>
-                        </p>
-                        <p className="xsmall muted truncate">
-                          {item.label} · {formatDate(item.dueDate)}
-                        </p>
-                      </div>
-                      <div className="watch-list__end">
-                        <span className="num strong small">{formatMAD(item.balance)}</span>
-                        <StatusBadge map={INSTALLMENT_STATUS} value={item.status} />
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Card>
-          </div>
-
-          <Card title="Stock par programme" actions={<Link to="/projets" className="link small">Projets</Link>}>
-            <div className="stock-list">
-              {data.stock.map((project) => (
-                <Link key={project.id} to={`/lots?projectId=${project.id}`} className="stock-list__item">
-                  <div className="row-between">
-                    <span className="strong">{project.name}</span>
-                    <span className="xsmall muted num">
-                      {project.stock.disponible} / {project.stock.total} disponibles
-                    </span>
-                  </div>
-                  <StockBar stock={project.stock} />
-                  <span className="xsmall faint">
-                    {PROJECT_TYPE[project.type]?.label} · {project.city}
-                  </span>
-                </Link>
-              ))}
-            </div>
-            <div className="legend">
-              {LOT_STATUSES.map((status) => (
-                <span key={status.value} className="legend__item">
-                  <span className="legend-dot" style={{ background: status.color }} />
-                  {status.label}
-                </span>
-              ))}
-            </div>
-          </Card>
+          </section>
         </div>
       )}
     </>

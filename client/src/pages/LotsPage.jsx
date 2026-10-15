@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Car, LayoutGrid, Lock, LockOpen, Pencil, Plus, Timer } from "lucide-react";
+import { LayoutGrid, Lock, LockOpen, Pencil, Plus, Timer } from "lucide-react";
 import { api } from "../api/index.js";
 import { useAsync } from "../hooks/useAsync.js";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { can } from "../auth/permissions.js";
 import { useToast } from "../components/Toast.jsx";
+import LotCard from "../components/lots/LotCard.jsx";
 import { Button, EmptyState, ErrorState, Field, FormError, Modal, PageHeader, SearchInput, Skeleton, StatusBadge } from "../components/ui.jsx";
 import { formatDate, formatDateTime, formatMAD, formatNumber } from "../utils/format.js";
 import { LOT_STATUS, LOT_STATUSES, LOT_TYPE, LOT_TYPES } from "../utils/status.js";
@@ -449,7 +450,7 @@ export default function LotsPage() {
       {lots.loading && !lots.data ? (
         <div className="lot-grid">
           {Array.from({ length: 12 }, (_, index) => (
-            <Skeleton key={index} height={150} />
+            <Skeleton key={index} height={290} />
           ))}
         </div>
       ) : lots.error && !lots.data ? (
@@ -463,26 +464,13 @@ export default function LotsPage() {
       ) : (
         <div className="lot-grid">
           {visible.map((lot) => (
-            <button key={lot.id} type="button" className={`lot-tile lot-tile--${lot.status}`} onClick={() => setSelectedId(lot.id)}>
-              <div className="row-between">
-                <span className="lot-tile__ref">{lot.ref}</span>
-                <StatusBadge map={LOT_STATUS} value={lot.status} dot={false} />
-              </div>
-              <p className="lot-tile__type row" style={{ gap: 4 }}>
-                {typeLabel(lot.type)}
-                {floorLabel(lot.floor) ? ` · ${floorLabel(lot.floor)}` : ""}
-                {lot.parking && <Car size={12} aria-label="Parking inclus" />}
-              </p>
-              <div className="lot-tile__figures">
-                <span className="lot-tile__surface num">
-                  {formatNumber(lot.surface)}
-                  <small> m²</small>
-                </span>
-                <span className="lot-tile__price num">{formatMAD(lot.price)}</span>
-              </div>
-              <p className="lot-tile__project truncate">{projectId ? locationLabel(lot) : lot.project?.name}</p>
-              {lot.holder && <p className="lot-tile__holder truncate">{lot.holder.name}</p>}
-            </button>
+            <LotCard
+              key={lot.id}
+              lot={lot}
+              where={projectId ? locationLabel(lot) : [lot.project?.name, lot.tranche?.name].filter(Boolean).join(" · ")}
+              floor={floorLabel(lot.floor)}
+              onOpen={() => setSelectedId(lot.id)}
+            />
           ))}
         </div>
       )}

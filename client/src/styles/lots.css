@@ -1,0 +1,449 @@
+/* ================= Lot cards ================= */
+.lot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 18px;
+}
+
+.lot-card {
+  --lot-tone: var(--success);
+  --lot-tint: var(--success-bg);
+  --lot-art: var(--success);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--bg-surface);
+  text-align: left;
+  color: inherit;
+  box-shadow: var(--shadow-xs);
+  overflow: hidden;
+  animation: card-in 0.55s var(--ease) backwards;
+  transition:
+    transform 0.35s var(--ease),
+    box-shadow 0.35s var(--ease),
+    border-color 0.35s var(--ease);
+}
+
+.lot-card--pre_reserve {
+  --lot-tone: var(--gold);
+  --lot-tint: var(--c-gold-50);
+  --lot-art: var(--c-gold-700);
+}
+
+.lot-card--reserve {
+  --lot-tone: var(--info);
+  --lot-tint: var(--info-bg);
+  --lot-art: var(--info);
+}
+
+.lot-card--vendu {
+  --lot-tone: var(--c-gold-400);
+  --lot-art: var(--c-gold-400);
+}
+
+.lot-card--bloque {
+  --lot-tone: var(--neutral);
+  --lot-tint: var(--neutral-bg);
+  --lot-art: var(--c-taupe-400);
+}
+
+.lot-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--c-sand-300);
+  box-shadow: 0 1px 2px rgba(36, 24, 16, 0.05), 0 28px 46px -24px rgba(36, 24, 16, 0.36);
+}
+
+.lot-card:focus-visible {
+  outline: 2px solid var(--c-gold-500);
+  outline-offset: 3px;
+}
+
+/* Scene */
+.lot-card__scene {
+  position: relative;
+  height: 128px;
+  padding: 14px 16px;
+  background:
+    radial-gradient(120% 90% at 100% 100%, rgba(255, 255, 255, 0.85) 0%, transparent 60%),
+    linear-gradient(160deg, var(--lot-tint) 0%, color-mix(in srgb, var(--lot-tint) 55%, #fff) 100%);
+  overflow: hidden;
+}
+
+.lot-card__scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(color-mix(in srgb, var(--lot-art) 22%, transparent) 1px, transparent 1.2px);
+  background-size: 14px 14px;
+  mask-image: linear-gradient(90deg, #000 0%, transparent 55%);
+  pointer-events: none;
+}
+
+.lot-card--vendu .lot-card__scene {
+  background:
+    radial-gradient(110% 120% at 100% 0%, rgba(250, 174, 28, 0.22) 0%, transparent 55%),
+    linear-gradient(150deg, var(--c-espresso-800) 0%, var(--c-espresso-950) 100%);
+}
+
+.lot-card--bloque .lot-card__scene {
+  background:
+    repeating-linear-gradient(135deg, transparent 0 9px, rgba(61, 43, 31, 0.05) 9px 18px),
+    var(--neutral-bg);
+}
+
+.lot-card__status,
+.lot-card__type {
+  position: absolute;
+  top: 14px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.lot-card__status {
+  left: 14px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--lot-tone);
+  box-shadow: 0 1px 2px rgba(36, 24, 16, 0.06);
+  backdrop-filter: blur(6px);
+}
+
+.lot-card--vendu .lot-card__status {
+  background: rgba(250, 174, 28, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(250, 174, 28, 0.3);
+}
+
+.lot-card__dot {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.lot-card--disponible .lot-card__dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: currentColor;
+  animation: lot-ping 2s var(--ease) infinite;
+}
+
+.lot-card__type {
+  right: 14px;
+  background: var(--c-espresso-800);
+  color: var(--c-gold-400);
+  letter-spacing: 0.04em;
+}
+
+.lot-card--vendu .lot-card__type {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--c-cream-100);
+}
+
+.lot-card__ref {
+  position: absolute;
+  left: 16px;
+  bottom: 12px;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--c-espresso-900);
+}
+
+.lot-card--vendu .lot-card__ref {
+  color: #fff;
+}
+
+.lot-card__stamp {
+  position: absolute;
+  left: 20px;
+  top: 52px;
+  z-index: 1;
+  padding: 3px 10px;
+  border: 1.5px solid var(--c-gold-400);
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--c-gold-400);
+  rotate: -10deg;
+  opacity: 0.85;
+}
+
+/* Illustration */
+.lot-art {
+  position: absolute;
+  right: 0;
+  bottom: -2px;
+  width: 150px;
+  height: auto;
+  fill: none;
+  stroke: var(--lot-art);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+  transform-origin: 100% 100%;
+  transition:
+    transform 0.6s var(--ease),
+    opacity 0.3s var(--ease);
+}
+
+.lot-card--vendu .lot-art {
+  opacity: 0.4;
+}
+
+.lot-card--bloque .lot-art {
+  opacity: 0.55;
+}
+
+.lot-art__ground {
+  stroke-opacity: 0.45;
+}
+
+.lot-art__lit {
+  fill: var(--c-gold-500);
+  fill-opacity: 0.85;
+  stroke: var(--c-gold-700);
+  transition: fill-opacity 0.4s var(--ease);
+}
+
+.lot-card--bloque .lot-art__lit {
+  fill: var(--c-taupe-400);
+  fill-opacity: 0.35;
+  stroke: var(--c-taupe-400);
+}
+
+.lot-card:hover .lot-art {
+  transform: translateX(-6px) scale(1.05);
+  opacity: 1;
+}
+
+.lot-card:hover .lot-art__lit {
+  animation: lot-glow 1.4s ease-in-out infinite;
+}
+
+/* Body */
+.lot-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 16px 14px;
+}
+
+.lot-card__figures {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.lot-card__surface {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.lot-card__surface small {
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.lot-card__price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  min-width: 0;
+  text-align: right;
+}
+
+.lot-card__price strong {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.lot-card__price small {
+  font-size: 0.6875rem;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.lot-card__where {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.lot-card__where svg {
+  flex: none;
+  color: var(--c-gold-600);
+}
+
+.lot-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lot-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 9px;
+  border-radius: 8px;
+  background: var(--c-cream-100);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.lot-chip svg {
+  color: var(--c-espresso-600);
+}
+
+.lot-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-strong);
+}
+
+.lot-card__holder {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.lot-card__holder .avatar {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  font-size: 0.6875rem;
+}
+
+.lot-card__holder-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.lot-card__holder-text small {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--text-faint);
+}
+
+.lot-card__hint {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--lot-tone);
+}
+
+.lot-card--vendu .lot-card__hint {
+  color: var(--text-muted);
+}
+
+.lot-card__go {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--c-cream-100);
+  color: var(--c-espresso-800);
+  transition:
+    background-color 0.3s var(--ease),
+    color 0.3s var(--ease),
+    transform 0.3s var(--ease);
+}
+
+.lot-card:hover .lot-card__go {
+  background: var(--c-espresso-800);
+  color: var(--c-gold-400);
+  transform: rotate(45deg);
+}
+
+@keyframes lot-ping {
+  0% {
+    opacity: 0.7;
+    scale: 1;
+  }
+
+  80%,
+  100% {
+    opacity: 0;
+    scale: 2.6;
+  }
+}
+
+@keyframes lot-glow {
+  50% {
+    fill-opacity: 0.4;
+  }
+}
+
+@media (max-width: 560px) {
+  .lot-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+}
+
+@media (hover: none) {
+  .lot-card:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lot-card,
+  .lot-card--disponible .lot-card__dot::after,
+  .lot-card:hover .lot-art__lit {
+    animation: none;
+  }
+
+  .lot-card:hover,
+  .lot-card:hover .lot-art {
+    transform: none;
+  }
+}

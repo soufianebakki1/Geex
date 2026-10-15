@@ -1,0 +1,247 @@
+/* ================= Payments: banks & origin of funds ================= */
+.bank-logo {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.bank-logo img {
+  width: 82%;
+  height: 82%;
+  object-fit: contain;
+}
+
+.bank-logo--mono {
+  background: var(--bank-color);
+  box-shadow: none;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+.pay-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pay-source__mark {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--info-bg);
+  color: var(--info);
+}
+
+.pay-source__mark--muted {
+  background: var(--c-cream-100);
+  color: var(--text-muted);
+}
+
+.pay-source__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.pay-source__name {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pay-source__meta {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.pay-source__meta--intl {
+  color: var(--info);
+  font-weight: 600;
+}
+
+/* Origin choice */
+.origin-choice {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.origin-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  background: var(--bg-surface);
+  cursor: pointer;
+  transition:
+    border-color 0.2s var(--ease),
+    background-color 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
+}
+
+.origin-option input,
+.bank-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.origin-option:hover {
+  border-color: var(--c-taupe-400);
+}
+
+.origin-option:has(input:focus-visible),
+.bank-option:has(input:focus-visible) {
+  outline: 2px solid var(--c-gold-500);
+  outline-offset: 2px;
+}
+
+.origin-option.is-active {
+  border-color: var(--c-gold-500);
+  background: var(--c-gold-50);
+  box-shadow: 0 0 0 3px rgba(250, 174, 28, 0.14);
+}
+
+.origin-option__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: var(--c-cream-100);
+  color: var(--c-espresso-800);
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+}
+
+.origin-option.is-active .origin-option__icon {
+  background: var(--c-espresso-800);
+  color: var(--c-gold-400);
+}
+
+.origin-option__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.origin-option__label {
+  font-weight: 700;
+}
+
+.origin-option__hint {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+/* Bank picker */
+.bank-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.bank-picker legend {
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.bank-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 8px;
+}
+
+.bank-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px 30px 8px 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-surface);
+  cursor: pointer;
+  transition:
+    border-color 0.2s var(--ease),
+    background-color 0.2s var(--ease),
+    transform 0.2s var(--ease);
+}
+
+.bank-option:hover {
+  border-color: var(--c-sand-300);
+  transform: translateY(-1px);
+}
+
+.bank-option.is-active {
+  border-color: var(--c-gold-500);
+  background: var(--c-gold-50);
+}
+
+.bank-option__name {
+  overflow: hidden;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+}
+
+.bank-option__check {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  translate: 0 -50%;
+  color: var(--c-gold-700);
+  opacity: 0;
+  scale: 0.6;
+  transition:
+    opacity 0.2s var(--ease),
+    scale 0.2s var(--ease);
+}
+
+.bank-option.is-active .bank-option__check {
+  opacity: 1;
+  scale: 1;
+}
+
+.origin-note {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg-subtle);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.origin-rate {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--info-bg);
+  font-size: var(--fs-sm);
+  color: var(--info);
+}
+
+@media (max-width: 560px) {
+  .origin-choice {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bank-picker__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

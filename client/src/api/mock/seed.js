@@ -21,6 +21,9 @@ const slug = (value) =>
 
 const pad = (value, size) => String(value).padStart(size, "0");
 
+const DEPOSIT_BANKS = ["attijariwafa", "cih", "banque_populaire", "bank_of_africa", "bmci", "saham"];
+const nationalFunds = (bank) => ({ origin: "national", bank, bankOther: "", country: "", foreignBank: "", currency: null, foreignAmount: null });
+
 export function createSeed() {
   const rand = prng(1990);
   const pick = (list) => list[Math.floor(rand() * list.length)];
@@ -470,6 +473,7 @@ export function createSeed() {
         installmentId: schedule[0].id,
         amount: pre.deposit,
         method: "virement",
+        ...nationalFunds(DEPOSIT_BANKS[payments.length % DEPOSIT_BANKS.length]),
         reference: `ACOMPTE-${pre.number}`,
         proofFileName: `recu_acompte_${pre.number}.pdf`,
         date: pre.createdAt,
@@ -545,7 +549,7 @@ export function createSeed() {
   });
 
   const scheduleOf = (reservationId) => installments.filter((item) => item.reservationId === reservationId).sort((a, b) => a.order - b.order);
-  const addPayment = (reservation, amount, { date, status, method = "virement", reference, installment, createdBy = "U2", rejectReason = null, note = "" }) => {
+  const addPayment = (reservation, amount, { date, status, method = "virement", funds, reference, installment, createdBy = "U2", rejectReason = null, note = "" }) => {
     const decided = !["en_attente_validation", "en_attente_encaissement"].includes(status);
     payments.push({
       id: `PAY${pad(payments.length + 1, 3)}`,
@@ -553,6 +557,7 @@ export function createSeed() {
       installmentId: installment?.id ?? null,
       amount,
       method,
+      ...funds,
       reference,
       proofFileName: `justificatif_${slug(reference)}.pdf`,
       date,
@@ -570,22 +575,23 @@ export function createSeed() {
   {
     const { reservation, lead } = won[0];
     const [, compromis] = scheduleOf(reservation.id);
-    addPayment(reservation, compromis.amount, { date: at(-186), status: "valide", reference: "VIR-AWB-118274", installment: compromis });
+    addPayment(reservation, compromis.amount, { date: at(-186), status: "valide", funds: nationalFunds("attijariwafa"), reference: "VIR-AWB-118274", installment: compromis });
     setLeadStage(lead, "en_paiement", at(-186));
   }
   {
     const { reservation, lead } = won[1];
     const [, compromis, grosOeuvre] = scheduleOf(reservation.id);
-    addPayment(reservation, compromis.amount, { date: at(-82), status: "valide", reference: "VIR-BMCE-552901", installment: compromis });
-    addPayment(reservation, 150_000, { date: at(-3), status: "en_attente_encaissement", method: "cheque", reference: "CHQ 0048213", installment: grosOeuvre, createdBy: "U3", note: `Avance sur « ${grosOeuvre.label} »` });
-    addPayment(reservation, 80_000, { date: at(-12), status: "rejete", method: "cheque", reference: "CHQ 0047990", installment: grosOeuvre, createdBy: "U3", rejectReason: "Chèque non signé, à représenter." });
+    addPayment(reservation, compromis.amount, { date: at(-82), status: "valide", funds: nationalFunds("bank_of_africa"), reference: "VIR-BOA-552901", installment: compromis });
+    addPayment(reservation, 150_000, { date: at(-3), status: "en_attente_encaissement", method: "cheque", funds: nationalFunds("cih"), reference: "CHQ 0048213", installment: grosOeuvre, createdBy: "U3", note: `Avance sur « ${grosOeuvre.label} »` });
+    addPayment(reservation, 80_000, { date: at(-12), status: "rejete", method: "cheque", funds: nationalFunds("banque_populaire"), reference: "CHQ 0047990", installment: grosOeuvre, createdBy: "U3", rejectReason: "Chèque non signé, à représenter." });
     setLeadStage(lead, "en_paiement", at(-82));
   }
   {
     const { reservation, lead } = won[2];
     const [, compromis] = scheduleOf(reservation.id);
-    addPayment(reservation, roundTo(compromis.amount * 0.6, 1_000), { date: at(-18), status: "valide", reference: "VIR-CIH-330187", installment: compromis });
-    addPayment(reservation, compromis.amount - roundTo(compromis.amount * 0.6, 1_000), { date: at(-1), status: "en_attente_validation", reference: "VRS-ATW-77120", installment: compromis });
+    const balance = compromis.amount - roundTo(compromis.amount * 0.6, 1_000);
+    addPayment(reservation, roundTo(compromis.amount * 0.6, 1_000), { date: at(-18), status: "valide", funds: nationalFunds("cih"), reference: "VIR-CIH-330187", installment: compromis });
+    addPayment(reservation, balance, { date: at(-1), status: "en_attente_validation", funds: { ...nationalFunds(null), origin: "international", country: "France", foreignBank: "BNP Paribas", currency: "EUR", foreignAmount: Math.round(balance / 10.85) }, reference: "SWIFT-BNPP-77120", installment: compromis });
     setLeadStage(lead, "en_paiement", at(-18));
   }
 

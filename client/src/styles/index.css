@@ -11,6 +11,11 @@
 @import "./layout.css" layer(legacy);
 @import "./components.css" layer(legacy);
 @import "./pages.css" layer(legacy);
+@import "./dashboard.css" layer(legacy);
+@import "./pre-reservations.css" layer(legacy);
+@import "./lots.css" layer(legacy);
+@import "./payments.css" layer(legacy);
+@import "./motion.css" layer(legacy);
 @import "tailwindcss/utilities.css" layer(utilities) source("..");
 
 @custom-variant dark (&:is(.dark *));

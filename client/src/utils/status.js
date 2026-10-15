@@ -176,6 +176,47 @@ export const PAYMENT_METHODS = [
   { value: "electronique", label: "Paiement électronique" },
 ];
 export const PAYMENT_METHOD = toMap(PAYMENT_METHODS);
+/** Methods that go through a bank: the bank is mandatory for transfers and cheques, optional for card payments. */
+export const BANK_METHODS = ["virement", "cheque", "cheque_certifie", "electronique"];
+export const BANK_REQUIRED_METHODS = ["virement", "cheque", "cheque_certifie"];
+
+export const PAYMENT_ORIGINS = [
+  { value: "national", label: "National", hint: "Banque marocaine, fonds en dirhams" },
+  { value: "international", label: "International", hint: "Fonds envoyés depuis l'étranger" },
+];
+export const PAYMENT_ORIGIN = toMap(PAYMENT_ORIGINS);
+
+export const BANKS = [
+  { value: "attijariwafa", label: "Attijariwafa bank", short: "AWB", color: "#f39200", logo: "/banks/attijariwafa.png" },
+  { value: "banque_populaire", label: "Banque Populaire", short: "BP", color: "#e5731b", logo: "/banks/banque_populaire.png" },
+  { value: "cih", label: "CIH Bank", short: "CIH", color: "#00539f", logo: "/banks/cih.png" },
+  { value: "bank_of_africa", label: "Bank of Africa", short: "BOA", color: "#0c2d6b", logo: "/banks/bank_of_africa.png" },
+  { value: "saham", label: "Saham Bank", short: "SB", color: "#c8102e", logo: "/banks/saham.png", hint: "ex-Société Générale" },
+  { value: "bmci", label: "BMCI", short: "BMCI", color: "#00915a", logo: "/banks/bmci.png" },
+  { value: "credit_agricole", label: "Crédit Agricole du Maroc", short: "CAM", color: "#00843d", logo: "/banks/credit_agricole.png" },
+  { value: "credit_du_maroc", label: "Crédit du Maroc", short: "CDM", color: "#008c82" },
+  { value: "cfg", label: "CFG Bank", short: "CFG", color: "#e30613", logo: "/banks/cfg.png" },
+  { value: "al_barid", label: "Al Barid Bank", short: "ABB", color: "#d9a800", logo: "/banks/al_barid.png" },
+  { value: "umnia", label: "Umnia Bank", short: "UB", color: "#6d2077" },
+  { value: "assafa", label: "Bank Assafa", short: "BA", color: "#00a651", logo: "/banks/assafa.png" },
+  { value: "al_akhdar", label: "Al Akhdar Bank", short: "AAB", color: "#3c8d2f" },
+  { value: "autre", label: "Autre banque", short: "…", color: "#8a7f74" },
+];
+export const BANK = toMap(BANKS);
+
+export const CURRENCIES = [
+  { value: "EUR", label: "Euro" },
+  { value: "USD", label: "Dollar américain" },
+  { value: "GBP", label: "Livre sterling" },
+  { value: "CAD", label: "Dollar canadien" },
+  { value: "CHF", label: "Franc suisse" },
+  { value: "AED", label: "Dirham émirati" },
+  { value: "SAR", label: "Riyal saoudien" },
+  { value: "QAR", label: "Riyal qatari" },
+];
+export const CURRENCY = toMap(CURRENCIES);
+
+export const ORIGIN_COUNTRIES = ["France", "Espagne", "Belgique", "Italie", "Pays-Bas", "Allemagne", "Royaume-Uni", "Suisse", "Canada", "États-Unis", "Émirats arabes unis", "Arabie saoudite", "Qatar"];
 
 export const INSTALLMENT_STATUSES = [
   { value: "a_venir", label: "À venir", tone: "neutral" },
