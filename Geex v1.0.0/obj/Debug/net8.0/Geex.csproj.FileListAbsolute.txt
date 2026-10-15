@@ -1,0 +1,61 @@
+E:\Theme\Geex\MVC\Geex\bin\Debug\net8.0\appsettings.Development.json
+E:\Theme\Geex\MVC\Geex\bin\Debug\net8.0\appsettings.json
+E:\Theme\Geex\MVC\Geex\bin\Debug\net8.0\Geex.staticwebassets.runtime.json
+E:\Theme\Geex\MVC\Geex\bin\Debug\net8.0\Geex.exe
+E:\Theme\Geex\MVC\Geex\bin\Debug\net8.0\Geex.deps.json
+E:\Theme\Geex\MVC\Geex\bin\Debug\net8.0\Geex.runtimeconfig.json
+E:\Theme\Geex\MVC\Geex\bin\Debug\net8.0\Geex.dll
+E:\Theme\Geex\MVC\Geex\bin\Debug\net8.0\Geex.pdb
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\Geex.GeneratedMSBuildEditorConfig.editorconfig
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\Geex.AssemblyInfoInputs.cache
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\Geex.AssemblyInfo.cs
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\Geex.csproj.CoreCompileInputs.cache
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\Geex.MvcApplicationPartsAssemblyInfo.cache
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\Geex.RazorAssemblyInfo.cache
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\Geex.RazorAssemblyInfo.cs
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\Geex.sourcelink.json
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\staticwebassets.build.json
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\staticwebassets.development.json
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\staticwebassets\msbuild.Geex.Microsoft.AspNetCore.StaticWebAssets.props
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\staticwebassets\msbuild.build.Geex.props
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.Geex.props
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.Geex.props
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\staticwebassets.pack.json
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\scopedcss\bundle\Geex.styles.css
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\scopedcss\projectbundle\Geex.bundle.scp.css
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\Geex.dll
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\refint\Geex.dll
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\Geex.pdb
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\Geex.genruntimeconfig.cache
+E:\Theme\Geex\MVC\Geex\obj\Debug\net8.0\ref\Geex.dll
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\bin\Debug\net8.0\appsettings.json
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\bin\Debug\net8.0\Geex.staticwebassets.runtime.json
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\bin\Debug\net8.0\Geex.exe
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\bin\Debug\net8.0\Geex.deps.json
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\bin\Debug\net8.0\Geex.runtimeconfig.json
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\bin\Debug\net8.0\Geex.dll
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\bin\Debug\net8.0\Geex.pdb
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\Geex.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\Geex.AssemblyInfoInputs.cache
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\Geex.AssemblyInfo.cs
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\Geex.csproj.CoreCompileInputs.cache
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\Geex.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\Geex.RazorAssemblyInfo.cache
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\Geex.RazorAssemblyInfo.cs
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\staticwebassets\msbuild.Geex.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\staticwebassets\msbuild.build.Geex.props
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.Geex.props
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.Geex.props
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\scopedcss\bundle\Geex.styles.css
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\scopedcss\projectbundle\Geex.bundle.scp.css
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\Geex.dll
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\refint\Geex.dll
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\Geex.pdb
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\Geex.genruntimeconfig.cache
+C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\obj\Debug\net8.0\ref\Geex.dll

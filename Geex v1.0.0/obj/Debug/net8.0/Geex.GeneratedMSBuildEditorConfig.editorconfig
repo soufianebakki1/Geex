@@ -1,0 +1,179 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = Geex
+build_property.RootNamespace = Geex
+build_property.ProjectDir = C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\soufi\Downloads\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\Geex\Geex v1.0.0
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/App/Calender.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwXENhbGVuZGVyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/App/Chat.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwXENoYXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/App/Todo.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwXFRvZG8uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Features/Badge.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmVhdHVyZXNcQmFkZ2UuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Features/Button.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmVhdHVyZXNcQnV0dG9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Features/Chart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmVhdHVyZXNcQ2hhcnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Features/Color.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmVhdHVyZXNcQ29sb3IuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Features/Form.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmVhdHVyZXNcRm9ybS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Features/Icon.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmVhdHVyZXNcSWNvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Features/Navigation.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmVhdHVyZXNcTmF2aWdhdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Features/Typography.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmVhdHVyZXNcVHlwb2dyYXBoeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Home/Index2.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleDIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Home/Index3.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleDMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Home/Index4.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleDQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Pages/Blankpage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcQmxhbmtwYWdlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Pages/Blog.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcQmxvZy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Pages/BlogDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcQmxvZ0RldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Pages/Comingsoon.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcQ29taW5nc29vbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Pages/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcRXJyb3IuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Pages/Faq.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcRmFxLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Pages/Forgetpassword.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcRm9yZ2V0cGFzc3dvcmQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Pages/Maintenance.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcTWFpbnRlbmFuY2UuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Pages/Pricing.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcUHJpY2luZy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Pages/Signin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcU2lnbmluLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Pages/Signup.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcU2lnbnVwLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Pages/Terms.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcVGVybXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Pages/Testimonial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcVGVzdGltb25pYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Pages/Verification.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcVmVyaWZpY2F0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Shared/Partials/_ContentHeader.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFBhcnRpYWxzXF9Db250ZW50SGVhZGVyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Shared/Partials/_Customizer.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFBhcnRpYWxzXF9DdXN0b21pemVyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Shared/Partials/_Footer.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFBhcnRpYWxzXF9Gb290ZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Shared/Partials/_Head.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFBhcnRpYWxzXF9IZWFkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Shared/Partials/_Header.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFBhcnRpYWxzXF9IZWFkZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Shared/Partials/_Sidebar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFBhcnRpYWxzXF9TaWRlYmFyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Shared/_Layout2.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/soufi/Downloads/geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc/Geex/Geex v1.0.0/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-jlvfjcsgoy

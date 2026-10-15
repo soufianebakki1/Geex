@@ -1,0 +1,689 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Geex.bundle.scp.css",
+      "PackagePath": "staticwebassets\\Geex.bundle.scp.css"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\css\\content-rtl.css",
+      "PackagePath": "staticwebassets\\css\\content-rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\css\\content.css",
+      "PackagePath": "staticwebassets\\css\\content.css"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\css\\header-rtl.css",
+      "PackagePath": "staticwebassets\\css\\header-rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\css\\header.css",
+      "PackagePath": "staticwebassets\\css\\header.css"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\css\\sidebar-rtl.css",
+      "PackagePath": "staticwebassets\\css\\sidebar-rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\css\\sidebar.css",
+      "PackagePath": "staticwebassets\\css\\sidebar.css"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\css\\style-rtl.css",
+      "PackagePath": "staticwebassets\\css\\style-rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\css\\style.css",
+      "PackagePath": "staticwebassets\\css\\style.css"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\fonts\\theme-icons.eot",
+      "PackagePath": "staticwebassets\\fonts\\theme-icons.eot"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\fonts\\theme-icons.svg",
+      "PackagePath": "staticwebassets\\fonts\\theme-icons.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\fonts\\theme-icons.ttf",
+      "PackagePath": "staticwebassets\\fonts\\theme-icons.ttf"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\fonts\\theme-icons.woff",
+      "PackagePath": "staticwebassets\\fonts\\theme-icons.woff"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\check-circle.svg",
+      "PackagePath": "staticwebassets\\icons\\check-circle.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\edit.svg",
+      "PackagePath": "staticwebassets\\icons\\edit.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\envelope-open.svg",
+      "PackagePath": "staticwebassets\\icons\\envelope-open.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\facebook-square.svg",
+      "PackagePath": "staticwebassets\\icons\\facebook-square.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\facebook.svg",
+      "PackagePath": "staticwebassets\\icons\\facebook.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\github.svg",
+      "PackagePath": "staticwebassets\\icons\\github.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\globe-solid.svg",
+      "PackagePath": "staticwebassets\\icons\\globe-solid.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\instagram.svg",
+      "PackagePath": "staticwebassets\\icons\\instagram.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\link-solid.svg",
+      "PackagePath": "staticwebassets\\icons\\link-solid.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\linkedin-in.svg",
+      "PackagePath": "staticwebassets\\icons\\linkedin-in.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\linkedin.svg",
+      "PackagePath": "staticwebassets\\icons\\linkedin.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\long-arrow-alt-left-solid.svg",
+      "PackagePath": "staticwebassets\\icons\\long-arrow-alt-left-solid.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\long-arrow-alt-right-solid.svg",
+      "PackagePath": "staticwebassets\\icons\\long-arrow-alt-right-solid.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\map-marker-solid.svg",
+      "PackagePath": "staticwebassets\\icons\\map-marker-solid.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\map.svg",
+      "PackagePath": "staticwebassets\\icons\\map.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\phone-alt-solid.svg",
+      "PackagePath": "staticwebassets\\icons\\phone-alt-solid.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\phone-solid.svg",
+      "PackagePath": "staticwebassets\\icons\\phone-solid.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\pinterest.svg",
+      "PackagePath": "staticwebassets\\icons\\pinterest.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\plus-solid.svg",
+      "PackagePath": "staticwebassets\\icons\\plus-solid.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\reddit.svg",
+      "PackagePath": "staticwebassets\\icons\\reddit.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\reply-solid.svg",
+      "PackagePath": "staticwebassets\\icons\\reply-solid.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\search-solid.svg",
+      "PackagePath": "staticwebassets\\icons\\search-solid.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\th-list-solid.svg",
+      "PackagePath": "staticwebassets\\icons\\th-list-solid.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\tumblr.svg",
+      "PackagePath": "staticwebassets\\icons\\tumblr.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\twitter.svg",
+      "PackagePath": "staticwebassets\\icons\\twitter.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\user.svg",
+      "PackagePath": "staticwebassets\\icons\\user.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\vimeo.svg",
+      "PackagePath": "staticwebassets\\icons\\vimeo.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\vk.svg",
+      "PackagePath": "staticwebassets\\icons\\vk.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\icons\\youtube.svg",
+      "PackagePath": "staticwebassets\\icons\\youtube.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\authentication.svg",
+      "PackagePath": "staticwebassets\\img\\authentication.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\author.png",
+      "PackagePath": "staticwebassets\\img\\avatar\\author.png"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\chat.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\chat.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\chat\\1.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\chat\\1.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\notification.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\notification.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\search.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\search.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\t1.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\t1.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\t2.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\t2.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\t3.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\t3.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\todo\\1.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\todo\\1.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\todo\\10.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\todo\\10.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\todo\\11.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\todo\\11.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\todo\\2.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\todo\\2.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\todo\\3.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\todo\\3.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\todo\\4.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\todo\\4.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\todo\\5.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\todo\\5.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\todo\\6.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\todo\\6.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\todo\\7.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\todo\\7.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\todo\\8.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\todo\\8.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\todo\\9.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\todo\\9.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\user.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\user.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\user1.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\user1.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\user2.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\user2.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\user3.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\user3.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\user4.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\user4.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\avatar\\user5.svg",
+      "PackagePath": "staticwebassets\\img\\avatar\\user5.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\balance-bg.svg",
+      "PackagePath": "staticwebassets\\img\\balance-bg.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\blog\\1.png",
+      "PackagePath": "staticwebassets\\img\\blog\\1.png"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\blog\\2.png",
+      "PackagePath": "staticwebassets\\img\\blog\\2.png"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\blog\\3.png",
+      "PackagePath": "staticwebassets\\img\\blog\\3.png"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\blog\\4.png",
+      "PackagePath": "staticwebassets\\img\\blog\\4.png"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\blog\\5.png",
+      "PackagePath": "staticwebassets\\img\\blog\\5.png"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\blog\\6.png",
+      "PackagePath": "staticwebassets\\img\\blog\\6.png"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\blog\\7.png",
+      "PackagePath": "staticwebassets\\img\\blog\\7.png"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\blog\\8.png",
+      "PackagePath": "staticwebassets\\img\\blog\\8.png"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\blog\\9.png",
+      "PackagePath": "staticwebassets\\img\\blog\\9.png"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\blog\\details.png",
+      "PackagePath": "staticwebassets\\img\\blog\\details.png"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\blog\\details1.png",
+      "PackagePath": "staticwebassets\\img\\blog\\details1.png"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\favicon.svg",
+      "PackagePath": "staticwebassets\\img\\favicon.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\feature\\feature-1.svg",
+      "PackagePath": "staticwebassets\\img\\feature\\feature-1.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\feature\\feature-2.svg",
+      "PackagePath": "staticwebassets\\img\\feature\\feature-2.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\feature\\feature-3.svg",
+      "PackagePath": "staticwebassets\\img\\feature\\feature-3.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\app.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\app.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\apple.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\apple.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\close.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\close.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\dark.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\dark.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\double-check.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\double-check.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\dropbox.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\dropbox.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\facebook.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\facebook.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\feature.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\feature.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\google.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\google.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\home.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\home.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\layout.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\layout.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\light.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\light.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\ltr.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\ltr.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\mastercard-icon.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\mastercard-icon.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\pages.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\pages.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\quote.png",
+      "PackagePath": "staticwebassets\\img\\icon\\quote.png"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\quotes.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\quotes.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\rtl.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\rtl.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\icon\\youtube.svg",
+      "PackagePath": "staticwebassets\\img\\icon\\youtube.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\logo-dark.svg",
+      "PackagePath": "staticwebassets\\img\\logo-dark.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\logo-lite.svg",
+      "PackagePath": "staticwebassets\\img\\logo-lite.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\logo.svg",
+      "PackagePath": "staticwebassets\\img\\logo.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\maintanence.svg",
+      "PackagePath": "staticwebassets\\img\\maintanence.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\mastercard-bg.svg",
+      "PackagePath": "staticwebassets\\img\\mastercard-bg.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\testimonial\\01.svg",
+      "PackagePath": "staticwebassets\\img\\testimonial\\01.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\testimonial\\1.svg",
+      "PackagePath": "staticwebassets\\img\\testimonial\\1.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\testimonial\\2.svg",
+      "PackagePath": "staticwebassets\\img\\testimonial\\2.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\testimonial\\3.svg",
+      "PackagePath": "staticwebassets\\img\\testimonial\\3.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\img\\testimonial\\4.svg",
+      "PackagePath": "staticwebassets\\img\\testimonial\\4.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\js\\main.js",
+      "PackagePath": "staticwebassets\\js\\main.js"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\sass\\content.scss",
+      "PackagePath": "staticwebassets\\sass\\content.scss"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\sass\\customizer.scss",
+      "PackagePath": "staticwebassets\\sass\\customizer.scss"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\sass\\darkMode.scss",
+      "PackagePath": "staticwebassets\\sass\\darkMode.scss"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\sass\\general.scss",
+      "PackagePath": "staticwebassets\\sass\\general.scss"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\sass\\header.scss",
+      "PackagePath": "staticwebassets\\sass\\header.scss"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\sass\\mixins\\helper.scss",
+      "PackagePath": "staticwebassets\\sass\\mixins\\helper.scss"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\sass\\mixins\\kew-frames.scss",
+      "PackagePath": "staticwebassets\\sass\\mixins\\kew-frames.scss"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\sass\\mixins\\media-queries.scss",
+      "PackagePath": "staticwebassets\\sass\\mixins\\media-queries.scss"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\sass\\mixins\\mixins.scss",
+      "PackagePath": "staticwebassets\\sass\\mixins\\mixins.scss"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\sass\\sidebar.scss",
+      "PackagePath": "staticwebassets\\sass\\sidebar.scss"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\sass\\style.scss",
+      "PackagePath": "staticwebassets\\sass\\style.scss"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\sass\\variables.scss",
+      "PackagePath": "staticwebassets\\sass\\variables.scss"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\css\\bootstrap\\bootstrap-rtl.css",
+      "PackagePath": "staticwebassets\\vendor\\css\\bootstrap\\bootstrap-rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\css\\bootstrap\\bootstrap.css",
+      "PackagePath": "staticwebassets\\vendor\\css\\bootstrap\\bootstrap.css"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\css\\fullcalendar@5.2.0.css",
+      "PackagePath": "staticwebassets\\vendor\\css\\fullcalendar@5.2.0.css"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\Jost-Bold.ttf",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\Jost-Bold.ttf"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\Jost-Medium.ttf",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\Jost-Medium.ttf"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\Jost-Regular.ttf",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\Jost-Regular.ttf"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\Jost-SemiBold.ttf",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\Jost-SemiBold.ttf"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\fontawesome\\fa-brands-400.eot",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\fontawesome\\fa-brands-400.eot"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\fontawesome\\fa-brands-400.ttf",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\fontawesome\\fa-brands-400.ttf"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\fontawesome\\fa-brands-400.woff",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\fontawesome\\fa-brands-400.woff"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\fontawesome\\fa-brands-400.woff2",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\fontawesome\\fa-brands-400.woff2"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\fontawesome\\fa-regular-400.eot",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\fontawesome\\fa-regular-400.eot"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\fontawesome\\fa-regular-400.ttf",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\fontawesome\\fa-regular-400.ttf"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\fontawesome\\fa-regular-400.woff",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\fontawesome\\fa-regular-400.woff"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\fontawesome\\fa-regular-400.woff2",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\fontawesome\\fa-regular-400.woff2"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\fontawesome\\fa-solid-900.eot",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\fontawesome\\fa-solid-900.eot"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\fontawesome\\fa-solid-900.ttf",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\fontawesome\\fa-solid-900.ttf"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\fontawesome\\fa-solid-900.woff",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\fontawesome\\fa-solid-900.woff"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\fontawesome\\fa-solid-900.woff2",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\fontawesome\\fa-solid-900.woff2"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\la-brands-400.eot",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\la-brands-400.eot"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\la-brands-400.svg",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\la-brands-400.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\la-brands-400.ttf",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\la-brands-400.ttf"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\la-brands-400.woff",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\la-brands-400.woff"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\la-brands-400.woff2",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\la-brands-400.woff2"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\la-regular-400.eot",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\la-regular-400.eot"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\la-regular-400.svg",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\la-regular-400.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\la-regular-400.ttf",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\la-regular-400.ttf"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\la-regular-400.woff",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\la-regular-400.woff"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\la-regular-400.woff2",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\la-regular-400.woff2"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\la-solid-900.eot",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\la-solid-900.eot"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\la-solid-900.svg",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\la-solid-900.svg"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\la-solid-900.ttf",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\la-solid-900.ttf"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\la-solid-900.woff",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\la-solid-900.woff"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\fonts\\la-solid-900.woff2",
+      "PackagePath": "staticwebassets\\vendor\\fonts\\la-solid-900.woff2"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\js\\apexcharts.min.js",
+      "PackagePath": "staticwebassets\\vendor\\js\\apexcharts.min.js"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\js\\bootstrap\\bootstrap.min.js",
+      "PackagePath": "staticwebassets\\vendor\\js\\bootstrap\\bootstrap.min.js"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\js\\bootstrap\\popper.js",
+      "PackagePath": "staticwebassets\\vendor\\js\\bootstrap\\popper.js"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\js\\fullcalendar@5.2.0.js",
+      "PackagePath": "staticwebassets\\vendor\\js\\fullcalendar@5.2.0.js"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\js\\google-chart.js",
+      "PackagePath": "staticwebassets\\vendor\\js\\google-chart.js"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\js\\jquery\\jquery-3.5.1.min.js",
+      "PackagePath": "staticwebassets\\vendor\\js\\jquery\\jquery-3.5.1.min.js"
+    },
+    {
+      "Id": "C:\\Users\\soufi\\Downloads\\geex-asp-net-mvc5-responsive-admin-dashboard-2024-09-02-06-48-55-utc\\Geex\\Geex v1.0.0\\wwwroot\\vendor\\js\\jquery\\jquery-ui.js",
+      "PackagePath": "staticwebassets\\vendor\\js\\jquery\\jquery-ui.js"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.Geex.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.Geex.props",
+      "PackagePath": "build\\Geex.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.Geex.props",
+      "PackagePath": "buildMultiTargeting\\Geex.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.Geex.props",
+      "PackagePath": "buildTransitive\\Geex.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

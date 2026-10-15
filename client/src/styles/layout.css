@@ -17,6 +17,57 @@
   color: #e9dfd3;
   border-right: 1px solid var(--c-espresso-950);
   z-index: 40;
+  overflow: clip;
+}
+
+/* Konouz sunburst in the top-right corner, same as the hero stat card */
+.sidebar::before,
+.sidebar::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.sidebar::before {
+  top: -120px;
+  right: -120px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(250, 174, 28, 0.26) 0%, rgba(250, 174, 28, 0.08) 38%, transparent 66%);
+  animation: sidebar-glow 6s ease-in-out infinite;
+}
+
+.sidebar::after {
+  top: -130px;
+  right: -130px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(250, 174, 28, 0.22) 0deg 3deg, transparent 3deg 15deg);
+  -webkit-mask: radial-gradient(circle, transparent 0 34%, #000 35% 62%, transparent 72%);
+  mask: radial-gradient(circle, transparent 0 34%, #000 35% 62%, transparent 72%);
+  animation: sidebar-rays 48s linear infinite;
+}
+
+@keyframes sidebar-rays {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes sidebar-glow {
+  50% {
+    opacity: 0.55;
+    scale: 0.92;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar::before,
+  .sidebar::after {
+    animation: none;
+  }
 }
 
 .sidebar__brand {
