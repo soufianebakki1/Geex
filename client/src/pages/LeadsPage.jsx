@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { MotionConfig, motion } from "framer-motion";
 import { BellRing, Plus, UsersRound } from "lucide-react";
 import { api } from "../api/index.js";
 import { errorMessage } from "../api/errors.js";
@@ -31,19 +32,25 @@ const budgetLabel = (lead) => {
   return null;
 };
 
-function LeadCard({ lead, draggable, onDragStart, onDragEnd }) {
+function LeadCard({ lead, draggable, landed, onDragStart, onDragEnd }) {
   const due = isDue(lead);
+  const [dragging, setDragging] = useState(false);
   return (
     <Link
       to={`/leads/${lead.id}`}
-      className="lead-card"
+      className={`lead-card ${dragging ? "is-dragging" : ""} ${landed ? "is-landed" : ""}`}
       draggable={draggable}
       onDragStart={(event) => {
         event.dataTransfer.setData("text/plain", lead.id);
         event.dataTransfer.effectAllowed = "move";
         onDragStart(lead.id);
+        // Deferred so the browser snapshots the drag image before the card fades.
+        requestAnimationFrame(() => setDragging(true));
       }}
-      onDragEnd={onDragEnd}
+      onDragEnd={() => {
+        setDragging(false);
+        onDragEnd();
+      }}
     >
       <div className="row-between">
         <span className="lead-card__name truncate">{lead.fullName}</span>
@@ -165,6 +172,7 @@ export default function LeadsPage() {
   const [cancelling, setCancelling] = useState(null);
   const [dragId, setDragId] = useState(null);
   const [overStage, setOverStage] = useState(null);
+  const [landedId, setLandedId] = useState(null);
   const canWrite = can(user, "leads.write");
   const agents = (team.data ?? []).filter((member) => member.role === "commercial");
 
@@ -179,6 +187,12 @@ export default function LeadsPage() {
         (!q || `${lead.fullName} ${lead.phone} ${lead.email} ${lead.address}`.toLowerCase().includes(q)),
     );
   }, [leads.data, query, projectId, agentId, sourceId, dueOnly]);
+
+  useEffect(() => {
+    if (!landedId) return undefined;
+    const timer = setTimeout(() => setLandedId(null), 1200);
+    return () => clearTimeout(timer);
+  }, [landedId]);
 
   const dueCount = useMemo(() => (leads.data ?? []).filter(isDue).length, [leads.data]);
 
@@ -218,6 +232,7 @@ export default function LeadsPage() {
       return;
     }
     const previous = leads.data;
+    setLandedId(lead.id);
     leads.setData((items) => items.map((item) => (item.id === lead.id ? { ...item, stage } : item)));
     try {
       const saved = await api.leads.update(lead.id, { stage });
@@ -232,11 +247,9 @@ export default function LeadsPage() {
   const tableRows = view === "tableau" ? filtered.filter((lead) => showClosed || !CLOSED_STAGES.includes(lead.stage)) : [];
 
   return (
-    <>
+    <MotionConfig reducedMotion="user">
       <PageHeader
-        eyebrow="Commercial"
         title="Leads"
-        description="Pipeline des prospects et tableau de suivi des relances. La pré-réservation, la réservation et les paiements font avancer les étapes automatiquement."
         actions={
           canWrite && (
             <Button variant="primary" icon={Plus} onClick={() => setCreating(true)}>
@@ -315,11 +328,12 @@ export default function LeadsPage() {
           )}
         </Card>
       ) : (
-        <div className="kanban" aria-busy={isLoading}>
+        <motion.div className="kanban" aria-busy={isLoading} layoutScroll>
           {columns.map((column) => (
             <section
               key={column.value}
               className={`kanban__col ${overStage === column.value && dragId ? "is-over" : ""}`}
+              style={{ "--stage": column.color }}
               onDragOver={(event) => {
                 if (!dragId) return;
                 event.preventDefault();
@@ -339,7 +353,7 @@ export default function LeadsPage() {
               aria-label={column.label}
             >
               <header className="kanban__head">
-                <span className="kanban__dot" style={{ background: column.color }} />
+                <span className="kanban__dot" />
                 <span className="kanban__title">{column.label}</span>
                 <span className="kanban__count">{isLoading ? "…" : column.items.length}</span>
               </header>
@@ -353,23 +367,35 @@ export default function LeadsPage() {
                 ) : column.items.length === 0 ? (
                   <p className="kanban__empty">Aucun lead</p>
                 ) : (
-                  column.items.map((lead) => (
-                    <LeadCard
+                  column.items.map((lead, index) => (
+                    <motion.div
                       key={lead.id}
-                      lead={lead}
-                      draggable={canWrite && !ENGAGED_STAGES.includes(lead.stage) && !["livre", "cloture"].includes(lead.stage)}
-                      onDragStart={setDragId}
-                      onDragEnd={() => {
-                        setDragId(null);
-                        setOverStage(null);
+                      layoutId={lead.id}
+                      layout="position"
+                      initial={lead.id === landedId ? false : { opacity: 0, y: 12, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{
+                        layout: { type: "spring", stiffness: 300, damping: 30 },
+                        default: { duration: 0.35, ease: [0.22, 1, 0.36, 1], delay: Math.min(index, 8) * 0.04 },
                       }}
-                    />
+                    >
+                      <LeadCard
+                        lead={lead}
+                        landed={lead.id === landedId}
+                        draggable={canWrite && !ENGAGED_STAGES.includes(lead.stage) && !["livre", "cloture"].includes(lead.stage)}
+                        onDragStart={setDragId}
+                        onDragEnd={() => {
+                          setDragId(null);
+                          setOverStage(null);
+                        }}
+                      />
+                    </motion.div>
                   ))
                 )}
               </div>
             </section>
           ))}
-        </div>
+        </motion.div>
       )}
 
       {leads.data && leads.data.length === 0 && (
@@ -401,6 +427,6 @@ export default function LeadsPage() {
           toast.success(`${saved.fullName} est archivé (annulé).`);
         }}
       />
-    </>
+    </MotionConfig>
   );
 }

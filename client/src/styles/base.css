@@ -20,6 +20,54 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ---------- Scrollbars ---------- */
+:root {
+  --scroll-thumb: #d9cdbd;
+  --scroll-thumb-hover: var(--c-taupe-400);
+  --scroll-thumb-active: var(--c-gold-600);
+  --scroll-track: transparent;
+}
+
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scroll-track);
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: var(--scroll-thumb) padding-box;
+  transition: background-color 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scroll-thumb-hover);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: var(--scroll-thumb-active);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-track {
+  background: var(--bg-app);
+}
+
+/* Chromium ignores ::-webkit-scrollbar once scrollbar-color is set, so the standard properties are Firefox-only. */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+  }
+}
+
 h1,
 h2,
 h3,

@@ -36,7 +36,7 @@ export default function ReservationsPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Commercial" title="Réservations" description="Réservations issues des dossiers complets : remise, signature, bulletin, encaissements et issue (clôture, désistement, résiliation)." />
+      <PageHeader title="Réservations" />
 
       <div className="toolbar">
         <Segmented

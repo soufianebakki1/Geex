@@ -55,9 +55,7 @@ export default function ManagersPage() {
   const { user } = useAuth();
   return (
     <CrudPage
-      eyebrow="Référentiel"
       title="Chefs de projet"
-      description="Responsables du suivi technique et de la livraison de chaque programme. Chaque chef de projet dispose d'un compte CRM."
       entityLabel="Chef de projet"
       resource={api.managers}
       columns={COLUMNS}

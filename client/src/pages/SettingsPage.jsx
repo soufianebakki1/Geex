@@ -354,9 +354,7 @@ export default function SettingsPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Administration"
         title="Paramètres"
-        description="Comptes utilisateurs, rôles et droits d'accès à l'application."
         actions={
           <Button variant="primary" icon={UserPlus} onClick={() => setEditing({})}>
             Ajouter un utilisateur

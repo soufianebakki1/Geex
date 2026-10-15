@@ -39,9 +39,7 @@ export default function SchedulePage() {
   return (
     <>
       <PageHeader
-        eyebrow="Finance"
         title="Échéancier"
-        description="Calendrier de paiement de chaque réservation et suivi des retards."
         actions={
           reservations.data?.length > 0 && (
             <select className="select" style={{ minWidth: 280 }} value={reservationId} onChange={(event) => setParams({ reservationId: event.target.value }, { replace: true })} aria-label="Réservation">

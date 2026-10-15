@@ -307,11 +307,11 @@ export default function DossierDetailPage() {
     <>
       <PageHeader
         back={{ to: "/dossiers", label: "Dossiers" }}
-        eyebrow={`Dossier de réservation${data.preReservationNumber ? ` · ${data.preReservationNumber}` : ""}`}
         title={data.lead?.name ?? "Dossier"}
         meta={
           <>
             <StatusBadge map={DOSSIER_STATUS} value={state.status} />
+            {data.preReservationNumber && <Badge tone="outline">{data.preReservationNumber}</Badge>}
             <Badge tone="outline">{DOSSIER_CLIENT_TYPE[data.clientType]?.label ?? data.clientType}</Badge>
             <span className="xsmall faint">Ouvert le {formatDate(data.createdAt)}</span>
           </>

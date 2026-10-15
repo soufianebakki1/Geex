@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
-import { ArrowLeft, CircleAlert, Inbox, LoaderCircle, RefreshCw, Search, X } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, CircleAlert, Inbox, LoaderCircle, RefreshCw, Search, X } from "lucide-react";
 import { errorMessage } from "../api/errors.js";
 import { initials } from "../utils/format.js";
 
@@ -23,6 +23,48 @@ export function ButtonLink({ to, variant = "secondary", size = "md", icon: Icon,
       {Icon ? <Icon size={size === "sm" ? 15 : 16} /> : null}
       {children}
     </Link>
+  );
+}
+
+function pageWindow(page, count) {
+  if (count <= 7) return Array.from({ length: count }, (_, index) => index + 1);
+  const keep = new Set([1, count, page - 1, page, page + 1]);
+  if (page <= 4) [2, 3, 4, 5].forEach((value) => keep.add(value));
+  if (page >= count - 3) [count - 4, count - 3, count - 2, count - 1].forEach((value) => keep.add(value));
+  const sorted = [...keep].filter((value) => value >= 1 && value <= count).sort((a, b) => a - b);
+  return sorted.flatMap((value, index) => (index > 0 && value - sorted[index - 1] > 1 ? ["gap", value] : [value]));
+}
+
+export function Pagination({ page, pageSize, total, onChange }) {
+  const pageCount = Math.ceil(total / pageSize);
+  if (pageCount <= 1) return null;
+  return (
+    <nav className="pagination" aria-label="Pagination">
+      <button type="button" className="pagination__btn" onClick={() => onChange(page - 1)} disabled={page === 1} aria-label="Page précédente">
+        <ChevronLeft size={16} />
+      </button>
+      {pageWindow(page, pageCount).map((value, index) =>
+        value === "gap" ? (
+          <span key={`gap-${index}`} className="pagination__gap" aria-hidden="true">
+            …
+          </span>
+        ) : (
+          <button
+            key={value}
+            type="button"
+            className={`pagination__btn num ${value === page ? "is-active" : ""}`}
+            onClick={() => onChange(value)}
+            aria-current={value === page ? "page" : undefined}
+            aria-label={`Page ${value}`}
+          >
+            {value}
+          </button>
+        ),
+      )}
+      <button type="button" className="pagination__btn" onClick={() => onChange(page + 1)} disabled={page === pageCount} aria-label="Page suivante">
+        <ChevronRight size={16} />
+      </button>
+    </nav>
   );
 }
 
@@ -77,7 +119,7 @@ export function Card({ title, subtitle, actions, children, footer, className = "
 
 export function PageHeader({ eyebrow, title, description, actions, back, meta }) {
   return (
-    <header className="page-header">
+    <header className={`page-header ${eyebrow || description ? "" : "page-header--compact"}`}>
       <div className="grow">
         {back && (
           <Link to={back.to} className="page-header__back">

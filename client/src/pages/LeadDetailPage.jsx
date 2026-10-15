@@ -316,7 +316,6 @@ export default function LeadDetailPage() {
     <>
       <PageHeader
         back={{ to: "/leads", label: "Leads" }}
-        eyebrow="Fiche prospect"
         title={data.fullName}
         meta={
           <>

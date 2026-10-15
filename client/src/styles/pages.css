@@ -475,20 +475,28 @@
 }
 
 .kanban__col {
+  --stage: var(--c-sand-300);
   display: flex;
   flex-direction: column;
   min-height: 320px;
   padding: 12px;
   border-radius: var(--radius-card);
-  background: var(--bg-muted);
-  border: 1px dashed transparent;
+  background: color-mix(in srgb, var(--stage) 20%, var(--bg-surface));
+  border: 1px solid color-mix(in srgb, var(--stage) 30%, transparent);
+  box-shadow: inset 0 3px 0 color-mix(in srgb, var(--stage) 70%, transparent);
   scroll-snap-align: start;
-  transition: background 0.15s var(--ease), border-color 0.15s var(--ease);
+  transition:
+    background 0.25s var(--ease),
+    border-color 0.25s var(--ease),
+    box-shadow 0.25s var(--ease);
 }
 
 .kanban__col.is-over {
-  background: var(--c-gold-50);
-  border-color: var(--c-gold-600);
+  background: color-mix(in srgb, var(--stage) 32%, var(--bg-surface));
+  border: 1px dashed var(--stage);
+  box-shadow:
+    inset 0 3px 0 var(--stage),
+    0 0 0 4px color-mix(in srgb, var(--stage) 18%, transparent);
 }
 
 .kanban__head {
@@ -502,6 +510,8 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  background: var(--stage);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--stage) 22%, transparent);
 }
 
 .kanban__title {
@@ -513,17 +523,17 @@
   margin-left: auto;
   padding: 0 8px;
   border-radius: 999px;
-  background: var(--bg-surface);
+  background: color-mix(in srgb, var(--stage) 30%, var(--bg-surface));
   font-size: var(--fs-xs);
   font-weight: 700;
-  color: var(--text-muted);
+  color: color-mix(in srgb, var(--stage) 55%, var(--text));
   line-height: 20px;
 }
 
 .kanban__sum {
   padding: 2px 4px 0;
   font-size: var(--fs-xs);
-  color: var(--text-faint);
+  color: color-mix(in srgb, var(--stage) 45%, var(--text-muted));
 }
 
 .kanban__list {
@@ -549,7 +559,11 @@
   background: var(--bg-surface);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-xs);
-  transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+  transition:
+    transform 0.25s var(--ease),
+    opacity 0.2s var(--ease),
+    border-color 0.2s var(--ease),
+    box-shadow 0.25s var(--ease);
 }
 
 .lead-card[draggable="true"] {
@@ -557,12 +571,47 @@
 }
 
 .lead-card:hover {
-  border-color: var(--c-sand-300);
-  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--stage, var(--c-sand-300)) 55%, var(--border));
+  box-shadow: 0 1px 2px rgba(36, 24, 16, 0.05), 0 12px 24px -16px rgba(36, 24, 16, 0.35);
 }
 
 .lead-card:active[draggable="true"] {
   cursor: grabbing;
+}
+
+.lead-card.is-dragging {
+  opacity: 0.4;
+  transform: scale(0.97);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.lead-card.is-landed {
+  animation: lead-land 1.1s var(--ease);
+}
+
+@keyframes lead-land {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--stage) 60%, transparent);
+    border-color: var(--stage);
+  }
+
+  60% {
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--stage) 0%, transparent);
+    border-color: var(--stage);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lead-card,
+  .lead-card:hover {
+    transform: none;
+  }
+
+  .lead-card.is-landed {
+    animation: none;
+  }
 }
 
 .lead-card__name {
@@ -924,6 +973,7 @@
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 18px;
+  scroll-margin-top: calc(var(--topbar-h) + 16px);
 }
 
 .status-filter__item {

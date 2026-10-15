@@ -64,9 +64,7 @@ export default function PromotersPage() {
   const { user } = useAuth();
   return (
     <CrudPage
-      eyebrow="Référentiel"
       title="Promoteurs"
-      description="Sociétés de promotion porteuses des programmes commercialisés."
       entityLabel="Promoteur"
       resource={api.promoters}
       columns={COLUMNS}

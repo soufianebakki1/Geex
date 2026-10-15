@@ -413,9 +413,7 @@ export default function ProjectsPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Catalogue"
         title="Projets"
-        description="Programmes immobiliers, leur structure (tranches, immeubles) et l'état du stock."
         actions={
           canEdit && (
             <Button variant="primary" icon={Plus} onClick={() => setEditing({})}>

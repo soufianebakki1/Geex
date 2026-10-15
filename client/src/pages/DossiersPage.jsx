@@ -35,7 +35,7 @@ export default function DossiersPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Commercial" title="Dossiers" description="Collecte et contrôle des pièces justificatives. Une réservation ne peut être créée que sur un dossier complet." />
+      <PageHeader title="Dossiers" />
 
       <div className="toolbar">
         <Segmented

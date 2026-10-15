@@ -5,6 +5,7 @@ import {
   Building2,
   CalendarClock,
   ChevronDown,
+  ChevronsLeft,
   FilePen,
   FolderCheck,
   HardHat,
@@ -28,6 +29,8 @@ import Logo from "./Logo.jsx";
 import { Avatar, Button } from "./ui.jsx";
 
 export const NOTIFICATIONS_CHANGED = "konouz:notifications-changed";
+const SIDEBAR_KEY = "konouz.sidebar-expanded";
+const DESKTOP_QUERY = "(min-width: 1081px)";
 
 const NAV = [
   { label: "Pilotage", items: [{ to: "/", area: "dashboard", icon: LayoutDashboard, end: true }] },
@@ -139,10 +142,12 @@ export default function AppShell() {
   const navigate = useNavigate();
   const location = useLocation();
   const [navOpen, setNavOpen] = useState(false);
+  const [expanded, setExpanded] = useState(() => localStorage.getItem(SIDEBAR_KEY) === "1");
   const unread = useUnreadCount();
   const area = areaForPath(location.pathname);
 
   useEffect(() => setNavOpen(false), [location.pathname]);
+  useEffect(() => localStorage.setItem(SIDEBAR_KEY, expanded ? "1" : "0"), [expanded]);
 
   async function handleLogout() {
     await logout();
@@ -152,8 +157,18 @@ export default function AppShell() {
   const groups = NAV.map((group) => ({ ...group, items: group.items.filter((item) => can(user, item.area)) })).filter((group) => group.items.length);
 
   return (
-    <div className={`shell ${navOpen ? "is-nav-open" : ""}`}>
+    <div className={`shell ${navOpen ? "is-nav-open" : ""} ${expanded ? "" : "is-collapsed"}`}>
       <aside className="sidebar" aria-label="Navigation principale">
+        <button
+          type="button"
+          className="sidebar__toggle"
+          onClick={() => setExpanded((value) => !value)}
+          aria-expanded={expanded}
+          aria-label={expanded ? "Réduire le menu" : "Développer le menu"}
+          title={expanded ? "Réduire le menu" : "Développer le menu"}
+        >
+          <ChevronsLeft size={15} />
+        </button>
         <div className="sidebar__brand">
           <Link to="/" aria-label="Konouz Immobilier — accueil">
             <Logo size={58} />
@@ -168,9 +183,9 @@ export default function AppShell() {
             <div key={group.label} className="nav-group">
               <p className="nav-group__label">{group.label}</p>
               {group.items.map((item) => (
-                <NavLink key={item.to} to={item.to} end={item.end} className="nav-link">
+                <NavLink key={item.to} to={item.to} end={item.end} className="nav-link" title={expanded ? undefined : AREA_LABELS[item.area]}>
                   <item.icon size={18} />
-                  <span>{AREA_LABELS[item.area]}</span>
+                  <span className="nav-link__label">{AREA_LABELS[item.area]}</span>
                   {item.badge === "notifications" && unread > 0 && <span className="nav-link__count">{unread}</span>}
                 </NavLink>
               ))}
@@ -181,7 +196,7 @@ export default function AppShell() {
         <div className="sidebar__footer">
           <div className="sidebar__user">
             <Avatar name={user.name} tone="gold" />
-            <div className="grow">
+            <div className="grow sidebar__user-text">
               <div className="sidebar__user-name truncate">{user.name}</div>
               <div className="sidebar__user-role">{ROLE_LABEL[user.role]}</div>
             </div>
@@ -195,7 +210,14 @@ export default function AppShell() {
 
       <div className="main">
         <header className="topbar">
-          <Button variant="ghost" iconOnly icon={Menu} className="topbar__menu" onClick={() => setNavOpen(true)} aria-label="Ouvrir le menu" />
+          <Button
+            variant="ghost"
+            iconOnly
+            icon={Menu}
+            className="topbar__menu"
+            onClick={() => (window.matchMedia(DESKTOP_QUERY).matches ? setExpanded((value) => !value) : setNavOpen(true))}
+            aria-label="Menu"
+          />
           <div className="topbar__crumbs">
             <span>Konouz Immobilier</span>
             {area && (

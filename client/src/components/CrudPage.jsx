@@ -5,9 +5,7 @@ import { useToast } from "./Toast.jsx";
 import { Button, Card, ConfirmDialog, EmptyState, ErrorState, Field, FormError, LoadingBlock, Modal, PageHeader, SearchInput } from "./ui.jsx";
 
 export default function CrudPage({
-  eyebrow,
   title,
-  description,
   entityLabel,
   resource,
   columns,
@@ -84,9 +82,7 @@ export default function CrudPage({
   return (
     <>
       <PageHeader
-        eyebrow={eyebrow}
         title={title}
-        description={description}
         actions={
           canWrite && (
             <Button variant="primary" icon={Plus} onClick={() => openForm(null)}>

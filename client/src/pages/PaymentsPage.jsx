@@ -463,9 +463,7 @@ export default function PaymentsPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Finance"
         title="Paiements"
-        description={canValidate ? "Contrôlez et validez les encaissements saisis par les équipes commerciales. Les chèques passent par une étape d'encaissement." : "Saisie des encaissements clients, validés ensuite par la comptabilité."}
         actions={
           can(user, "payments.create") && (
             <Button variant="primary" icon={Plus} onClick={() => setFormOpen(true)}>

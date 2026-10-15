@@ -55,9 +55,7 @@ export default function NotificationsPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Compte"
         title="Notifications"
-        description="Alertes sur les délais, validations et événements qui vous concernent."
         actions={
           unreadCount > 0 && (
             <Button icon={CheckCheck} onClick={markAll} loading={markingAll}>

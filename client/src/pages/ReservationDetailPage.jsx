@@ -9,7 +9,7 @@ import { can } from "../auth/permissions.js";
 import { useToast } from "../components/Toast.jsx";
 import Logo from "../components/Logo.jsx";
 import { SourceMark, bankName } from "../components/payments/BankLogo.jsx";
-import { Button, ButtonLink, Card, ConfirmDialog, ErrorState, Field, LoadingBlock, PageHeader, ProgressBar, StatusBadge } from "../components/ui.jsx";
+import { Badge, Button, ButtonLink, Card, ConfirmDialog, ErrorState, Field, LoadingBlock, PageHeader, ProgressBar, StatusBadge } from "../components/ui.jsx";
 import { formatDate, formatDateTime, formatMAD, formatNumber, percent } from "../utils/format.js";
 import { DOSSIER_CLIENT_TYPE, INSTALLMENT_STATUS, LOT_TYPE, PAYMENT_METHOD, PAYMENT_STATUS, RESERVATION_END_STATUSES, RESERVATION_STATUS } from "../utils/status.js";
 
@@ -228,11 +228,11 @@ export default function ReservationDetailPage() {
     <>
       <PageHeader
         back={{ to: "/reservations", label: "Réservations" }}
-        eyebrow={`Réservation ${data.number}`}
         title={data.lead?.name}
         meta={
           <>
             <StatusBadge map={RESERVATION_STATUS} value={data.status} />
+            <Badge tone="outline">{data.number}</Badge>
             <span className="xsmall faint">
               {data.signedAt ? `Signée le ${formatDate(data.signedAt)}${data.signedByUser ? ` par ${data.signedByUser.name}` : ""}` : `Créée le ${formatDate(data.createdAt)}`}
               {data.agent ? ` · commercial ${data.agent.name}` : ""}

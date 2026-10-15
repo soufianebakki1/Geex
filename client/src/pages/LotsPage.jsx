@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { LayoutGrid, Lock, LockOpen, Pencil, Plus, Timer } from "lucide-react";
 import { api } from "../api/index.js";
@@ -7,7 +7,7 @@ import { useAuth } from "../auth/AuthContext.jsx";
 import { can } from "../auth/permissions.js";
 import { useToast } from "../components/Toast.jsx";
 import LotCard from "../components/lots/LotCard.jsx";
-import { Button, EmptyState, ErrorState, Field, FormError, Modal, PageHeader, SearchInput, Skeleton, StatusBadge } from "../components/ui.jsx";
+import { Button, EmptyState, ErrorState, Field, FormError, Modal, PageHeader, Pagination, SearchInput, Skeleton, StatusBadge } from "../components/ui.jsx";
 import { formatDate, formatDateTime, formatMAD, formatNumber } from "../utils/format.js";
 import { LOT_STATUS, LOT_STATUSES, LOT_TYPE, LOT_TYPES } from "../utils/status.js";
 
@@ -336,6 +336,8 @@ function LotDetail({ lot, user, onClose, onChanged, onEdit }) {
   );
 }
 
+const PAGE_SIZE = 50;
+
 export default function LotsPage() {
   const { user } = useAuth();
   const toast = useToast();
@@ -348,6 +350,8 @@ export default function LotsPage() {
   const [sort, setSort] = useState("ref");
   const [selectedId, setSelectedId] = useState(null);
   const [editing, setEditing] = useState(null);
+  const [page, setPage] = useState(1);
+  const gridTop = useRef(null);
   const projects = useAsync(() => api.projects.list(), []);
   const lots = useAsync(() => api.lots.list({ projectId }), [projectId]);
   const canWrite = can(user, "catalog.write");
@@ -374,6 +378,16 @@ export default function LotsPage() {
 
   const counts = useMemo(() => Object.fromEntries(LOT_STATUSES.map((item) => [item.value, base.filter((lot) => lot.status === item.value).length])), [base]);
   const visible = useMemo(() => base.filter((lot) => !status || lot.status === status).sort(SORTS[sort]), [base, status, sort]);
+  const pageCount = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const pageItems = visible.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  useEffect(() => setPage(1), [projectId, status, type, trancheId, query, sort]);
+
+  function goToPage(next) {
+    setPage(next);
+    gridTop.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
   const selected = lots.data?.find((lot) => lot.id === selectedId) ?? null;
   const currentProject = projects.data?.find((project) => project.id === projectId);
   const upsert = (saved) => lots.setData((items) => (items.some((item) => item.id === saved.id) ? items.map((item) => (item.id === saved.id ? saved : item)) : [...items, saved]));
@@ -381,9 +395,7 @@ export default function LotsPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Catalogue"
         title={currentProject ? `Lots — ${currentProject.name}` : "Lots"}
-        description="Grille des biens et disponibilité en temps réel. Cliquez sur un lot pour le détail, l'historique et les actions."
         actions={
           canWrite && (
             <Button variant="primary" icon={Plus} onClick={() => setEditing({})}>
@@ -429,7 +441,7 @@ export default function LotsPage() {
         </select>
       </div>
 
-      <div className="status-filter" role="group" aria-label="Filtrer par disponibilité">
+      <div className="status-filter" role="group" aria-label="Filtrer par disponibilité" ref={gridTop}>
         <button type="button" className={`status-filter__item ${!status ? "is-active" : ""}`} onClick={() => setParam("status", "")}>
           Tous <span className="num">{base.length}</span>
         </button>
@@ -462,17 +474,20 @@ export default function LotsPage() {
           <EmptyState icon={LayoutGrid} title="Aucun lot ne correspond" description="Modifiez les filtres pour élargir la recherche." />
         </div>
       ) : (
-        <div className="lot-grid">
-          {visible.map((lot) => (
-            <LotCard
-              key={lot.id}
-              lot={lot}
-              where={projectId ? locationLabel(lot) : [lot.project?.name, lot.tranche?.name].filter(Boolean).join(" · ")}
-              floor={floorLabel(lot.floor)}
-              onOpen={() => setSelectedId(lot.id)}
-            />
-          ))}
-        </div>
+        <>
+          <div className="lot-grid">
+            {pageItems.map((lot) => (
+              <LotCard
+                key={lot.id}
+                lot={lot}
+                where={projectId ? locationLabel(lot) : [lot.project?.name, lot.tranche?.name].filter(Boolean).join(" · ")}
+                floor={floorLabel(lot.floor)}
+                onOpen={() => setSelectedId(lot.id)}
+              />
+            ))}
+          </div>
+          <Pagination page={currentPage} pageSize={PAGE_SIZE} total={visible.length} onChange={goToPage} />
+        </>
       )}
 
       {selected && !editing && (

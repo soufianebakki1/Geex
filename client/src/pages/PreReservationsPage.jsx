@@ -410,7 +410,7 @@ export default function PreReservationsPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Commercial" title="Pré-réservations" description="Une option temporaire posée sur un lot. À l'expiration du délai, le lot est automatiquement remis en vente." actions={newButton} />
+      <PageHeader title="Pré-réservations" actions={newButton} />
 
       {list.loading && !list.data ? (
         <LoadingBlock rows={4} />
