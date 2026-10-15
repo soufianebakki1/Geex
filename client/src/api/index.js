@@ -16,6 +16,14 @@ function crud(base) {
   };
 }
 
+function toForm(data) {
+  const form = new FormData();
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") form.append(key, value);
+  });
+  return form;
+}
+
 export const api = {
   auth: {
     login: (email, password) => request("POST", "/auth/login", { email, password }),
@@ -31,6 +39,8 @@ export const api = {
     list: () => request("GET", "/team"),
   },
 
+  sources: crud("/sources"),
+
   leads: {
     ...crud("/leads"),
     contacts: (id) => request("GET", `/leads/${id}/contacts`),
@@ -38,11 +48,21 @@ export const api = {
     activities: (id) => request("GET", `/leads/${id}/activities`),
   },
 
-  projects: crud("/projects"),
+  projects: {
+    ...crud("/projects"),
+    addTranche: (projectId, data) => request("POST", `/projects/${projectId}/tranches`, data),
+    updateTranche: (id, data) => request("PATCH", `/tranches/${id}`, data),
+    removeTranche: (id) => request("DELETE", `/tranches/${id}`),
+    addBuilding: (trancheId, data) => request("POST", `/tranches/${trancheId}/buildings`, data),
+    updateBuilding: (id, data) => request("PATCH", `/buildings/${id}`, data),
+    removeBuilding: (id) => request("DELETE", `/buildings/${id}`),
+  },
 
   lots: {
     list: (params) => request("GET", `/lots${qs(params)}`),
     get: (id) => request("GET", `/lots/${id}`),
+    history: (id) => request("GET", `/lots/${id}/history`),
+    create: (data) => request("POST", "/lots", data),
     update: (id, data) => request("PATCH", `/lots/${id}`, data),
   },
 
@@ -50,33 +70,33 @@ export const api = {
     list: (params) => request("GET", `/pre-reservations${qs(params)}`),
     create: (data) => request("POST", "/pre-reservations", data),
     cancel: (id, reason) => request("POST", `/pre-reservations/${id}/cancel`, { reason }),
-    convert: (id) => request("POST", `/pre-reservations/${id}/convert`),
+    extend: (id, hours, reason) => request("POST", `/pre-reservations/${id}/extend`, { hours, reason }),
+    convert: (id, clientType) => request("POST", `/pre-reservations/${id}/convert`, { clientType }),
   },
 
   dossiers: {
     list: (params) => request("GET", `/dossiers${qs(params)}`),
     get: (id) => request("GET", `/dossiers/${id}`),
     cancel: (id, reason) => request("POST", `/dossiers/${id}/cancel`, { reason }),
-    uploadDocument: (id, key, file) => {
-      const form = new FormData();
-      form.append("file", file);
-      return request("POST", `/dossiers/${id}/documents/${key}`, form);
-    },
+    uploadDocument: (id, key, file) => request("POST", `/dossiers/${id}/documents/${key}`, toForm({ file })),
     removeDocument: (id, key) => request("DELETE", `/dossiers/${id}/documents/${key}`),
-    setDocumentStatus: (id, key, status) => request("PATCH", `/dossiers/${id}/documents/${key}`, { status }),
+    setDocumentStatus: (id, key, status, reason) => request("PATCH", `/dossiers/${id}/documents/${key}`, { status, reason }),
   },
 
   reservations: {
     list: (params) => request("GET", `/reservations${qs(params)}`),
     get: (id) => request("GET", `/reservations/${id}`),
-    create: (dossierId) => request("POST", "/reservations", { dossierId }),
+    create: (data) => request("POST", "/reservations", data),
+    decideDiscount: (id, decision, reason) => request("POST", `/reservations/${id}/discount`, { decision, reason }),
     confirm: (id) => request("POST", `/reservations/${id}/confirm`),
     generateBulletin: (id) => request("POST", `/reservations/${id}/bulletin`),
+    close: (id, status, reason) => request("POST", `/reservations/${id}/close`, { status, reason }),
   },
 
   payments: {
     list: (params) => request("GET", `/payments${qs(params)}`),
-    create: (data) => request("POST", "/payments", data),
+    create: (data) => request("POST", "/payments", data.proof ? toForm(data) : data),
+    encashment: (id) => request("POST", `/payments/${id}/encashment`),
     validate: (id, comment) => request("POST", `/payments/${id}/validate`, { comment }),
     reject: (id, comment) => request("POST", `/payments/${id}/reject`, { comment }),
   },

@@ -1,8 +1,9 @@
 export const ROLES = [
   { value: "admin", label: "Administrateur" },
+  { value: "direction", label: "Direction" },
   { value: "commercial", label: "Commercial" },
   { value: "chef_projet", label: "Chef de projet" },
-  { value: "comptable", label: "Comptable" },
+  { value: "comptable", label: "Comptabilité" },
 ];
 
 export const ROLE_LABEL = Object.fromEntries(ROLES.map((role) => [role.value, role.label]));
@@ -11,16 +12,16 @@ const ALL = ROLES.map((role) => role.value);
 
 export const AREAS = {
   dashboard: ALL,
-  leads: ["admin", "commercial", "chef_projet"],
+  leads: ["admin", "direction", "commercial", "chef_projet"],
   projects: ALL,
   lots: ALL,
-  preReservations: ["admin", "commercial"],
-  dossiers: ["admin", "commercial", "comptable"],
-  reservations: ["admin", "commercial", "comptable"],
-  payments: ["admin", "commercial", "comptable"],
-  schedule: ["admin", "commercial", "comptable"],
-  promoters: ["admin", "chef_projet"],
-  managers: ["admin"],
+  preReservations: ["admin", "direction", "commercial"],
+  dossiers: ["admin", "direction", "commercial", "comptable"],
+  reservations: ["admin", "direction", "commercial", "comptable"],
+  payments: ["admin", "direction", "commercial", "comptable"],
+  schedule: ["admin", "direction", "commercial", "comptable"],
+  promoters: ["admin", "direction", "chef_projet"],
+  managers: ["admin", "direction"],
   notifications: ALL,
   settings: ["admin"],
 };
@@ -43,15 +44,21 @@ export const AREA_LABELS = {
 
 export const ACTIONS = {
   "leads.write": ["admin", "commercial"],
+  "leads.assign": ["admin"],
+  "leads.close": ["admin"],
   "catalog.write": ["admin", "chef_projet"],
   "preReservations.write": ["admin", "commercial"],
+  "preReservations.extend": ["admin", "direction"],
   "dossiers.upload": ["admin", "commercial"],
   "dossiers.validate": ["admin", "comptable"],
   "reservations.confirm": ["admin", "commercial"],
+  "reservations.approveDiscount": ["admin", "direction"],
+  "reservations.close": ["admin", "direction"],
   "payments.create": ["admin", "commercial", "comptable"],
   "payments.validate": ["admin", "comptable"],
   "promoters.write": ["admin"],
   "managers.write": ["admin"],
+  "sources.write": ["admin"],
   "users.manage": ["admin"],
 };
 
@@ -63,6 +70,7 @@ export function can(user, key) {
 
 const HOME_BY_ROLE = {
   admin: "/",
+  direction: "/",
   commercial: "/leads",
   chef_projet: "/projets",
   comptable: "/paiements",

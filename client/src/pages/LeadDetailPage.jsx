@@ -1,31 +1,135 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { CalendarDays, Mail, MapPin, MessageCircle, Pencil, Phone, Timer, Footprints, Handshake } from "lucide-react";
+import { CalendarDays, Footprints, Mail, MessageCircle, MessagesSquare, Pencil, Phone, Timer } from "lucide-react";
 import { api } from "../api/index.js";
 import { errorMessage } from "../api/errors.js";
 import { useAsync } from "../hooks/useAsync.js";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { can } from "../auth/permissions.js";
 import { useToast } from "../components/Toast.jsx";
+import LeadCancelDialog from "../components/LeadCancelDialog.jsx";
 import LeadFormModal from "../components/LeadFormModal.jsx";
 import { Avatar, Badge, Button, ButtonLink, Card, EmptyState, ErrorState, Field, FormError, LoadingBlock, PageHeader, StatusBadge } from "../components/ui.jsx";
-import { formatDate, formatDateTime, formatMAD, timeAgo, toDateTimeInput } from "../utils/format.js";
-import { CONTACT_TYPE, CONTACT_TYPES, ENGAGED_STAGES, LEAD_STAGE, LEAD_STAGES, PRE_RESERVATION_STATUS, RESERVATION_STATUS } from "../utils/status.js";
+import { formatDate, formatDateTime, formatMAD, formatNumber, timeAgo, toDateInput, toDateTimeInput } from "../utils/format.js";
+import {
+  CLIENT_TYPE,
+  CONTACT_CHANNEL,
+  CONTACT_CHANNELS,
+  CONTACT_RESULT,
+  CONTACT_RESULTS,
+  ENGAGED_STAGES,
+  FINANCING_MODE,
+  FOLLOW_UP_OUTCOME,
+  FOLLOW_UP_OUTCOMES,
+  LEAD_STAGE,
+  MANUAL_STAGES,
+  PRE_RESERVATION_STATUS,
+  RESERVATION_STATUS,
+} from "../utils/status.js";
 
-const CONTACT_ICONS = { appel: Phone, email: Mail, whatsapp: MessageCircle, visite: Footprints, rdv: Handshake };
+const CHANNEL_ICONS = { telephone: Phone, whatsapp: MessageCircle, email: Mail, visite: Footprints, autre: MessagesSquare };
+const LOCKED_STAGES = [...ENGAGED_STAGES, "livre", "cloture"];
 
-function ContactLog({ leadId, canWrite, contacts, onAdded }) {
-  const [form, setForm] = useState({ type: "appel", date: toDateTimeInput(), summary: "" });
+const range = (min, max, format) => {
+  if (min != null && max != null) return `${format(min)} – ${format(max)}`;
+  if (max != null) return `jusqu'à ${format(max)}`;
+  if (min != null) return `à partir de ${format(min)}`;
+  return null;
+};
+const surface = (value) => `${formatNumber(value)} m²`;
+const empty = <span className="faint">—</span>;
+
+function FollowUpSlot({ lead, slot, canWrite, onSave }) {
+  const dateKey = `followUp${slot}Date`;
+  const outcomeKey = `followUp${slot}Outcome`;
+  const initial = { date: lead[dateKey] ? toDateInput(lead[dateKey]) : "", outcome: lead[outcomeKey] ?? "" };
+  const [form, setForm] = useState(initial);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setForm({ date: lead[dateKey] ? toDateInput(lead[dateKey]) : "", outcome: lead[outcomeKey] ?? "" });
+    setError(null);
+  }, [lead, dateKey, outcomeKey]);
+
+  const locked = slot === 2 && !lead.followUp1Date;
+  const dirty = form.date !== initial.date || form.outcome !== initial.outcome;
+  const due = Boolean(lead[dateKey] && !lead[outcomeKey] && toDateInput(lead[dateKey]) <= toDateInput());
+  const outcome = FOLLOW_UP_OUTCOME[lead[outcomeKey]];
 
   async function submit(event) {
     event.preventDefault();
     setSaving(true);
     setError(null);
     try {
-      await api.leads.addContact(leadId, { ...form, date: new Date(form.date).toISOString() });
-      setForm({ type: form.type, date: toDateTimeInput(), summary: "" });
+      await onSave({ [dateKey]: form.date ? `${form.date}T09:00` : null, [outcomeKey]: form.outcome || null });
+    } catch (err) {
+      setError(err);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form className={`follow-up ${due ? "is-due" : ""}`} onSubmit={submit}>
+      <div className="row-between" style={{ marginBottom: 8 }}>
+        <p className="follow-up__label">{slot === 1 ? "1re relance" : "2e relance"}</p>
+        {outcome ? <Badge tone={outcome.tone}>{outcome.label}</Badge> : due ? <Badge tone="warning">À faire</Badge> : null}
+      </div>
+      {canWrite ? (
+        <div className="stack-xs">
+          <Field label="Date de relance">
+            {(id) => <input id={id} className="input" type="date" value={form.date} disabled={locked} onChange={(event) => setForm((prev) => ({ ...prev, date: event.target.value }))} />}
+          </Field>
+          <Field label="Sort" hint={locked ? "Planifiez d'abord la 1re relance." : undefined}>
+            {(id) => (
+              <select id={id} className="select" value={form.outcome} disabled={locked || !form.date} onChange={(event) => setForm((prev) => ({ ...prev, outcome: event.target.value }))}>
+                <option value="">En attente</option>
+                {FOLLOW_UP_OUTCOMES.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label} → {item.next}
+                  </option>
+                ))}
+              </select>
+            )}
+          </Field>
+          <FormError error={error} />
+          {dirty && (
+            <div className="row" style={{ justifyContent: "flex-end" }}>
+              <Button size="sm" variant="ghost" onClick={() => setForm(initial)} disabled={saving}>
+                Annuler
+              </Button>
+              <Button size="sm" variant="dark" type="submit" loading={saving}>
+                Enregistrer
+              </Button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <p className="small num">{lead[dateKey] ? formatDate(lead[dateKey]) : <span className="faint">Non planifiée</span>}</p>
+      )}
+    </form>
+  );
+}
+
+function ContactLog({ leadId, canWrite, contacts, onAdded }) {
+  const blank = () => ({ channel: "telephone", result: "contact_etabli", durationMinutes: "", at: toDateTimeInput(), notes: "" });
+  const [form, setForm] = useState(blank);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const set = (key) => (event) => setForm((prev) => ({ ...prev, [key]: event.target.value }));
+
+  async function submit(event) {
+    event.preventDefault();
+    setSaving(true);
+    setError(null);
+    try {
+      await api.leads.addContact(leadId, {
+        ...form,
+        durationMinutes: form.durationMinutes === "" ? null : Number(form.durationMinutes),
+        at: new Date(form.at).toISOString(),
+      });
+      setForm({ ...blank(), channel: form.channel });
       onAdded();
     } catch (err) {
       setError(err);
@@ -35,49 +139,55 @@ function ContactLog({ leadId, canWrite, contacts, onAdded }) {
   }
 
   return (
-    <Card title="Journal de contacts" subtitle="Appels, emails, visites et rendez-vous avec le prospect.">
+    <Card title="Interactions" subtitle="Appels, messages, emails et visites avec le prospect.">
       {canWrite && (
         <form className="contact-form" onSubmit={submit}>
-          <div className="contact-form__types" role="radiogroup" aria-label="Type de contact">
-            {CONTACT_TYPES.map((type) => {
-              const Icon = CONTACT_ICONS[type.value];
+          <div className="contact-form__types" role="radiogroup" aria-label="Canal">
+            {CONTACT_CHANNELS.map((channel) => {
+              const Icon = CHANNEL_ICONS[channel.value];
               return (
                 <button
-                  key={type.value}
+                  key={channel.value}
                   type="button"
                   role="radio"
-                  aria-checked={form.type === type.value}
-                  className={`chip ${form.type === type.value ? "is-active" : ""}`}
-                  onClick={() => setForm((prev) => ({ ...prev, type: type.value }))}
+                  aria-checked={form.channel === channel.value}
+                  className={`chip ${form.channel === channel.value ? "is-active" : ""}`}
+                  onClick={() => setForm((prev) => ({ ...prev, channel: channel.value }))}
                 >
                   <Icon size={14} />
-                  {type.label}
+                  {channel.label}
                 </button>
               );
             })}
           </div>
-          <div className="contact-form__row">
-            <Field label="Date" className="contact-form__date">
-              {(id) => <input id={id} className="input" type="datetime-local" value={form.date} onChange={(event) => setForm((prev) => ({ ...prev, date: event.target.value }))} required />}
-            </Field>
-            <Field label="Compte rendu" className="grow">
+          <div className="form-grid">
+            <Field label="Résultat" required>
               {(id) => (
-                <textarea
-                  id={id}
-                  className="textarea"
-                  rows={2}
-                  value={form.summary}
-                  onChange={(event) => setForm((prev) => ({ ...prev, summary: event.target.value }))}
-                  placeholder="Ce qui a été dit, les prochaines étapes…"
-                  required
-                />
+                <select id={id} className="select" value={form.result} onChange={set("result")}>
+                  {CONTACT_RESULTS.map((result) => (
+                    <option key={result.value} value={result.value}>
+                      {result.label}
+                    </option>
+                  ))}
+                </select>
               )}
+            </Field>
+            <div className="row" style={{ alignItems: "flex-start" }}>
+              <Field label="Date" className="grow">
+                {(id) => <input id={id} className="input" type="datetime-local" value={form.at} onChange={set("at")} required />}
+              </Field>
+              <Field label="Durée (min)" className="contact-form__duration">
+                {(id) => <input id={id} className="input num" type="number" min="0" value={form.durationMinutes} onChange={set("durationMinutes")} />}
+              </Field>
+            </div>
+            <Field label="Notes" className="span-2">
+              {(id) => <textarea id={id} className="textarea" rows={2} value={form.notes} onChange={set("notes")} placeholder="Ce qui a été dit, les prochaines étapes…" />}
             </Field>
           </div>
           <FormError error={error} />
           <div className="row" style={{ justifyContent: "flex-end" }}>
-            <Button variant="dark" size="sm" type="submit" loading={saving} disabled={!form.summary.trim()}>
-              Enregistrer le contact
+            <Button variant="dark" size="sm" type="submit" loading={saving}>
+              Enregistrer l'interaction
             </Button>
           </div>
         </form>
@@ -88,11 +198,11 @@ function ContactLog({ leadId, canWrite, contacts, onAdded }) {
       ) : contacts.error && !contacts.data ? (
         <ErrorState compact error={contacts.error} onRetry={contacts.reload} />
       ) : contacts.data.length === 0 ? (
-        <EmptyState compact icon={Phone} title="Aucun contact enregistré" />
+        <EmptyState compact icon={Phone} title="Aucune interaction enregistrée" />
       ) : (
         <ul className="contact-list">
           {contacts.data.map((contact) => {
-            const Icon = CONTACT_ICONS[contact.type] ?? Phone;
+            const Icon = CHANNEL_ICONS[contact.channel] ?? MessagesSquare;
             return (
               <li key={contact.id} className="contact-list__item">
                 <span className="contact-list__icon">
@@ -100,10 +210,16 @@ function ContactLog({ leadId, canWrite, contacts, onAdded }) {
                 </span>
                 <div className="grow">
                   <div className="row-between wrap">
-                    <span className="strong small">{CONTACT_TYPE[contact.type]?.label}</span>
-                    <span className="xsmall faint">{formatDateTime(contact.date)}</span>
+                    <span className="row">
+                      <span className="strong small">{CONTACT_CHANNEL[contact.channel]?.label ?? contact.channel}</span>
+                      <StatusBadge map={CONTACT_RESULT} value={contact.result} dot={false} />
+                    </span>
+                    <span className="xsmall faint">
+                      {formatDateTime(contact.at)}
+                      {contact.durationMinutes ? ` · ${contact.durationMinutes} min` : ""}
+                    </span>
                   </div>
-                  <p className="contact-list__summary">{contact.summary}</p>
+                  {contact.notes && <p className="contact-list__summary">{contact.notes}</p>}
                   <p className="xsmall faint">par {contact.user?.name ?? "—"}</p>
                 </div>
               </li>
@@ -125,8 +241,10 @@ export default function LeadDetailPage() {
   const projects = useAsync(() => api.projects.list(), []);
   const team = useAsync(() => api.team.list(), []);
   const [editing, setEditing] = useState(false);
+  const [cancelling, setCancelling] = useState(null);
   const [stageSaving, setStageSaving] = useState(false);
   const canWrite = can(user, "leads.write");
+  const canClose = can(user, "leads.close");
 
   const refreshAll = () => {
     lead.reload({ silent: true });
@@ -135,6 +253,10 @@ export default function LeadDetailPage() {
   };
 
   async function changeStage(stage) {
+    if (stage === "annule") {
+      setCancelling({});
+      return;
+    }
     setStageSaving(true);
     try {
       await api.leads.update(id, { stage });
@@ -145,6 +267,16 @@ export default function LeadDetailPage() {
     } finally {
       setStageSaving(false);
     }
+  }
+
+  async function saveFollowUp(patch) {
+    if (Object.values(patch).includes("annulation") && lead.data.stage !== "annule") {
+      setCancelling(patch);
+      return;
+    }
+    await api.leads.update(id, patch);
+    toast.success("Relance enregistrée.");
+    refreshAll();
   }
 
   if (lead.loading && !lead.data) {
@@ -169,18 +301,28 @@ export default function LeadDetailPage() {
   const data = lead.data;
   const engaged = ENGAGED_STAGES.includes(data.stage);
   const activePre = data.preReservations?.find((pre) => pre.status === "active");
-  const selectableStages = LEAD_STAGES.filter((stage) => !ENGAGED_STAGES.includes(stage.value) || stage.value === data.stage);
+  const stageOptions = [
+    ...(LOCKED_STAGES.includes(data.stage) ? [data.stage] : []),
+    ...MANUAL_STAGES.filter((stage) => !LOCKED_STAGES.includes(data.stage) && !(stage === "nouveau" && data.agentId) && !(stage !== "nouveau" && !data.agentId)),
+    ...(canClose && ["signe", "en_paiement"].includes(data.stage) ? ["livre"] : []),
+    ...(canClose && data.stage === "livre" ? ["cloture"] : []),
+    ...(LOCKED_STAGES.includes(data.stage) ? [] : ["annule"]),
+  ];
+  if (!stageOptions.includes(data.stage)) stageOptions.unshift(data.stage);
+  const budget = range(data.budgetMin, data.budgetMax, formatMAD);
+  const area = range(data.surfaceMin, data.surfaceMax, surface);
 
   return (
     <>
       <PageHeader
         back={{ to: "/leads", label: "Leads" }}
         eyebrow="Fiche prospect"
-        title={`${data.firstName} ${data.lastName}`}
+        title={data.fullName}
         meta={
           <>
             <StatusBadge map={LEAD_STAGE} value={data.stage} />
-            <Badge tone="outline">{data.source}</Badge>
+            <Badge tone="outline">{CLIENT_TYPE[data.clientType]?.label}</Badge>
+            {data.source && <Badge tone="outline">{data.source.name}</Badge>}
             <span className="xsmall faint">Créé {timeAgo(data.createdAt)}</span>
           </>
         }
@@ -191,21 +333,21 @@ export default function LeadDetailPage() {
                 className="select"
                 style={{ width: "auto" }}
                 value={data.stage}
-                disabled={engaged || stageSaving}
+                disabled={stageSaving || stageOptions.length < 2}
                 onChange={(event) => changeStage(event.target.value)}
                 aria-label="Étape du pipeline"
                 title={engaged ? "L'étape suit l'avancement de la réservation" : undefined}
               >
-                {selectableStages.map((stage) => (
-                  <option key={stage.value} value={stage.value}>
-                    {stage.label}
+                {stageOptions.map((stage) => (
+                  <option key={stage} value={stage}>
+                    {LEAD_STAGE[stage].label}
                   </option>
                 ))}
               </select>
               <Button icon={Pencil} onClick={() => setEditing(true)}>
                 Modifier
               </Button>
-              {can(user, "preReservations.write") && !engaged && data.stage !== "perdu" && (
+              {can(user, "preReservations.write") && !LOCKED_STAGES.includes(data.stage) && data.stage !== "annule" && (
                 <ButtonLink to={`/pre-reservations?leadId=${data.id}`} variant="primary" icon={Timer}>
                   Pré-réserver un lot
                 </ButtonLink>
@@ -215,40 +357,26 @@ export default function LeadDetailPage() {
         }
       />
 
+      {data.stage === "annule" && data.cancelReason && (
+        <p className="note" style={{ marginBottom: 16 }}>
+          <strong>Lead annulé</strong> — {data.cancelReason}
+        </p>
+      )}
+
       <div className="detail-grid">
         <div className="stack">
           <Card title="Coordonnées">
             <dl className="dl">
               <dt>Téléphone</dt>
               <dd>
-                <a className="link" href={`tel:${data.phone.replace(/\s/g, "")}`}>
+                <a className="link num" href={`tel:${data.phone.replace(/\s/g, "")}`}>
                   {data.phone}
                 </a>
               </dd>
               <dt>Email</dt>
-              <dd>{data.email ? <a className="link" href={`mailto:${data.email}`}>{data.email}</a> : <span className="faint">—</span>}</dd>
+              <dd>{data.email ? <a className="link" href={`mailto:${data.email}`}>{data.email}</a> : empty}</dd>
               <dt>Adresse</dt>
-              <dd>{data.address || <span className="faint">—</span>}</dd>
-              <dt>Ville</dt>
-              <dd>
-                {data.city ? (
-                  <span className="row">
-                    <MapPin size={14} className="faint" />
-                    {data.city}
-                  </span>
-                ) : (
-                  <span className="faint">—</span>
-                )}
-              </dd>
-            </dl>
-          </Card>
-
-          <Card title="Projet & budget">
-            <dl className="dl">
-              <dt>Projet d'intérêt</dt>
-              <dd>{data.project ? `${data.project.name} · ${data.project.city}` : <span className="faint">Non précisé</span>}</dd>
-              <dt>Budget</dt>
-              <dd className="num">{data.budget ? formatMAD(data.budget) : <span className="faint">—</span>}</dd>
+              <dd>{data.address || empty}</dd>
               <dt>Commercial</dt>
               <dd>
                 {data.agent ? (
@@ -257,13 +385,34 @@ export default function LeadDetailPage() {
                     {data.agent.name}
                   </span>
                 ) : (
-                  "—"
+                  <Badge tone="warning">À affecter</Badge>
                 )}
               </dd>
-              <dt>Dernier contact</dt>
-              <dd>{data.lastContactAt ? formatDateTime(data.lastContactAt) : <span className="faint">Jamais</span>}</dd>
+              <dt>Dernière activité</dt>
+              <dd>{data.lastActivityAt ? formatDateTime(data.lastActivityAt) : <span className="faint">Aucune</span>}</dd>
             </dl>
-            {data.notes && <p className="note">{data.notes}</p>}
+          </Card>
+
+          <Card title="Recherche">
+            <dl className="dl">
+              <dt>Projet</dt>
+              <dd>{data.project ? `${data.project.name} · ${data.project.city}` : empty}</dd>
+              <dt>Type de bien</dt>
+              <dd>{data.propertyType || empty}</dd>
+              <dt>Ville souhaitée</dt>
+              <dd>{data.desiredCity || empty}</dd>
+              <dt>Budget</dt>
+              <dd className="num">{budget ?? empty}</dd>
+              <dt>Surface</dt>
+              <dd className="num">{area ?? empty}</dd>
+              <dt>Financement</dt>
+              <dd>{FINANCING_MODE[data.financing]?.label ?? empty}</dd>
+              <dt>Délai d'achat</dt>
+              <dd>{data.purchaseDelay || empty}</dd>
+              <dt>Motivation</dt>
+              <dd>{data.motivation || empty}</dd>
+            </dl>
+            {data.remark && <p className="note">{data.remark}</p>}
           </Card>
 
           {(data.preReservations?.length > 0 || data.reservation) && (
@@ -290,7 +439,9 @@ export default function LeadDetailPage() {
                 {data.preReservations.map((pre) => (
                   <li key={pre.id}>
                     <div className="grow">
-                      <p className="strong small">Pré-réservation · lot {pre.lot?.ref}</p>
+                      <p className="strong small">
+                        {pre.number} · lot {pre.lot?.ref}
+                      </p>
                       <p className="xsmall muted">
                         {formatDate(pre.createdAt)} · acompte {formatMAD(pre.deposit)}
                       </p>
@@ -316,6 +467,13 @@ export default function LeadDetailPage() {
         </div>
 
         <div className="stack">
+          <Card title="Relances" subtitle="Suivi téléphonique : date et sort de chaque relance. Une annulation archive le lead.">
+            <div className="follow-ups">
+              <FollowUpSlot lead={data} slot={1} canWrite={canWrite} onSave={saveFollowUp} />
+              <FollowUpSlot lead={data} slot={2} canWrite={canWrite} onSave={saveFollowUp} />
+            </div>
+          </Card>
+
           <ContactLog leadId={id} canWrite={canWrite} contacts={contacts} onAdded={refreshAll} />
 
           <Card title="Chronologie" subtitle="Historique complet des actions sur ce prospect.">
@@ -354,6 +512,17 @@ export default function LeadDetailPage() {
         onSaved={() => {
           setEditing(false);
           toast.success("Fiche mise à jour.");
+          refreshAll();
+        }}
+      />
+
+      <LeadCancelDialog
+        lead={cancelling ? data : null}
+        extra={cancelling ?? undefined}
+        onClose={() => setCancelling(null)}
+        onCancelled={() => {
+          setCancelling(null);
+          toast.success("Lead annulé et archivé.");
           refreshAll();
         }}
       />

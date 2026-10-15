@@ -121,8 +121,7 @@
   pointer-events: none;
 }
 
-.login__bar,
-.login-card {
+.login__bar {
   pointer-events: auto;
 }
 
@@ -161,133 +160,15 @@
   color: var(--c-gold-500);
 }
 
-.login__eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--c-brass);
-}
-
-.login__eyebrow::before {
-  content: "";
-  width: 32px;
-  height: 1px;
-  background: currentColor;
-}
-
-/* Glass card */
-.login-card {
+.login__main {
   align-self: center;
+  display: flex;
+  justify-content: center;
   width: 100%;
-  max-width: 440px;
-  padding: 36px 32px 28px;
-  border: 1px solid var(--login-line);
-  border-radius: var(--radius-xl);
-  background: var(--login-glass);
-  backdrop-filter: blur(22px) saturate(1.2);
-  -webkit-backdrop-filter: blur(22px) saturate(1.2);
-  box-shadow:
-    0 40px 80px -24px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  animation: login-rise 0.9s var(--ease) 0.35s both;
-}
-
-.login-card__title {
-  font-size: var(--fs-3xl);
-  font-weight: 500;
-  color: #fff;
-}
-
-.login-card__subtitle {
-  margin-top: 6px;
-  font-size: var(--fs-base);
-  color: var(--login-ink-soft);
-}
-
-.login-card__form {
-  margin-top: 26px;
-}
-
-.login-card .field__label {
-  color: var(--login-ink-soft);
-}
-
-.login-card .input {
-  border-color: var(--login-line);
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
-}
-
-.login-card .input::placeholder {
-  color: var(--login-ink-faint);
-}
-
-.login-card .input:hover {
-  border-color: rgba(239, 230, 219, 0.3);
-}
-
-.login-card .input:focus {
-  border-color: var(--c-gold-500);
-  background: rgba(255, 255, 255, 0.09);
-}
-
-.login-card .input:-webkit-autofill {
-  -webkit-text-fill-color: #fff;
-  box-shadow: 0 0 0 100px #2a1d14 inset;
-  caret-color: #fff;
-}
-
-.login-card .btn--primary:disabled {
-  background: rgba(250, 174, 28, 0.35);
-  color: rgba(22, 14, 9, 0.7);
-}
-
-.input--lg {
-  height: 46px;
-  font-size: var(--fs-md);
-}
-
-.password-field {
-  position: relative;
-}
-
-.password-field .input {
-  padding-right: 46px;
-}
-
-.password-field__toggle {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--login-ink-faint);
-}
-
-.password-field__toggle:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.password-field__toggle:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
 }
 
 /* Demo role cards */
 .login-roles {
-  margin-top: 26px;
   padding-top: 22px;
   border-top: 1px solid var(--login-line);
 }
@@ -320,6 +201,10 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
+}
+
+.login-roles__grid > .login-role:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
 }
 
 .login-role {
@@ -442,18 +327,13 @@
 }
 
 @media (max-width: 420px) {
-  .login-card {
-    padding: 28px 20px 22px;
-  }
-
   .login-roles__grid {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .login__bar,
-  .login-card {
+  .login__bar {
     animation: none;
   }
 
@@ -663,6 +543,20 @@
 .watch-list__item:last-child {
   border-bottom: 0;
   padding-bottom: 0;
+}
+
+.watch-list__item--link > a {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.watch-list__item--link > a:hover .strong {
+  color: var(--c-gold-700, var(--text));
 }
 
 .watch-list__end {
@@ -884,9 +778,10 @@
 
 .lead-card__meta {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 4px 8px;
 }
 
 .lead-card__budget {
@@ -948,10 +843,19 @@
 
 .engagements li {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 6px 10px;
   padding: 10px 0;
   border-bottom: 1px solid var(--border);
+}
+
+.engagements li > .grow {
+  min-width: 170px;
+}
+
+.engagements li > .row {
+  margin-left: auto;
 }
 
 .engagements li:first-child {
@@ -1569,7 +1473,13 @@
   color: var(--c-taupe-400);
 }
 
-.doc-row--recu .doc-row__icon {
+.doc-row--rejete .doc-row__icon {
+  border: 0;
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.doc-row--en_attente .doc-row__icon {
   border: 0;
   background: var(--info-bg);
   color: var(--info);
@@ -1920,19 +1830,28 @@
   color: var(--text-muted);
 }
 
-.schedule__item--paye .schedule__marker {
+.schedule__item--payee .schedule__marker {
   border-color: var(--success);
   background: var(--success);
   color: #fff;
 }
 
-.schedule__item--paye::before {
+.schedule__item--payee::before {
   background: var(--success);
 }
 
-.schedule__item--partiel .schedule__marker {
+.schedule__item--partiellement_payee .schedule__marker,
+.schedule__item--en_attente .schedule__marker {
   border-color: var(--info);
   color: var(--info);
+}
+
+.schedule__item--annulee .schedule__body {
+  opacity: 0.55;
+}
+
+.schedule__item--annulee .schedule__body .strong {
+  text-decoration: line-through;
 }
 
 .schedule__item--en_retard .schedule__marker {
@@ -2058,4 +1977,162 @@
 .matrix__cell svg {
   margin: 0 auto;
   color: var(--success);
+}
+
+/* ================= Data model additions ================= */
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+}
+
+.check input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--c-espresso-800);
+}
+
+.structure {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-subtle);
+}
+
+.structure__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-2);
+}
+
+.structure__list {
+  list-style: none;
+  margin: 10px 0 8px 26px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.structure__list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.structure__add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.structure__add .input {
+  flex: 1 1 180px;
+  height: 34px;
+}
+
+.structure__add .form-error {
+  flex-basis: 100%;
+}
+
+.history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-list li {
+  display: flex;
+  gap: 10px;
+  font-size: var(--fs-sm);
+}
+
+.history-list__dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-top: 7px;
+  border-radius: 50%;
+  background: var(--c-taupe-400);
+}
+
+.section-title {
+  margin: 0 0 10px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.prospect-table {
+  min-width: 1480px;
+}
+
+.prospect-table td {
+  vertical-align: top;
+}
+
+.prospect-table td:nth-child(3) {
+  width: 200px;
+}
+
+.prospect-table td:nth-child(9) {
+  width: 240px;
+}
+
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.contact-form__duration {
+  flex: none;
+  width: 104px;
+}
+
+.follow-ups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.follow-up {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-subtle);
+}
+
+.follow-up.is-due {
+  border-color: var(--c-gold-500);
+  background: var(--gold-bg);
+}
+
+.follow-up__label {
+  margin: 0 0 4px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+@media (max-width: 640px) {
+  .follow-ups {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

@@ -1,0 +1,580 @@
+# KonouzImmobilier CRM — Database Design
+
+## Entity Relationship Diagram (ERD)
+
+```mermaid
+erDiagram
+    USERS {
+        int id PK
+        string nom
+        string prenom
+        string email
+        string password_hash
+        enum role
+        bool actif
+        datetime created_at
+    }
+
+    PROMOTEURS {
+        int id PK
+        string groupe
+        string societe
+        string rc
+        string if_number
+        string ice
+        string siege_social
+        datetime created_at
+    }
+
+    PROJETS {
+        int id PK
+        int promoteur_id FK
+        int chef_projet_id FK
+        string nom
+        enum type_projet
+        string adresse
+        string consistance
+        string tf_mere
+        date date_prevue_livraison
+        bool actif
+        datetime created_at
+    }
+
+    TRANCHES {
+        int id PK
+        int projet_id FK
+        string nom
+        string description
+    }
+
+    IMMEUBLES {
+        int id PK
+        int tranche_id FK
+        string nom
+        int nb_etages
+    }
+
+    LOTS {
+        int id PK
+        int projet_id FK
+        int tranche_id FK
+        int immeuble_id FK
+        string numero_lot
+        enum type_lot
+        float superficie
+        float prix
+        int etage
+        bool parking
+        enum statut
+        datetime created_at
+    }
+
+    SOURCES_MARKETING {
+        int id PK
+        string categorie
+        string nom
+    }
+
+    LEADS {
+        int id PK
+        int commercial_id FK
+        int source_id FK
+        int projet_id FK
+        string nom_prenom
+        string telephone
+        string email
+        string adresse
+        enum statut_pipeline
+        enum type_client
+        string type_bien_souhaite
+        float budget_min
+        float budget_max
+        string ville_souhaitee
+        float surface_min
+        float surface_max
+        enum mode_financement
+        string delai_achat
+        string motivation
+        datetime date_affectation
+        datetime derniere_activite
+        string motif_annulation
+        datetime created_at
+    }
+
+    ACTIVITES {
+        int id PK
+        int lead_id FK
+        int user_id FK
+        enum canal
+        datetime date_heure
+        int duree_minutes
+        enum resultat
+        string notes
+        datetime created_at
+    }
+
+    PRERESERVATIONS {
+        int id PK
+        int lead_id FK
+        int lot_id FK
+        int commercial_id FK
+        string numero_unique
+        datetime date_creation
+        datetime date_expiration
+        string motif
+        string commentaires
+        enum statut
+        datetime date_prolongation
+        string motif_annulation
+        datetime created_at
+    }
+
+    DOSSIERS {
+        int id PK
+        int prereservation_id FK
+        int lead_id FK
+        int commercial_id FK
+        enum type_client
+        enum statut
+        datetime date_ouverture
+        datetime date_validation
+        datetime created_at
+    }
+
+    DOCUMENTS {
+        int id PK
+        int dossier_id FK
+        string nom
+        string categorie
+        string chemin_fichier
+        enum statut
+        int valide_par FK
+        datetime date_upload
+        datetime date_validation
+        bool obligatoire
+    }
+
+    RESERVATIONS {
+        int id PK
+        int dossier_id FK
+        int lot_id FK
+        int lead_id FK
+        int commercial_id FK
+        string numero_unique
+        float prix_vente
+        float remise
+        string motif_remise
+        int approuve_par FK
+        enum statut
+        datetime date_signature
+        string conditions_paiement
+        datetime created_at
+    }
+
+    PAIEMENTS {
+        int id PK
+        int reservation_id FK
+        int echeance_id FK
+        float montant
+        enum mode_paiement
+        string reference
+        string chemin_justificatif
+        enum statut
+        int valide_par FK
+        datetime date_paiement
+        datetime date_validation
+        string motif_rejet
+        datetime created_at
+    }
+
+    ECHEANCES {
+        int id PK
+        int reservation_id FK
+        int numero_ordre
+        float montant
+        date date_echeance
+        float montant_paye
+        float solde
+        enum statut
+        datetime created_at
+    }
+
+    NOTIFICATIONS {
+        int id PK
+        int user_id FK
+        string titre
+        string message
+        string lien
+        bool lu
+        datetime created_at
+    }
+
+    HISTORIQUE_LOTS {
+        int id PK
+        int lot_id FK
+        enum ancien_statut
+        enum nouveau_statut
+        int user_id FK
+        string raison
+        datetime created_at
+    }
+
+    USERS ||--o{ LEADS : "affecte"
+    USERS ||--o{ ACTIVITES : "effectue"
+    USERS ||--o{ PRERESERVATIONS : "cree"
+    USERS ||--o{ DOSSIERS : "gere"
+    USERS ||--o{ RESERVATIONS : "signe"
+    USERS ||--o{ PAIEMENTS : "valide"
+    USERS ||--o{ NOTIFICATIONS : "recoit"
+    PROMOTEURS ||--o{ PROJETS : "possede"
+    PROJETS ||--o{ TRANCHES : "contient"
+    PROJETS ||--o{ LOTS : "contient"
+    TRANCHES ||--o{ IMMEUBLES : "contient"
+    TRANCHES ||--o{ LOTS : "groupe"
+    IMMEUBLES ||--o{ LOTS : "heberge"
+    SOURCES_MARKETING ||--o{ LEADS : "origine"
+    PROJETS ||--o{ LEADS : "interesse"
+    LEADS ||--o{ ACTIVITES : "a"
+    LEADS ||--o{ PRERESERVATIONS : "fait"
+    LOTS ||--o{ PRERESERVATIONS : "bloque_par"
+    PRERESERVATIONS ||--o| DOSSIERS : "genere"
+    LEADS ||--o{ DOSSIERS : "appartient"
+    DOSSIERS ||--o{ DOCUMENTS : "contient"
+    DOSSIERS ||--o| RESERVATIONS : "aboutit"
+    LOTS ||--o{ RESERVATIONS : "reserve_par"
+    LEADS ||--o{ RESERVATIONS : "acheteur"
+    RESERVATIONS ||--o{ ECHEANCES : "genere"
+    RESERVATIONS ||--o{ PAIEMENTS : "recoit"
+    ECHEANCES ||--o{ PAIEMENTS : "couvre"
+    LOTS ||--o{ HISTORIQUE_LOTS : "trace"
+```
+
+---
+
+## Description Détaillée des Tables
+
+### `USERS` — Utilisateurs du CRM
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| nom | VARCHAR(100) | Nom de famille |
+| prenom | VARCHAR(100) | Prénom |
+| email | VARCHAR(255) UNIQUE | Email de connexion |
+| password_hash | VARCHAR(255) | Mot de passe hashé |
+| role | ENUM | ADMIN / COMMERCIAL / CHEF_PROJET / COMPTABILITE / DIRECTION |
+| actif | BOOLEAN | Compte actif ou désactivé |
+| created_at | DATETIME | Date de création |
+
+---
+
+### `PROMOTEURS` — Sociétés promotrices
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| groupe | VARCHAR(255) | Nom du groupe |
+| societe | VARCHAR(255) | Nom de la société |
+| rc | VARCHAR(100) | Registre de commerce |
+| if_number | VARCHAR(100) | Identifiant fiscal |
+| ice | VARCHAR(100) | ICE |
+| siege_social | TEXT | Adresse du siège |
+
+---
+
+### `PROJETS` — Projets immobiliers
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| promoteur_id | FK → PROMOTEURS | Promoteur du projet |
+| chef_projet_id | FK → USERS | Chef de projet responsable |
+| nom | VARCHAR(255) | Nom du projet |
+| type_projet | ENUM | RESIDENCE / LOTISSEMENT / GALERIE_COMMERCE |
+| adresse | TEXT | Adresse du projet |
+| consistance | TEXT | Ex: F2, F3, F4, Duplex, Villa, Lots, Commerces |
+| tf_mere | VARCHAR(100) | Titre foncier mère |
+| date_prevue_livraison | DATE | Date prévue de livraison |
+| actif | BOOLEAN | Projet en cours ou clôturé |
+
+---
+
+### `TRANCHES` — Tranches d'un projet
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| projet_id | FK → PROJETS | Projet parent |
+| nom | VARCHAR(100) | Nom/numéro de la tranche |
+| description | TEXT | Description optionnelle |
+
+---
+
+### `IMMEUBLES` — Immeubles dans une tranche
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| tranche_id | FK → TRANCHES | Tranche parente |
+| nom | VARCHAR(100) | Nom/lettre de l'immeuble |
+| nb_etages | INT | Nombre d'étages |
+
+---
+
+### `LOTS` — Biens immobiliers disponibles à la vente
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| projet_id | FK → PROJETS | Projet |
+| tranche_id | FK → TRANCHES | Tranche |
+| immeuble_id | FK → IMMEUBLES | Immeuble (si applicable) |
+| numero_lot | VARCHAR(50) | Numéro unique du lot |
+| type_lot | ENUM | F2 / F3 / F4 / DUPLEX / VILLA / LOT / COMMERCE |
+| superficie | FLOAT | Superficie en m² |
+| prix | DECIMAL(12,2) | Prix de vente officiel |
+| etage | INT | Étage (si applicable) |
+| parking | BOOLEAN | Parking inclus |
+| statut | ENUM | DISPONIBLE / PRE_RESERVE / RESERVE / VENDU |
+| created_at | DATETIME | Date d'ajout au stock |
+
+---
+
+### `SOURCES_MARKETING` — Canaux d'acquisition des leads
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| categorie | VARCHAR(100) | Ex: RESEAUX_SOCIAUX, PANNEAUX, SMS |
+| nom | VARCHAR(100) | Ex: Facebook, Instagram, Emailing |
+
+---
+
+### `LEADS` — Prospects / Acquéreurs potentiels
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| commercial_id | FK → USERS | Commercial affecté |
+| source_id | FK → SOURCES_MARKETING | Source du lead |
+| projet_id | FK → PROJETS | Projet qui intéresse le prospect |
+| nom_prenom | VARCHAR(255) | Nom complet |
+| telephone | VARCHAR(20) | Téléphone principal |
+| email | VARCHAR(255) | Email (optionnel) |
+| adresse | TEXT | Adresse |
+| statut_pipeline | ENUM | NOUVEAU / AFFECTE / CONTACTE / QUALIFIE / EN_VISITE / EN_NEGOCIATION / PRE_RESERVE / RESERVE / SIGNE / EN_PAIEMENT / LIVRE / CLOTURE / ANNULE |
+| type_client | ENUM | PARTICULIER / SOCIETE |
+| type_bien_souhaite | VARCHAR(100) | F2, F3, Villa… |
+| budget_min | DECIMAL(12,2) | Budget minimum |
+| budget_max | DECIMAL(12,2) | Budget maximum |
+| ville_souhaitee | VARCHAR(100) | Ville souhaitée |
+| surface_min | FLOAT | Surface minimum en m² |
+| surface_max | FLOAT | Surface maximum en m² |
+| mode_financement | ENUM | COMPTANT / CREDIT / |
+| delai_achat | VARCHAR(100) | Immédiat, 3 mois, 6 mois… |
+| motivation | TEXT | Résidence principale, investissement… |
+| date_affectation | DATETIME | Date d'affectation au commercial |
+| derniere_activite | DATETIME | Date de la dernière interaction |
+| motif_annulation | TEXT | Motif si lead annulé/perdu |
+| created_at | DATETIME | Date de création |
+
+---
+
+### `ACTIVITES` — Journal de toutes les interactions avec un prospect
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| lead_id | FK → LEADS | Prospect concerné |
+| user_id | FK → USERS | Commercial qui a effectué l'action |
+| canal | ENUM | TELEPHONE / WHATSAPP / EMAIL / VISITE / AUTRE |
+| date_heure | DATETIME | Date et heure de l'interaction |
+| duree_minutes | INT | Durée en minutes |
+| resultat | ENUM | CONTACT_ETABLI / SANS_REPONSE / NUMERO_ERRONE / RAPPEL_DEMANDE / NON_INTERESSE / RDV_FIXE / AUTRE |
+| notes | TEXT | Notes libres du commercial |
+| created_at | DATETIME | Date d'enregistrement |
+
+> ⚠️ Aucune suppression d'activité n'est autorisée (auditabilité totale)
+
+---
+
+### `PRERESERVATIONS` — Blocage temporaire d'un lot
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| lead_id | FK → LEADS | Prospect qui réserve |
+| lot_id | FK → LOTS | Lot bloqué |
+| commercial_id | FK → USERS | Commercial responsable |
+| numero_unique | VARCHAR(50) UNIQUE | Numéro de pré-réservation ex: PR-2025-0001 |
+| date_creation | DATETIME | Date/heure de création |
+| date_expiration | DATETIME | Date/heure limite (48h par défaut) |
+| motif | TEXT | Pourquoi la pré-réservation |
+| commentaires | TEXT | Notes supplémentaires |
+| statut | ENUM | ACTIVE / EXPIREE / ANNULEE / CONVERTIE |
+| date_prolongation | DATETIME | Date si prolongation accordée |
+| motif_annulation | TEXT | Motif si annulée |
+| created_at | DATETIME | Date d'enregistrement |
+
+---
+
+### `DOSSIERS` — Dossier documentaire du client
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| prereservation_id | FK → PRERESERVATIONS | Pré-réservation source |
+| lead_id | FK → LEADS | Acquéreur |
+| commercial_id | FK → USERS | Commercial responsable |
+| type_client | ENUM | PARTICULIER / SOCIETE / ETRANGER / INDIVISION |
+| statut | ENUM | EN_COURS / COMPLET / INCOMPLET / VALIDE / REJETE |
+| date_ouverture | DATETIME | Date d'ouverture du dossier |
+| date_validation | DATETIME | Date de validation complète |
+
+---
+
+### `DOCUMENTS` — Pièces justificatives du dossier
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| dossier_id | FK → DOSSIERS | Dossier parent |
+| nom | VARCHAR(255) | Nom du document (ex: CIN, RC…) |
+| categorie | VARCHAR(100) | Catégorie (identité, juridique, paiement…) |
+| chemin_fichier | VARCHAR(500) | Chemin vers le fichier uploadé |
+| statut | ENUM | EN_ATTENTE / VALIDE / REJETE / MANQUANT |
+| valide_par | FK → USERS | Qui a validé |
+| date_upload | DATETIME | Date de téléversement |
+| date_validation | DATETIME | Date de validation |
+| obligatoire | BOOLEAN | Document obligatoire ou optionnel |
+
+> ⚠️ Toute modification est historisée — aucune suppression sans traçabilité
+
+---
+
+### `RESERVATIONS` — Réservation définitive
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| dossier_id | FK → DOSSIERS | Dossier source |
+| lot_id | FK → LOTS | Lot réservé |
+| lead_id | FK → LEADS | Acquéreur |
+| commercial_id | FK → USERS | Commercial |
+| numero_unique | VARCHAR(50) UNIQUE | Numéro ex: RSV-2025-0001 |
+| prix_vente | DECIMAL(12,2) | Prix final négocié |
+| remise | DECIMAL(12,2) | Remise accordée |
+| motif_remise | TEXT | Justification de la remise |
+| approuve_par | FK → USERS | Qui a approuvé la remise |
+| statut | ENUM | EN_ATTENTE / ACTIVE / ANNULEE / DESISTEMENT / CHANGE_REF / RESILIATION / CLOTUREE |
+| date_signature | DATETIME | Date/heure de signature |
+| conditions_paiement | TEXT | Modalités de paiement convenues |
+| created_at | DATETIME | Date de création |
+
+---
+
+### `ECHEANCES` — Tableau de paiement par échéance
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| reservation_id | FK → RESERVATIONS | Réservation parente |
+| numero_ordre | INT | 1ère, 2ème, 3ème échéance… |
+| montant | DECIMAL(12,2) | Montant dû |
+| date_echeance | DATE | Date limite |
+| montant_paye | DECIMAL(12,2) | Montant déjà reçu |
+| solde | DECIMAL(12,2) | Reste à payer |
+| statut | ENUM | A_VENIR / EN_ATTENTE / PARTIELLEMENT_PAYEE / PAYEE / EN_RETARD / ANNULEE |
+
+---
+
+### `PAIEMENTS` — Enregistrement des paiements reçus
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| reservation_id | FK → RESERVATIONS | Réservation concernée |
+| echeance_id | FK → ECHEANCES | Échéance couverte (nullable) |
+| montant | DECIMAL(12,2) | Montant du paiement |
+| mode_paiement | ENUM | VIREMENT / CHEQUE / CHEQUE_CERTIFIE / ESPECES / ELECTRONIQUE |
+| reference | VARCHAR(255) | Référence chèque / virement |
+| chemin_justificatif | VARCHAR(500) | Justificatif uploadé |
+| statut | ENUM | EN_ATTENTE_VALIDATION / VALIDE / REJETE / EN_ATTENTE_ENCAISSEMENT |
+| valide_par | FK → USERS | Comptable qui a validé |
+| date_paiement | DATETIME | Date du paiement |
+| date_validation | DATETIME | Date de validation comptable |
+| motif_rejet | TEXT | Si rejeté |
+
+---
+
+### `NOTIFICATIONS` — Système d'alertes
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| user_id | FK → USERS | Destinataire |
+| titre | VARCHAR(255) | Titre de la notification |
+| message | TEXT | Contenu détaillé |
+| lien | VARCHAR(500) | Lien vers la fiche concernée |
+| lu | BOOLEAN | Notification lue ou non |
+| created_at | DATETIME | Date de création |
+
+---
+
+### `HISTORIQUE_LOTS` — Traçabilité des changements de statut des lots
+
+| Colonne | Type | Description |
+|---|---|---|
+| id | INT PK | Identifiant unique |
+| lot_id | FK → LOTS | Lot concerné |
+| ancien_statut | ENUM | Statut avant |
+| nouveau_statut | ENUM | Statut après |
+| user_id | FK → USERS | Qui a effectué le changement |
+| raison | TEXT | Raison du changement |
+| created_at | DATETIME | Date du changement |
+
+---
+
+## Résumé des Énumérations (ENUM)
+
+### Statuts du Lot
+`DISPONIBLE` → `PRE_RESERVE` → `RESERVE` → `VENDU`
+(Retours possibles en cas d'annulation)
+
+### Statuts du Lead (Pipeline)
+```
+NOUVEAU → AFFECTE → CONTACTE → QUALIFIE → EN_VISITE →
+EN_NEGOCIATION → PRE_RESERVE → RESERVE → SIGNE →
+EN_PAIEMENT → LIVRE → CLOTURE
+                    ↘ ANNULE (à tout moment)
+```
+
+### Types de Bien (Lots)
+`F2`, `F3`, `F4`, `DUPLEX`, `VILLA`, `LOT`, `COMMERCE`
+
+### Types de Projet
+`RESIDENCE`, `LOTISSEMENT`, `GALERIE_COMMERCE`
+
+### Canaux de Contact
+`TELEPHONE`, `WHATSAPP`, `EMAIL`, `VISITE`, `AUTRE`
+
+### Modes de Financement
+`COMPTANT`, `CREDIT`, `AIDE_ETAT`
+
+### Modes de Paiement
+`VIREMENT`, `CHEQUE`, `CHEQUE_CERTIFIE`, `ESPECES`, `ELECTRONIQUE`
+
+### Rôles Utilisateurs
+`ADMIN`, `COMMERCIAL`, `CHEF_PROJET`, `COMPTABILITE`, `DIRECTION`
+
+---
+
+## Règles d'Intégrité Importantes
+
+1. **Un lot ne peut avoir qu'une seule pré-réservation ACTIVE** à la fois
+2. **Aucune suppression** sur ACTIVITES et DOCUMENTS (audit trail)
+3. **La réservation définitive** ne peut être créée que si :
+   - Dossier = COMPLET
+   - Lot = DISPONIBLE ou PRE_RESERVE (par le même lead)
+4. **L'échéancier** est auto-généré à la signature de la réservation
+5. **Modifier un projet** ne rétro-affecte pas les réservations déjà existantes

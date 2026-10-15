@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
-import { ArrowUpRight, CalendarClock, Hourglass, TrendingUp, UsersRound, Wallet } from "lucide-react";
+import { ArrowUpRight, BellRing, CalendarClock, ChevronRight, Hourglass, Percent, PhoneCall, TrendingUp, UserPlus, UsersRound, Wallet } from "lucide-react";
 import { api } from "../api/index.js";
 import { useAsync } from "../hooks/useAsync.js";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { can } from "../auth/permissions.js";
 import Countdown from "../components/Countdown.jsx";
-import { Avatar, Card, EmptyState, ErrorState, PageHeader, Skeleton, StatusBadge } from "../components/ui.jsx";
-import { formatCompactMAD, formatDate, formatLongDate, formatMAD, percent, timeAgo } from "../utils/format.js";
-import { INSTALLMENT_STATUS, LEAD_STAGE, LOT_STATUSES } from "../utils/status.js";
+import { Avatar, Badge, Card, EmptyState, ErrorState, PageHeader, Skeleton, StatusBadge } from "../components/ui.jsx";
+import { daysUntil, formatCompactMAD, formatDate, formatLongDate, formatMAD, percent, timeAgo } from "../utils/format.js";
+import { INSTALLMENT_STATUS, LEAD_STAGE, LOT_STATUSES, PROJECT_TYPE } from "../utils/status.js";
 
 function Kpi({ icon: Icon, label, value, hint, to, tone }) {
   const content = (
@@ -68,6 +68,23 @@ function StockBar({ stock }) {
   );
 }
 
+function attentionItems(kpis, user) {
+  return [
+    can(user, "leads.assign") && kpis.unassignedLeads > 0 && { icon: UserPlus, label: "Leads à affecter", count: kpis.unassignedLeads, to: "/leads", tone: "warning" },
+    can(user, "leads") && kpis.followUpsDue > 0 && { icon: PhoneCall, label: "Relances dues", count: kpis.followUpsDue, to: "/leads?relances=dues", tone: "warning" },
+    can(user, "reservations.approveDiscount") && kpis.discountsToApprove > 0 && { icon: Percent, label: "Remises à approuver", count: kpis.discountsToApprove, to: "/reservations", tone: "gold" },
+    can(user, "payments.validate") && kpis.pendingPaymentsCount > 0 && { icon: Wallet, label: "Paiements à traiter", count: kpis.pendingPaymentsCount, hint: formatCompactMAD(kpis.pendingPaymentsAmount), to: "/paiements", tone: "info" },
+    can(user, "preReservations") && kpis.expiringSoon > 0 && { icon: Hourglass, label: "Pré-réservations expirant sous 48 h", count: kpis.expiringSoon, to: "/pre-reservations", tone: "warning" },
+    can(user, "schedule") && kpis.overdueCount > 0 && { icon: CalendarClock, label: "Échéances en retard", count: kpis.overdueCount, hint: formatCompactMAD(kpis.overdueAmount), to: "/echeancier", tone: "danger" },
+  ].filter(Boolean);
+}
+
+function followUpHint(date) {
+  const days = daysUntil(date);
+  if (days < 0) return `${Math.abs(days)} j de retard`;
+  return "Aujourd'hui";
+}
+
 function DashboardSkeleton() {
   return (
     <div className="stack">
@@ -117,7 +134,7 @@ export default function DashboardPage() {
               icon={TrendingUp}
               label="Réservations du mois"
               value={data.kpis.reservationsThisMonth}
-              hint={data.kpis.reservationsValueThisMonth ? `${formatCompactMAD(data.kpis.reservationsValueThisMonth)} de chiffre d'affaires` : "Aucune réservation confirmée"}
+              hint={data.kpis.reservationsValueThisMonth ? `${formatCompactMAD(data.kpis.reservationsValueThisMonth)} de chiffre d'affaires` : "Aucune réservation signée"}
               to={can(user, "reservations") ? "/reservations" : undefined}
             />
             <Kpi
@@ -129,10 +146,64 @@ export default function DashboardPage() {
             />
           </div>
 
+          <div className="dash-grid dash-grid--even">
+            <Card
+              title="Relances à faire"
+              subtitle="1re et 2e relances arrivées à échéance"
+              actions={can(user, "leads") && data.followUps.length > 0 && <Link to="/leads?relances=dues" className="link small">Tout voir</Link>}
+            >
+              {data.followUps.length === 0 ? (
+                <EmptyState compact icon={BellRing} title="Aucune relance en attente" />
+              ) : (
+                <ul className="watch-list">
+                  {data.followUps.map((item) => (
+                    <li key={`${item.leadId}-${item.slot}`} className="watch-list__item">
+                      <div className="grow">
+                        <p className="strong truncate">
+                          <Link to={`/leads/${item.leadId}`}>{item.name}</Link>
+                        </p>
+                        <p className="xsmall muted truncate">
+                          Relance {item.slot} · {item.phone}
+                          {item.agent ? ` · ${item.agent.name}` : ""}
+                        </p>
+                      </div>
+                      <div className="watch-list__end">
+                        <span className="xsmall strong" style={{ color: daysUntil(item.date) < 0 ? "var(--danger)" : "var(--warning)" }}>
+                          {followUpHint(item.date)}
+                        </span>
+                        <StatusBadge map={LEAD_STAGE} value={item.stage} />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Card>
+
+            <Card title="Points d'attention" subtitle="Actions en attente selon votre rôle">
+              {attentionItems(data.kpis, user).length === 0 ? (
+                <EmptyState compact title="Rien à signaler" description="Aucune action en attente." />
+              ) : (
+                <ul className="watch-list">
+                  {attentionItems(data.kpis, user).map((item) => (
+                    <li key={item.label} className="watch-list__item watch-list__item--link">
+                      <Link to={item.to}>
+                        <item.icon size={16} className="faint" />
+                        <span className="grow strong small">{item.label}</span>
+                        {item.hint && <span className="xsmall muted num">{item.hint}</span>}
+                        <Badge tone={item.tone}>{item.count}</Badge>
+                        <ChevronRight size={14} className="faint" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Card>
+          </div>
+
           <div className="dash-grid">
             <Card title="Pipeline commercial" subtitle="Leads ayant atteint chaque étape, et taux de passage d'une étape à la suivante.">
               <Funnel stages={data.funnel} />
-              {data.kpis.lostLeads > 0 && <p className="xsmall faint funnel__foot">{data.kpis.lostLeads} lead(s) perdu(s) exclu(s) du pipeline.</p>}
+              {data.kpis.lostLeads > 0 && <p className="xsmall faint funnel__foot">{data.kpis.lostLeads} lead(s) annulé(s) exclu(s) du pipeline.</p>}
             </Card>
 
             <Card title="Activité récente" bodyClassName="activity-body">
@@ -213,7 +284,7 @@ export default function DashboardPage() {
                         </p>
                       </div>
                       <div className="watch-list__end">
-                        <span className="num strong small">{formatMAD(item.amount - item.paidAmount)}</span>
+                        <span className="num strong small">{formatMAD(item.balance)}</span>
                         <StatusBadge map={INSTALLMENT_STATUS} value={item.status} />
                       </div>
                     </li>
@@ -234,7 +305,9 @@ export default function DashboardPage() {
                     </span>
                   </div>
                   <StockBar stock={project.stock} />
-                  <span className="xsmall faint">{project.city}</span>
+                  <span className="xsmall faint">
+                    {PROJECT_TYPE[project.type]?.label} · {project.city}
+                  </span>
                 </Link>
               ))}
             </div>

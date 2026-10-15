@@ -5,7 +5,9 @@ import { api } from "../api/index.js";
 import { useAsync } from "../hooks/useAsync.js";
 import { Card, EmptyState, ErrorState, LoadingBlock, PageHeader, ProgressBar, SearchInput, Segmented, StatusBadge } from "../components/ui.jsx";
 import { formatDate } from "../utils/format.js";
-import { DOSSIER_STATUS, RESERVATION_STATUS } from "../utils/status.js";
+import { DOSSIER_CLIENT_TYPE, DOSSIER_STATUS, RESERVATION_STATUS } from "../utils/status.js";
+
+const reserved = (item) => item.reservation && item.reservation.status !== "annulee";
 
 export default function DossiersPage() {
   const navigate = useNavigate();
@@ -15,10 +17,13 @@ export default function DossiersPage() {
 
   const groups = useMemo(() => {
     const items = dossiers.data ?? [];
+    const open = items.filter((item) => !reserved(item) && item.state.status !== "rejete");
     return {
-      open: items.filter((item) => !item.reservation),
-      incomplete: items.filter((item) => !item.reservation && item.state.status === "incomplet"),
-      reserved: items.filter((item) => item.reservation),
+      open,
+      incomplete: open.filter((item) => ["en_cours", "incomplet"].includes(item.state.status)),
+      toValidate: open.filter((item) => item.state.status === "complet"),
+      reserved: items.filter(reserved),
+      rejected: items.filter((item) => item.state.status === "rejete"),
       all: items,
     };
   }, [dossiers.data]);
@@ -30,7 +35,7 @@ export default function DossiersPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Commercial" title="Dossiers" description="Collecte et contrôle des pièces justificatives avant confirmation de la réservation." />
+      <PageHeader eyebrow="Commercial" title="Dossiers" description="Collecte et contrôle des pièces justificatives. Une réservation ne peut être créée que sur un dossier complet." />
 
       <div className="toolbar">
         <Segmented
@@ -40,7 +45,9 @@ export default function DossiersPage() {
           items={[
             { value: "open", label: "En cours", count: groups.open.length },
             { value: "incomplete", label: "Incomplets", count: groups.incomplete.length },
+            { value: "toValidate", label: "À valider", count: groups.toValidate.length },
             { value: "reserved", label: "Réservés", count: groups.reserved.length },
+            { value: "rejected", label: "Rejetés", count: groups.rejected.length },
             { value: "all", label: "Tous", count: groups.all.length },
           ]}
         />
@@ -63,6 +70,7 @@ export default function DossiersPage() {
               <thead>
                 <tr>
                   <th>Client</th>
+                  <th>Type</th>
                   <th>Lot</th>
                   <th style={{ minWidth: 180 }}>Pièces obligatoires</th>
                   <th>Statut</th>
@@ -75,8 +83,9 @@ export default function DossiersPage() {
                   <tr key={item.id} className="is-clickable" onClick={() => navigate(`/dossiers/${item.id}`)}>
                     <td>
                       <div className="cell-primary">{item.lead?.name}</div>
-                      <div className="cell-secondary">{item.lead?.phone}</div>
+                      <div className="cell-secondary">{item.preReservationNumber ?? item.lead?.phone}</div>
                     </td>
+                    <td className="small">{DOSSIER_CLIENT_TYPE[item.clientType]?.label ?? "—"}</td>
                     <td>
                       <div>{item.lot?.ref}</div>
                       <div className="cell-secondary">{item.lot?.project?.name}</div>

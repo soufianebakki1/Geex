@@ -13,22 +13,16 @@ const COLUMNS = [
       <div className="row">
         <Avatar name={item.name} />
         <div>
-          <div className="cell-primary">{item.name}</div>
-          <div className="cell-secondary">{item.specialty || "—"}</div>
+          <div className="cell-primary">
+            {item.lastName} {item.firstName}
+          </div>
+          <div className="cell-secondary">Compte CRM actif</div>
         </div>
       </div>
     ),
   },
-  {
-    key: "email",
-    label: "Coordonnées",
-    render: (item) => (
-      <>
-        <div>{item.email || <span className="faint">—</span>}</div>
-        <div className="cell-secondary">{item.phone}</div>
-      </>
-    ),
-  },
+  { key: "phone", label: "Téléphone", render: (item) => <span className="num">{item.phone || "—"}</span> },
+  { key: "email", label: "Email", render: (item) => item.email },
   {
     key: "projects",
     label: "Projets suivis",
@@ -48,13 +42,14 @@ const COLUMNS = [
 ];
 
 const FIELDS = [
-  { name: "name", label: "Nom complet", required: true, span: true },
-  { name: "email", label: "Email", type: "email" },
+  { name: "lastName", label: "Nom", required: true },
+  { name: "firstName", label: "Prénom", required: true },
   { name: "phone", label: "Téléphone", type: "tel" },
-  { name: "specialty", label: "Spécialité", span: true },
+  { name: "email", label: "Email", type: "email", required: true, hint: "Sert d'identifiant de connexion au CRM" },
+  { name: "password", label: "Mot de passe provisoire", type: "password", required: true, createOnly: true, span: true, hint: "8 caractères minimum, à changer à la première connexion" },
 ];
 
-const SEARCH_KEYS = ["name", "email", "specialty"];
+const SEARCH_KEYS = ["name", "email", "phone"];
 
 export default function ManagersPage() {
   const { user } = useAuth();
@@ -62,7 +57,7 @@ export default function ManagersPage() {
     <CrudPage
       eyebrow="Référentiel"
       title="Chefs de projet"
-      description="Responsables du suivi technique et de la livraison de chaque programme."
+      description="Responsables du suivi technique et de la livraison de chaque programme. Chaque chef de projet dispose d'un compte CRM."
       entityLabel="Chef de projet"
       resource={api.managers}
       columns={COLUMNS}
@@ -70,6 +65,8 @@ export default function ManagersPage() {
       searchKeys={SEARCH_KEYS}
       canWrite={can(user, "managers.write")}
       emptyIcon={HardHat}
+      deleteLabel="Retirer"
+      deleteDescription="Le compte CRM de ce chef de projet sera désactivé. Son historique est conservé."
     />
   );
 }

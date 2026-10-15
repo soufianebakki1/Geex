@@ -4,7 +4,20 @@ import { useAsync } from "../hooks/useAsync.js";
 import { useToast } from "./Toast.jsx";
 import { Button, Card, ConfirmDialog, EmptyState, ErrorState, Field, FormError, LoadingBlock, Modal, PageHeader, SearchInput } from "./ui.jsx";
 
-export default function CrudPage({ eyebrow, title, description, entityLabel, resource, columns, fields, searchKeys, canWrite, emptyIcon }) {
+export default function CrudPage({
+  eyebrow,
+  title,
+  description,
+  entityLabel,
+  resource,
+  columns,
+  fields: allFields,
+  searchKeys,
+  canWrite,
+  emptyIcon,
+  deleteLabel = "Supprimer",
+  deleteDescription = "Cette action est définitive.",
+}) {
   const toast = useToast();
   const list = useAsync(() => resource.list(), []);
   const [query, setQuery] = useState("");
@@ -15,6 +28,7 @@ export default function CrudPage({ eyebrow, title, description, entityLabel, res
   const [deleting, setDeleting] = useState(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
+  const fields = allFields.filter((field) => !field.createOnly || !editing?.id);
 
   const rows = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -26,7 +40,7 @@ export default function CrudPage({ eyebrow, title, description, entityLabel, res
   function openForm(item) {
     setFormError(null);
     setEditing(item ?? {});
-    setForm(Object.fromEntries(fields.map((field) => [field.name, item?.[field.name] ?? ""])));
+    setForm(Object.fromEntries(allFields.filter((field) => !field.createOnly || !item?.id).map((field) => [field.name, item?.[field.name] ?? ""])));
   }
 
   async function save(event) {
@@ -58,7 +72,7 @@ export default function CrudPage({ eyebrow, title, description, entityLabel, res
     try {
       await resource.remove(deleting.id);
       list.setData((items) => items.filter((item) => item.id !== deleting.id));
-      toast.success(`${entityLabel} supprimé.`);
+        toast.success(`${entityLabel} ${deleteLabel === "Supprimer" ? "supprimé" : "retiré"}.`);
       setDeleting(null);
     } catch (error) {
       setDeleteError(error);
@@ -139,8 +153,8 @@ export default function CrudPage({ eyebrow, title, description, entityLabel, res
                               setDeleteError(null);
                               setDeleting(item);
                             }}
-                            aria-label={`Supprimer ${item.name}`}
-                            title="Supprimer"
+                            aria-label={`${deleteLabel} ${item.name}`}
+                            title={deleteLabel}
                           />
                         </div>
                       </td>
@@ -197,9 +211,9 @@ export default function CrudPage({ eyebrow, title, description, entityLabel, res
 
       <ConfirmDialog
         open={Boolean(deleting)}
-        title={`Supprimer ${deleting?.name ?? ""} ?`}
-        description="Cette action est définitive."
-        confirmLabel="Supprimer"
+        title={`${deleteLabel} ${deleting?.name ?? ""} ?`}
+        description={deleteDescription}
+        confirmLabel={deleteLabel}
         tone="danger"
         busy={deleteBusy}
         error={deleteError}

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Check, Pencil, RotateCcw, UserPlus, UsersRound } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Check, Megaphone, Pencil, Plus, RotateCcw, Trash2, UserPlus, UsersRound } from "lucide-react";
 import { api } from "../api/index.js";
 import { USE_MOCKS } from "../api/client.js";
 import { errorMessage } from "../api/errors.js";
@@ -11,17 +11,191 @@ import { Avatar, Badge, Button, Card, ConfirmDialog, EmptyState, ErrorState, Fie
 
 const ACTION_LABELS = {
   "leads.write": "Créer et modifier les leads",
-  "catalog.write": "Gérer projets et lots",
+  "leads.assign": "Affecter les leads aux commerciaux",
+  "leads.close": "Marquer un lead livré ou clôturé",
+  "catalog.write": "Gérer projets, tranches, immeubles et lots",
   "preReservations.write": "Poser des pré-réservations",
+  "preReservations.extend": "Prolonger une pré-réservation",
   "dossiers.upload": "Téléverser les pièces",
-  "dossiers.validate": "Valider les pièces",
-  "reservations.confirm": "Confirmer les réservations",
+  "dossiers.validate": "Valider ou rejeter les pièces",
+  "reservations.confirm": "Créer et signer les réservations",
+  "reservations.approveDiscount": "Approuver les remises",
+  "reservations.close": "Désistement, résiliation, clôture",
   "payments.create": "Saisir des paiements",
   "payments.validate": "Valider les paiements",
   "promoters.write": "Gérer les promoteurs",
   "managers.write": "Gérer les chefs de projet",
+  "sources.write": "Gérer les sources marketing",
   "users.manage": "Gérer les utilisateurs",
 };
+
+function SourcesCard() {
+  const toast = useToast();
+  const sources = useAsync(() => api.sources.list(), []);
+  const [form, setForm] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const [deleting, setDeleting] = useState(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
+
+  const groups = useMemo(() => {
+    const map = new Map();
+    (sources.data ?? []).forEach((source) => map.set(source.category, [...(map.get(source.category) ?? []), source]));
+    return [...map];
+  }, [sources.data]);
+  const categories = groups.map(([category]) => category);
+
+  async function save(event) {
+    event.preventDefault();
+    setSaving(true);
+    setError(null);
+    try {
+      const payload = { category: form.category.trim(), name: form.name.trim() };
+      if (form.id) {
+        const updated = await api.sources.update(form.id, payload);
+        sources.setData((items) => items.map((item) => (item.id === updated.id ? { ...item, ...updated } : item)));
+      } else {
+        const created = await api.sources.create(payload);
+        sources.setData((items) => [...items, { ...created, leadCount: 0 }]);
+      }
+      toast.success("Source enregistrée.");
+      setForm(null);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function confirmDelete() {
+    setDeleteBusy(true);
+    setDeleteError(null);
+    try {
+      await api.sources.remove(deleting.id);
+      sources.setData((items) => items.filter((item) => item.id !== deleting.id));
+      toast.success("Source supprimée.");
+      setDeleting(null);
+    } catch (err) {
+      setDeleteError(errorMessage(err));
+    } finally {
+      setDeleteBusy(false);
+    }
+  }
+
+  return (
+    <Card
+      title="Sources marketing"
+      subtitle="Canaux d'acquisition proposés à la saisie d'un lead, regroupés par catégorie."
+      actions={
+        <Button size="sm" icon={Plus} onClick={() => setForm({ category: "", name: "" })}>
+          Ajouter une source
+        </Button>
+      }
+      flush
+    >
+      {sources.loading && !sources.data ? (
+        <div className="card__body">
+          <LoadingBlock rows={3} />
+        </div>
+      ) : sources.error && !sources.data ? (
+        <ErrorState error={sources.error} onRetry={sources.reload} />
+      ) : groups.length === 0 ? (
+        <EmptyState icon={Megaphone} title="Aucune source" />
+      ) : (
+        <div className="table-wrap">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Catégorie</th>
+                <th>Source</th>
+                <th className="align-right">Leads</th>
+                <th className="cell-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {groups.flatMap(([category, items]) =>
+                items.map((source, index) => (
+                  <tr key={source.id}>
+                    <td>{index === 0 ? <span className="cell-primary">{category}</span> : null}</td>
+                    <td>{source.name}</td>
+                    <td className="align-right num">{source.leadCount}</td>
+                    <td className="cell-actions">
+                      <div className="btn-group">
+                        <Button size="sm" variant="ghost" iconOnly icon={Pencil} onClick={() => setForm(source)} aria-label={`Modifier ${source.name}`} title="Modifier" />
+                        <Button
+                          size="sm"
+                          variant="danger-ghost"
+                          iconOnly
+                          icon={Trash2}
+                          onClick={() => {
+                            setDeleteError(null);
+                            setDeleting(source);
+                          }}
+                          aria-label={`Supprimer ${source.name}`}
+                          title="Supprimer"
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                )),
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <Modal
+        open={Boolean(form)}
+        onClose={() => setForm(null)}
+        busy={saving}
+        size="sm"
+        title={form?.id ? `Modifier — ${form.name}` : "Nouvelle source marketing"}
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setForm(null)} disabled={saving}>
+              Annuler
+            </Button>
+            <Button variant="primary" type="submit" form="source-form" loading={saving}>
+              Enregistrer
+            </Button>
+          </>
+        }
+      >
+        <form id="source-form" className="stack" onSubmit={save}>
+          <Field label="Catégorie" required hint="Choisissez une catégorie existante ou saisissez-en une nouvelle">
+            {(id) => (
+              <>
+                <input id={id} className="input" list="source-categories" value={form?.category ?? ""} onChange={(event) => setForm((prev) => ({ ...prev, category: event.target.value }))} required />
+                <datalist id="source-categories">
+                  {categories.map((category) => (
+                    <option key={category} value={category} />
+                  ))}
+                </datalist>
+              </>
+            )}
+          </Field>
+          <Field label="Nom de la source" required>
+            {(id) => <input id={id} className="input" value={form?.name ?? ""} onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))} placeholder="Facebook, Panneaux…" required />}
+          </Field>
+          <FormError error={error} />
+        </form>
+      </Modal>
+
+      <ConfirmDialog
+        open={Boolean(deleting)}
+        title={`Supprimer ${deleting?.name ?? ""} ?`}
+        description="Une source déjà utilisée par des leads ne peut pas être supprimée."
+        confirmLabel="Supprimer"
+        tone="danger"
+        busy={deleteBusy}
+        error={deleteError}
+        onClose={() => setDeleting(null)}
+        onConfirm={confirmDelete}
+      />
+    </Card>
+  );
+}
 
 function UserForm({ open, editing, onClose, onSaved }) {
   const [form, setForm] = useState({});
@@ -32,7 +206,11 @@ function UserForm({ open, editing, onClose, onSaved }) {
   useEffect(() => {
     if (!open) return;
     setError(null);
-    setForm(isEdit ? { name: editing.name, email: editing.email, role: editing.role, phone: editing.phone ?? "" } : { name: "", email: "", role: "commercial", phone: "", password: "" });
+    setForm(
+      isEdit
+        ? { lastName: editing.lastName ?? "", firstName: editing.firstName ?? "", email: editing.email, role: editing.role, phone: editing.phone ?? "" }
+        : { lastName: "", firstName: "", email: "", role: "commercial", phone: "", password: "" },
+    );
   }, [open, editing, isEdit]);
 
   const set = (key) => (event) => setForm((prev) => ({ ...prev, [key]: event.target.value }));
@@ -42,9 +220,8 @@ function UserForm({ open, editing, onClose, onSaved }) {
     setSaving(true);
     setError(null);
     try {
-      const saved = isEdit
-        ? await api.users.update(editing.id, { name: form.name.trim(), role: form.role, phone: form.phone.trim() })
-        : await api.users.create({ ...form, name: form.name.trim(), email: form.email.trim() });
+      const person = { lastName: form.lastName.trim(), firstName: form.firstName.trim(), phone: form.phone.trim() };
+      const saved = isEdit ? await api.users.update(editing.id, { ...person, role: form.role }) : await api.users.create({ ...form, ...person, email: form.email.trim() });
       onSaved(saved, isEdit);
     } catch (err) {
       setError(err);
@@ -73,8 +250,11 @@ function UserForm({ open, editing, onClose, onSaved }) {
     >
       <form id="user-form" className="stack" onSubmit={submit}>
         <div className="form-grid">
-          <Field label="Nom complet" required className="span-2">
-            {(id) => <input id={id} className="input" value={form.name ?? ""} onChange={set("name")} required />}
+          <Field label="Nom" required>
+            {(id) => <input id={id} className="input" value={form.lastName ?? ""} onChange={set("lastName")} required />}
+          </Field>
+          <Field label="Prénom" required>
+            {(id) => <input id={id} className="input" value={form.firstName ?? ""} onChange={set("firstName")} required />}
           </Field>
           <Field label="Email" required hint={isEdit ? "L'email sert d'identifiant et ne peut pas être modifié." : undefined}>
             {(id) => <input id={id} className="input" type="email" value={form.email ?? ""} onChange={set("email")} required disabled={isEdit} />}
@@ -222,7 +402,7 @@ export default function SettingsPage() {
                         </div>
                       </td>
                       <td>
-                        <Badge tone={item.role === "admin" ? "brand" : "outline"}>{ROLE_LABEL[item.role]}</Badge>
+                        <Badge tone={["admin", "direction"].includes(item.role) ? "brand" : "outline"}>{ROLE_LABEL[item.role]}</Badge>
                       </td>
                       <td>{item.phone || <span className="faint">—</span>}</td>
                       <td>{item.active ? <Badge tone="success" dot>Actif</Badge> : <Badge tone="neutral" dot>Désactivé</Badge>}</td>
@@ -249,6 +429,8 @@ export default function SettingsPage() {
             </div>
           )}
         </Card>
+
+        <SourcesCard />
 
         <Card title="Rôles et permissions" subtitle="Droits appliqués par le serveur ; l'interface masque les actions non autorisées." flush>
           <PermissionMatrix />

@@ -156,7 +156,7 @@ export default function AppShell() {
       <aside className="sidebar" aria-label="Navigation principale">
         <div className="sidebar__brand">
           <Link to="/" aria-label="Konouz Immobilier — accueil">
-            <Logo />
+            <Logo size={58} />
           </Link>
           <button type="button" className="sidebar__close" onClick={() => setNavOpen(false)} aria-label="Fermer le menu">
             <X size={18} />

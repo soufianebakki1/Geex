@@ -1,0 +1,39 @@
+/*
+ * Tailwind preflight is intentionally omitted: base.css is the app's reset.
+ * The hand-written stylesheets live in the `legacy` layer, below Tailwind
+ * utilities, so element rules (h1, button, input…) never override utility classes.
+ */
+@layer theme, base, legacy, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "./tokens.css" layer(legacy);
+@import "./base.css" layer(legacy);
+@import "./layout.css" layer(legacy);
+@import "./components.css" layer(legacy);
+@import "./pages.css" layer(legacy);
+@import "tailwindcss/utilities.css" layer(utilities) source("..");
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-display: "Fraunces", "Cormorant Garamond", Georgia, serif;
+
+  --color-espresso-950: #160e09;
+  --color-espresso-900: #241810;
+  --color-espresso-800: #3d2b1f;
+  --color-gold-400: #fbbf47;
+  --color-gold-500: #faae1c;
+  --color-gold-600: #e09a0c;
+  --color-brass: #c5a059;
+  --color-cream: #efe6db;
+
+  /* shadcn/ui semantic tokens mapped to the Konouz palette */
+  --color-background: #f7f3ee;
+  --color-foreground: #1c1917;
+  --color-primary: #faae1c;
+  --color-primary-foreground: #241810;
+  --color-muted-foreground: #6b635b;
+  --color-input: #e3d8ca;
+  --color-ring: #faae1c;
+  --color-destructive: #b42318;
+}

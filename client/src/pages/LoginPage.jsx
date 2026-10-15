@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { ArrowRight, Briefcase, Calculator, Eye, EyeOff, HardHat, ShieldCheck } from "lucide-react";
+import { Briefcase, Calculator, HardHat, Landmark, ShieldCheck } from "lucide-react";
+import { SignInCard } from "@/components/ui/sign-in-card-2";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { ROLE_LABEL, canAccessPath, homeFor } from "../auth/permissions.js";
 import { USE_MOCKS } from "../api/client.js";
-import { Button, Field, FormError } from "../components/ui.jsx";
+import { errorMessage } from "../api/errors.js";
 import Logo from "../components/Logo.jsx";
 import LoginBackdrop from "../components/LoginBackdrop.jsx";
 
 const DEMO_ACCOUNTS = [
   { email: "admin@konouz.ma", role: "admin", icon: ShieldCheck },
+  { email: "direction@konouz.ma", role: "direction", icon: Landmark },
   { email: "commercial@konouz.ma", role: "commercial", icon: Briefcase },
   { email: "chef@konouz.ma", role: "chef_projet", icon: HardHat },
   { email: "compta@konouz.ma", role: "comptable", icon: Calculator },
@@ -52,7 +54,6 @@ export default function LoginPage() {
   const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -62,8 +63,7 @@ export default function LoginPage() {
     return <Navigate to={resume ? from : homeFor(user)} replace />;
   }
 
-  async function onSubmit(event) {
-    event.preventDefault();
+  async function submit() {
     setError(null);
     setSubmitting(true);
     try {
@@ -84,47 +84,33 @@ export default function LoginPage() {
     <div className="login">
       <div className="login__layout">
         <header className="login__bar">
-          <Logo />
+          <Logo size={76} />
           <p className="login__since">Konouz Immobilier · depuis 1990</p>
         </header>
 
-        <main className="login-card">
-          <p className="login__eyebrow">Espace collaborateurs</p>
-          <h1 className="login-card__title">Connexion</h1>
-          <p className="login-card__subtitle">Accédez à votre espace avec vos identifiants professionnels.</p>
-
-          <form className="stack login-card__form" onSubmit={onSubmit} noValidate>
-            <Field label="Adresse email">
-              {(id) => (
-                <input id={id} className="input input--lg" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} required placeholder="prenom.nom@konouz.ma" />
-              )}
-            </Field>
-            <Field label="Mot de passe">
-              {(id) => (
-                <div className="password-field">
-                  <input
-                    id={id}
-                    className="input input--lg"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    required
-                  />
-                  <button type="button" className="password-field__toggle" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}>
-                    {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
-                  </button>
-                </div>
-              )}
-            </Field>
-            <FormError error={error} />
-            <Button variant="primary" size="lg" type="submit" loading={submitting} disabled={!email || !password}>
-              Se connecter
-              {!submitting && <ArrowRight size={17} />}
-            </Button>
-          </form>
-
-          {USE_MOCKS && <DemoAccounts selected={email} onSelect={selectDemo} />}
+        <main className="login__main">
+          <SignInCard
+            withBackground={false}
+            className="pointer-events-auto max-w-[520px]"
+            title="Connexion"
+            subtitle="Accédez à votre espace avec vos identifiants professionnels."
+            emailPlaceholder="prenom.nom@konouz.ma"
+            passwordPlaceholder="Mot de passe"
+            email={email}
+            password={password}
+            onEmailChange={(value) => {
+              setEmail(value);
+              setError(null);
+            }}
+            onPasswordChange={(value) => {
+              setPassword(value);
+              setError(null);
+            }}
+            onSubmit={submit}
+            loading={submitting}
+            error={error ? errorMessage(error) : null}
+            footer={USE_MOCKS ? <DemoAccounts selected={email} onSelect={selectDemo} /> : null}
+          />
         </main>
 
         <footer className="login__footer">

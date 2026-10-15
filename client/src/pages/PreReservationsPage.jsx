@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { FolderCheck, Hourglass, X } from "lucide-react";
+import { FolderCheck, Hourglass, TimerReset, X } from "lucide-react";
 import { api } from "../api/index.js";
 import { errorMessage } from "../api/errors.js";
 import { useAsync } from "../hooks/useAsync.js";
@@ -9,23 +9,31 @@ import { useAuth } from "../auth/AuthContext.jsx";
 import { can } from "../auth/permissions.js";
 import { useToast } from "../components/Toast.jsx";
 import Countdown from "../components/Countdown.jsx";
-import { Button, Card, ConfirmDialog, EmptyState, ErrorState, Field, FormError, LoadingBlock, PageHeader, ProgressBar, Segmented, StatusBadge } from "../components/ui.jsx";
+import { Badge, Button, Card, ConfirmDialog, EmptyState, ErrorState, Field, FormError, LoadingBlock, PageHeader, ProgressBar, Segmented, StatusBadge } from "../components/ui.jsx";
 import { formatDate, formatDateTime, formatMAD, formatNumber, percent } from "../utils/format.js";
-import { PAYMENT_METHODS, PRE_RESERVATION_STATUS } from "../utils/status.js";
+import { DOSSIER_CLIENT_TYPES, LOT_TYPE, MANUAL_STAGES, PAYMENT_METHOD, PAYMENT_METHODS, PRE_RESERVATION_STATUS } from "../utils/status.js";
 
 const VALIDITY_OPTIONS = [
   { hours: 48, label: "48 h" },
   { hours: 72, label: "72 h" },
   { hours: 168, label: "7 jours" },
 ];
-const INELIGIBLE_STAGES = ["pre_reserve", "gagne", "perdu"];
+const EXTEND_OPTIONS = [
+  { hours: 24, label: "24 h" },
+  { hours: 48, label: "48 h" },
+  { hours: 72, label: "72 h" },
+  { hours: 168, label: "7 jours" },
+];
+const REASONS = ["Attente de l'apport", "Attente de l'accord de crédit", "Visite de confirmation", "Réflexion du client", "Validation familiale"];
+
+const lotLabel = (lot) => [LOT_TYPE[lot?.type]?.label ?? lot?.type, lot?.building?.name ?? lot?.tranche?.name].filter(Boolean).join(" · ");
 
 function PreReservationForm({ onCreated }) {
   const [params] = useSearchParams();
   const leads = useAsync(() => api.leads.list(), []);
   const lots = useAsync(() => api.lots.list({ status: "disponible" }), []);
   const projects = useAsync(() => api.projects.list(), []);
-  const [form, setForm] = useState({ leadId: params.get("leadId") ?? "", projectId: "", lotId: params.get("lotId") ?? "", deposit: "50000", depositMethod: PAYMENT_METHODS[0], validityHours: 48, note: "" });
+  const [form, setForm] = useState({ leadId: params.get("leadId") ?? "", projectId: "", lotId: params.get("lotId") ?? "", deposit: "50000", depositMethod: "virement", validityHours: 48, reason: "", comments: "" });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
@@ -41,7 +49,7 @@ function PreReservationForm({ onCreated }) {
     if (lead?.projectId) setForm((prev) => ({ ...prev, projectId: lead.projectId }));
   }, [leads.data, form.leadId, form.projectId, form.lotId]);
 
-  const eligibleLeads = (leads.data ?? []).filter((lead) => !INELIGIBLE_STAGES.includes(lead.stage));
+  const eligibleLeads = (leads.data ?? []).filter((lead) => lead.agentId && MANUAL_STAGES.includes(lead.stage));
   const availableLots = (lots.data ?? []).filter((lot) => !form.projectId || lot.projectId === form.projectId);
   const selectedLot = lots.data?.find((lot) => lot.id === form.lotId);
   const preselectedLeadIneligible = form.leadId && leads.data && !eligibleLeads.some((lead) => lead.id === form.leadId);
@@ -60,10 +68,11 @@ function PreReservationForm({ onCreated }) {
         deposit: Number(form.deposit),
         depositMethod: form.depositMethod,
         validityHours: Number(form.validityHours),
-        note: form.note.trim(),
+        reason: form.reason.trim(),
+        comments: form.comments.trim(),
       });
       onCreated(created);
-      setForm((prev) => ({ ...prev, leadId: "", lotId: "", note: "" }));
+      setForm((prev) => ({ ...prev, leadId: "", lotId: "", reason: "", comments: "" }));
       lots.reload({ silent: true });
       leads.reload({ silent: true });
     } catch (err) {
@@ -81,13 +90,13 @@ function PreReservationForm({ onCreated }) {
         <LoadingBlock rows={4} />
       ) : (
         <form className="stack" onSubmit={submit}>
-          <Field label="Client" required error={preselectedLeadIneligible ? "Ce lead a déjà un engagement en cours ou est clôturé." : undefined}>
+          <Field label="Client" required error={preselectedLeadIneligible ? "Ce lead n'est pas affecté, a déjà un engagement en cours ou est clôturé." : undefined}>
             {(id) => (
               <select id={id} className="select" value={form.leadId} onChange={set("leadId")} required>
                 <option value="">Sélectionner un lead…</option>
                 {eligibleLeads.map((lead) => (
                   <option key={lead.id} value={lead.id}>
-                    {lead.firstName} {lead.lastName} — {lead.phone}
+                    {lead.fullName} — {lead.phone}
                   </option>
                 ))}
               </select>
@@ -111,7 +120,7 @@ function PreReservationForm({ onCreated }) {
                 <option value="">Sélectionner un lot…</option>
                 {availableLots.map((lot) => (
                   <option key={lot.id} value={lot.id}>
-                    {lot.ref} · {lot.type} {lot.rooms} p. · {formatNumber(lot.surface)} m² · {formatMAD(lot.price)}
+                    {lot.ref} · {lotLabel(lot)} · {formatNumber(lot.surface)} m² · {formatMAD(lot.price)}
                     {form.projectId ? "" : ` (${lot.project?.name})`}
                   </option>
                 ))}
@@ -145,7 +154,9 @@ function PreReservationForm({ onCreated }) {
               {(id) => (
                 <select id={id} className="select" value={form.depositMethod} onChange={set("depositMethod")} required>
                   {PAYMENT_METHODS.map((method) => (
-                    <option key={method}>{method}</option>
+                    <option key={method.value} value={method.value}>
+                      {method.label}
+                    </option>
                   ))}
                 </select>
               )}
@@ -169,11 +180,23 @@ function PreReservationForm({ onCreated }) {
               )}
             </Field>
           </div>
-          <Field label="Note interne">
-            {(id) => <textarea id={id} className="textarea" rows={2} value={form.note} onChange={set("note")} placeholder="Conditions particulières, mode de versement de l'acompte…" />}
+          <Field label="Motif" required>
+            {(id) => (
+              <>
+                <input id={id} className="input" list="pre-reasons" value={form.reason} onChange={set("reason")} required placeholder="Attente de l'apport, accord de crédit…" />
+                <datalist id="pre-reasons">
+                  {REASONS.map((reason) => (
+                    <option key={reason} value={reason} />
+                  ))}
+                </datalist>
+              </>
+            )}
+          </Field>
+          <Field label="Commentaires">
+            {(id) => <textarea id={id} className="textarea" rows={2} value={form.comments} onChange={set("comments")} placeholder="Conditions particulières, informations utiles…" />}
           </Field>
           <FormError error={error ?? leads.error ?? lots.error} />
-          <Button variant="primary" type="submit" loading={saving} disabled={!form.leadId || !form.lotId || preselectedLeadIneligible}>
+          <Button variant="primary" type="submit" loading={saving} disabled={!form.leadId || !form.lotId || !form.reason.trim() || preselectedLeadIneligible}>
             Pré-réserver le lot
           </Button>
         </form>
@@ -182,7 +205,7 @@ function PreReservationForm({ onCreated }) {
   );
 }
 
-function ActivePreReservation({ pre, canWrite, onConvert, onCancel, onExpire }) {
+function ActivePreReservation({ pre, canWrite, canExtend, onConvert, onCancel, onExtend, onExpire }) {
   const now = useNow(30_000);
   const total = new Date(pre.expiresAt).getTime() - new Date(pre.createdAt).getTime();
   const left = new Date(pre.expiresAt).getTime() - now;
@@ -194,36 +217,53 @@ function ActivePreReservation({ pre, canWrite, onConvert, onCancel, onExpire }) 
     <article className={`pre-card ${expired ? "is-expired" : ""}`}>
       <div className="pre-card__main">
         <div className="grow">
-          <p className="pre-card__client">
+          <p className="pre-card__client row wrap">
             <Link to={`/leads/${pre.lead?.id}`} className="strong">
               {pre.lead?.name}
             </Link>
+            <span className="xsmall faint num">{pre.number}</span>
+            {pre.extendedAt && <Badge tone="gold">Prolongée</Badge>}
           </p>
           <p className="small muted">
-            Lot <span className="strong">{pre.lot?.ref}</span> · {pre.lot?.type} · {pre.lot?.project?.name}
+            Lot <span className="strong">{pre.lot?.ref}</span> · {lotLabel(pre.lot)} · {pre.lot?.project?.name}
+          </p>
+          <p className="small">
+            <span className="muted">Motif :</span> {pre.reason || "—"}
           </p>
           <p className="xsmall faint">
-            Créée le {formatDateTime(pre.createdAt)} par {pre.createdByUser?.name ?? "—"} · expire le {formatDateTime(pre.expiresAt)}
+            Créée le {formatDateTime(pre.createdAt)} par {pre.createdByUser?.name ?? "—"}
+            {pre.agent && pre.agent.id !== pre.createdByUser?.id ? ` · commercial ${pre.agent.name}` : ""} · expire le {formatDateTime(pre.expiresAt)}
           </p>
         </div>
         <div className="pre-card__money">
           <p className="xsmall muted">Acompte</p>
           <p className="strong num">{formatMAD(pre.deposit)}</p>
+          <p className="xsmall faint">{PAYMENT_METHOD[pre.depositMethod]?.label ?? pre.depositMethod}</p>
           <p className="xsmall faint num">sur {formatMAD(pre.lot?.price)}</p>
         </div>
       </div>
+      {pre.comments && <p className="note small" style={{ whiteSpace: "pre-line" }}>{pre.comments}</p>}
       <div className="pre-card__timer">
         <Countdown to={pre.expiresAt} onExpire={onExpire} />
         <ProgressBar value={ratio * 100} tone={tone} label="Temps de validité restant" />
       </div>
-      {canWrite && (
+      {(canWrite || canExtend) && (
         <div className="pre-card__actions">
-          <Button variant="ghost" size="sm" icon={X} onClick={() => onCancel(pre)} disabled={expired}>
-            Annuler
-          </Button>
-          <Button variant="dark" size="sm" icon={FolderCheck} onClick={() => onConvert(pre)} disabled={expired}>
-            Constituer le dossier
-          </Button>
+          {canExtend && (
+            <Button variant="ghost" size="sm" icon={TimerReset} onClick={() => onExtend(pre)} disabled={expired}>
+              Prolonger
+            </Button>
+          )}
+          {canWrite && (
+            <>
+              <Button variant="ghost" size="sm" icon={X} onClick={() => onCancel(pre)} disabled={expired}>
+                Annuler
+              </Button>
+              <Button variant="dark" size="sm" icon={FolderCheck} onClick={() => onConvert(pre)} disabled={expired}>
+                Constituer le dossier
+              </Button>
+            </>
+          )}
         </div>
       )}
     </article>
@@ -239,9 +279,13 @@ export default function PreReservationsPage() {
   const [converting, setConverting] = useState(null);
   const [cancelling, setCancelling] = useState(null);
   const [cancelReason, setCancelReason] = useState("");
+  const [extending, setExtending] = useState(null);
+  const [extension, setExtension] = useState({ hours: 24, reason: "" });
+  const [clientType, setClientType] = useState("particulier");
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState(null);
   const canWrite = can(user, "preReservations.write");
+  const canExtend = can(user, "preReservations.extend");
 
   const active = useMemo(() => (list.data ?? []).filter((pre) => pre.status === "active").sort((a, b) => a.expiresAt.localeCompare(b.expiresAt)), [list.data]);
   const history = useMemo(() => (list.data ?? []).filter((pre) => pre.status !== "active"), [list.data]);
@@ -252,9 +296,14 @@ export default function PreReservationsPage() {
     setActionError(null);
     try {
       if (kind === "convert") {
-        const dossier = await api.preReservations.convert(converting.id);
+        const dossier = await api.preReservations.convert(converting.id, clientType);
         toast.success("Dossier ouvert. Ajoutez les pièces justificatives.");
         navigate(`/dossiers/${dossier.id}`);
+      } else if (kind === "extend") {
+        const saved = await api.preReservations.extend(extending.id, Number(extension.hours), extension.reason.trim());
+        toast.success(`Pré-réservation ${saved.number} prolongée jusqu'au ${formatDateTime(saved.expiresAt)}.`);
+        setExtending(null);
+        refresh();
       } else {
         await api.preReservations.cancel(cancelling.id, cancelReason.trim());
         toast.success("Pré-réservation annulée, le lot est remis en vente.");
@@ -313,10 +362,17 @@ export default function PreReservationsPage() {
                   key={pre.id}
                   pre={pre}
                   canWrite={canWrite}
+                  canExtend={canExtend}
                   onExpire={refresh}
                   onConvert={(item) => {
                     setActionError(null);
+                    setClientType(item.lead?.clientType ?? "particulier");
                     setConverting(item);
+                  }}
+                  onExtend={(item) => {
+                    setActionError(null);
+                    setExtension({ hours: 24, reason: "" });
+                    setExtending(item);
                   }}
                   onCancel={(item) => {
                     setActionError(null);
@@ -336,6 +392,7 @@ export default function PreReservationsPage() {
                 <table className="table">
                   <thead>
                     <tr>
+                      <th>N°</th>
                       <th>Client</th>
                       <th>Lot</th>
                       <th className="align-right">Acompte</th>
@@ -346,14 +403,19 @@ export default function PreReservationsPage() {
                   <tbody>
                     {history.map((pre) => (
                       <tr key={pre.id}>
+                        <td className="num small">{pre.number}</td>
                         <td>
                           <div className="cell-primary">{pre.lead?.name}</div>
+                          <div className="cell-secondary">{pre.reason}</div>
                         </td>
                         <td>
                           <div>{pre.lot?.ref}</div>
                           <div className="cell-secondary">{pre.lot?.project?.name}</div>
                         </td>
-                        <td className="align-right num">{formatMAD(pre.deposit)}</td>
+                        <td className="align-right">
+                          <div className="num">{formatMAD(pre.deposit)}</div>
+                          <div className="cell-secondary">{PAYMENT_METHOD[pre.depositMethod]?.label}</div>
+                        </td>
                         <td>{formatDate(pre.createdAt)}</td>
                         <td>
                           <div className="row">
@@ -386,7 +448,54 @@ export default function PreReservationsPage() {
         error={actionError}
         onClose={() => setConverting(null)}
         onConfirm={() => runAction("convert")}
-      />
+      >
+        <Field label="Type de client" required hint="Détermine la liste des pièces justificatives à fournir.">
+          {(id) => (
+            <select id={id} className="select" value={clientType} onChange={(event) => setClientType(event.target.value)}>
+              {DOSSIER_CLIENT_TYPES.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
+              ))}
+            </select>
+          )}
+        </Field>
+      </ConfirmDialog>
+      <ConfirmDialog
+        open={Boolean(extending)}
+        title="Prolonger la pré-réservation ?"
+        description={extending ? `${extending.number} — lot ${extending.lot?.ref}, expire actuellement le ${formatDateTime(extending.expiresAt)}.` : ""}
+        confirmLabel="Prolonger"
+        tone="dark"
+        busy={busy}
+        error={actionError}
+        onClose={() => setExtending(null)}
+        onConfirm={() => (extension.reason.trim() ? runAction("extend") : setActionError("Indiquez le motif de la prolongation."))}
+      >
+        <div className="stack">
+          <Field label="Durée supplémentaire" required>
+            {() => (
+              <div className="segmented segmented--full" role="radiogroup" aria-label="Durée supplémentaire">
+                {EXTEND_OPTIONS.map((option) => (
+                  <button
+                    key={option.hours}
+                    type="button"
+                    role="radio"
+                    aria-checked={extension.hours === option.hours}
+                    className={`segmented__item ${extension.hours === option.hours ? "is-active" : ""}`}
+                    onClick={() => setExtension((prev) => ({ ...prev, hours: option.hours }))}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </Field>
+          <Field label="Motif de la prolongation" required>
+            {(id) => <textarea id={id} className="textarea" rows={2} value={extension.reason} onChange={(event) => setExtension((prev) => ({ ...prev, reason: event.target.value }))} placeholder="Accord de crédit en cours, client à l'étranger…" />}
+          </Field>
+        </div>
+      </ConfirmDialog>
       <ConfirmDialog
         open={Boolean(cancelling)}
         title="Annuler la pré-réservation ?"

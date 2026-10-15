@@ -5,28 +5,32 @@ import { can } from "../auth/permissions.js";
 import CrudPage from "../components/CrudPage.jsx";
 import { Badge } from "../components/ui.jsx";
 
+const dash = <span className="faint">—</span>;
+
 const COLUMNS = [
   {
-    key: "name",
-    label: "Promoteur",
+    key: "company",
+    label: "Société",
     render: (item) => (
       <>
-        <div className="cell-primary">{item.name}</div>
-        <div className="cell-secondary">{item.ice ? `ICE ${item.ice}` : "ICE non renseigné"}</div>
+        <div className="cell-primary">{item.company}</div>
+        <div className="cell-secondary">{item.group || "Groupe non renseigné"}</div>
       </>
     ),
   },
   {
-    key: "contactName",
-    label: "Contact",
+    key: "legal",
+    label: "RC · IF · ICE",
     render: (item) => (
-      <>
-        <div>{item.contactName || <span className="faint">—</span>}</div>
-        <div className="cell-secondary">{[item.phone, item.email].filter(Boolean).join(" · ")}</div>
-      </>
+      <div className="small">
+        <div>RC {item.rc || "—"}</div>
+        <div className="cell-secondary num">
+          IF {item.ifNumber || "—"} · ICE {item.ice || "—"}
+        </div>
+      </div>
     ),
   },
-  { key: "city", label: "Ville" },
+  { key: "headOffice", label: "Siège social", render: (item) => item.headOffice || dash },
   {
     key: "projects",
     label: "Projets",
@@ -46,16 +50,15 @@ const COLUMNS = [
 ];
 
 const FIELDS = [
-  { name: "name", label: "Raison sociale", required: true, span: true },
-  { name: "contactName", label: "Interlocuteur" },
-  { name: "ice", label: "ICE", hint: "Identifiant commun de l'entreprise (15 chiffres)" },
-  { name: "phone", label: "Téléphone", type: "tel" },
-  { name: "email", label: "Email", type: "email" },
-  { name: "city", label: "Ville" },
-  { name: "address", label: "Adresse" },
+  { name: "group", label: "Groupe", placeholder: "Groupe Konouz" },
+  { name: "company", label: "Société", required: true, placeholder: "Raison sociale" },
+  { name: "rc", label: "RC", hint: "Registre de commerce" },
+  { name: "ifNumber", label: "IF", hint: "Identifiant fiscal" },
+  { name: "ice", label: "ICE", hint: "Identifiant commun de l'entreprise (15 chiffres)", span: true },
+  { name: "headOffice", label: "Siège social", type: "textarea", span: true },
 ];
 
-const SEARCH_KEYS = ["name", "contactName", "city", "email", "ice"];
+const SEARCH_KEYS = ["company", "group", "rc", "ifNumber", "ice", "headOffice"];
 
 export default function PromotersPage() {
   const { user } = useAuth();

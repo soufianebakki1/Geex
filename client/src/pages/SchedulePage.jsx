@@ -7,10 +7,12 @@ import { useAuth } from "../auth/AuthContext.jsx";
 import { can } from "../auth/permissions.js";
 import { ButtonLink, Card, EmptyState, ErrorState, LoadingBlock, PageHeader, ProgressBar, StatusBadge } from "../components/ui.jsx";
 import { daysUntil, formatDate, formatMAD, percent } from "../utils/format.js";
-import { INSTALLMENT_STATUS } from "../utils/status.js";
+import { INSTALLMENT_STATUS, RESERVATION_STATUS } from "../utils/status.js";
+
+const SETTLED = ["payee", "annulee"];
 
 function dueHint(item) {
-  if (item.status === "paye") return null;
+  if (SETTLED.includes(item.status)) return null;
   const days = daysUntil(item.dueDate);
   if (days < 0) return `${Math.abs(days)} j de retard`;
   if (days === 0) return "Aujourd'hui";
@@ -20,7 +22,7 @@ function dueHint(item) {
 export default function SchedulePage() {
   const { user } = useAuth();
   const [params, setParams] = useSearchParams();
-  const reservations = useAsync(() => api.reservations.list({ status: "confirmee" }), []);
+  const reservations = useAsync(() => api.reservations.list().then((items) => items.filter((item) => item.signedAt)), []);
   const overdue = useAsync(() => api.schedules.overdue(), []);
   const reservationId = params.get("reservationId") ?? "";
   const schedule = useAsync(() => (reservationId ? api.schedules.get(reservationId) : Promise.resolve(null)), [reservationId]);
@@ -46,6 +48,7 @@ export default function SchedulePage() {
               {reservations.data.map((item) => (
                 <option key={item.id} value={item.id}>
                   {item.number} — {item.lead?.name}
+                  {item.status !== "active" ? ` (${RESERVATION_STATUS[item.status]?.label.toLowerCase()})` : ""}
                 </option>
               ))}
             </select>
@@ -68,7 +71,7 @@ export default function SchedulePage() {
                     <span className="strong">{item.leadName}</span> · {item.label}
                   </span>
                   <span className="xsmall muted nowrap">{dueHint(item)}</span>
-                  <span className="num strong nowrap">{formatMAD(item.amount - item.paidAmount)}</span>
+                  <span className="num strong nowrap">{formatMAD(item.balance)}</span>
                 </button>
               </li>
             ))}
@@ -84,7 +87,7 @@ export default function SchedulePage() {
         </div>
       ) : reservations.data.length === 0 ? (
         <div className="card">
-          <EmptyState icon={CalendarClock} title="Aucune réservation confirmée" description="L'échéancier est généré à la confirmation d'une réservation." />
+          <EmptyState icon={CalendarClock} title="Aucune réservation signée" description="L'échéancier est généré automatiquement à la signature d'une réservation." />
         </div>
       ) : schedule.loading && !data ? (
         <LoadingBlock rows={5} />
@@ -141,7 +144,7 @@ export default function SchedulePage() {
 
           <Card
             title="Calendrier des échéances"
-            actions={can(user, "payments.create") && <ButtonLink to={`/paiements?reservationId=${data.reservation.id}`} size="sm" icon={Wallet}>Enregistrer un paiement</ButtonLink>}
+            actions={can(user, "payments.create") && data.reservation.status === "active" && <ButtonLink to={`/paiements?reservationId=${data.reservation.id}`} size="sm" icon={Wallet}>Enregistrer un paiement</ButtonLink>}
           >
             <ol className="schedule">
               {data.installments.map((item) => {
@@ -160,11 +163,11 @@ export default function SchedulePage() {
                         </div>
                         <div className="schedule__amounts">
                           <span className="num strong">{formatMAD(item.amount)}</span>
-                          <span className="xsmall muted num">{item.paidAmount > 0 && item.status !== "paye" ? `${formatMAD(item.paidAmount)} réglés` : ""}</span>
+                          <span className="xsmall muted num">{item.paidAmount > 0 && !SETTLED.includes(item.status) ? `${formatMAD(item.paidAmount)} réglés · reste ${formatMAD(item.balance)}` : ""}</span>
                         </div>
                         <StatusBadge map={INSTALLMENT_STATUS} value={item.status} />
                       </div>
-                      {item.status !== "a_venir" && item.status !== "paye" && <ProgressBar value={itemPct} tone={item.status === "en_retard" ? "danger" : "gold"} label="Part réglée" />}
+                      {item.paidAmount > 0 && !SETTLED.includes(item.status) && <ProgressBar value={itemPct} tone={item.status === "en_retard" ? "danger" : "gold"} label="Part réglée" />}
                     </div>
                   </li>
                 );

@@ -1,9 +1,9 @@
+import { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 import { Compass } from "lucide-react";
 import AppShell from "./components/AppShell.jsx";
 import { ButtonLink, EmptyState } from "./components/ui.jsx";
 import { RequireArea, RequireAuth } from "./auth/guards.jsx";
-import LoginPage from "./pages/LoginPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import LeadsPage from "./pages/LeadsPage.jsx";
 import LeadDetailPage from "./pages/LeadDetailPage.jsx";
@@ -20,6 +20,8 @@ import PromotersPage from "./pages/PromotersPage.jsx";
 import ManagersPage from "./pages/ManagersPage.jsx";
 import NotificationsPage from "./pages/NotificationsPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
+
+const LoginPage = lazy(() => import("./pages/LoginPage.jsx"));
 
 const guarded = (area, element) => <RequireArea area={area}>{element}</RequireArea>;
 
@@ -43,7 +45,14 @@ function NotFound() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
+      <Route
+        path="/login"
+        element={
+          <Suspense fallback={<div className="login" />}>
+            <LoginPage />
+          </Suspense>
+        }
+      />
       <Route
         element={
           <RequireAuth>

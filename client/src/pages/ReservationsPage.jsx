@@ -3,9 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { FilePen } from "lucide-react";
 import { api } from "../api/index.js";
 import { useAsync } from "../hooks/useAsync.js";
-import { Card, EmptyState, ErrorState, LoadingBlock, PageHeader, ProgressBar, SearchInput, Segmented, StatusBadge } from "../components/ui.jsx";
+import { Badge, Card, EmptyState, ErrorState, LoadingBlock, PageHeader, ProgressBar, SearchInput, Segmented, StatusBadge } from "../components/ui.jsx";
 import { formatDate, formatMAD, percent } from "../utils/format.js";
-import { RESERVATION_STATUS } from "../utils/status.js";
+import { LOT_TYPE, RESERVATION_STATUS } from "../utils/status.js";
+
+const SIGNED = ["active", "cloturee"];
+const ENDED = ["annulee", "desistement", "change_ref", "resiliation", "cloturee"];
+const inTab = (item, tab) => tab === "all" || (tab === "ended" ? ENDED.includes(item.status) : item.status === tab);
 
 export default function ReservationsPage() {
   const navigate = useNavigate();
@@ -17,21 +21,22 @@ export default function ReservationsPage() {
     const items = reservations.data ?? [];
     return {
       all: items.length,
-      en_attente: items.filter((item) => item.status === "en_attente").length,
-      confirmee: items.filter((item) => item.status === "confirmee").length,
+      en_attente: items.filter((item) => inTab(item, "en_attente")).length,
+      active: items.filter((item) => inTab(item, "active")).length,
+      ended: items.filter((item) => inTab(item, "ended")).length,
     };
   }, [reservations.data]);
 
   const rows = useMemo(() => {
     const q = query.trim().toLowerCase();
     return (reservations.data ?? [])
-      .filter((item) => tab === "all" || item.status === tab)
+      .filter((item) => inTab(item, tab))
       .filter((item) => !q || `${item.number} ${item.lead?.name} ${item.lot?.ref} ${item.project?.name}`.toLowerCase().includes(q));
   }, [reservations.data, tab, query]);
 
   return (
     <>
-      <PageHeader eyebrow="Commercial" title="Réservations" description="Réservations issues des dossiers complets : confirmation, bulletin et suivi des encaissements." />
+      <PageHeader eyebrow="Commercial" title="Réservations" description="Réservations issues des dossiers complets : remise, signature, bulletin, encaissements et issue (clôture, désistement, résiliation)." />
 
       <div className="toolbar">
         <Segmented
@@ -40,8 +45,9 @@ export default function ReservationsPage() {
           onChange={setTab}
           items={[
             { value: "all", label: "Toutes", count: counts.all },
-            { value: "en_attente", label: "À confirmer", count: counts.en_attente },
-            { value: "confirmee", label: "Confirmées", count: counts.confirmee },
+            { value: "en_attente", label: "À signer", count: counts.en_attente },
+            { value: "active", label: "Actives", count: counts.active },
+            { value: "ended", label: "Terminées", count: counts.ended },
           ]}
         />
         <span className="toolbar__spacer" />
@@ -77,7 +83,7 @@ export default function ReservationsPage() {
                     <tr key={item.id} className="is-clickable" onClick={() => navigate(`/reservations/${item.id}`)}>
                       <td>
                         <div className="cell-primary num">{item.number}</div>
-                        <div className="cell-secondary">{formatDate(item.confirmedAt ?? item.createdAt)}</div>
+                        <div className="cell-secondary">{formatDate(item.signedAt ?? item.createdAt)}</div>
                       </td>
                       <td>
                         <div className="cell-primary">{item.lead?.name}</div>
@@ -85,13 +91,16 @@ export default function ReservationsPage() {
                       </td>
                       <td>
                         <div>
-                          {item.lot?.ref} · {item.lot?.type}
+                          {item.lot?.ref} · {LOT_TYPE[item.lot?.type]?.label ?? item.lot?.type}
                         </div>
                         <div className="cell-secondary">{item.project?.name}</div>
                       </td>
-                      <td className="align-right num nowrap">{formatMAD(item.price)}</td>
+                      <td className="align-right nowrap">
+                        <div className="num">{formatMAD(item.price)}</div>
+                        {item.discount > 0 && <div className="cell-secondary num">remise {formatMAD(item.discount)}</div>}
+                      </td>
                       <td>
-                        {item.status === "confirmee" ? (
+                        {SIGNED.includes(item.status) ? (
                           <div className="row">
                             <div className="grow">
                               <ProgressBar value={paidPct} tone={item.totals.overdue ? "danger" : "success"} label="Part encaissée" />
@@ -105,6 +114,8 @@ export default function ReservationsPage() {
                       <td>
                         <div className="stack-sm" style={{ gap: 4, alignItems: "flex-start" }}>
                           <StatusBadge map={RESERVATION_STATUS} value={item.status} />
+                          {item.discountPending && <Badge tone="warning">Remise à approuver</Badge>}
+                          {item.blocked && <Badge tone="danger">Bloquée</Badge>}
                           {item.totals.overdue > 0 && <span className="xsmall" style={{ color: "var(--danger)" }}>Retard {formatMAD(item.totals.overdue)}</span>}
                         </div>
                       </td>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { BadgeCheck, CalendarClock, FileText, Lock, Printer, Wallet } from "lucide-react";
+import { BadgeCheck, Ban, CalendarClock, Check, FileText, Flag, Lock, Percent, Printer, Wallet, X } from "lucide-react";
 import { api } from "../api/index.js";
 import { errorMessage } from "../api/errors.js";
 import { useAsync } from "../hooks/useAsync.js";
@@ -8,38 +8,51 @@ import { useAuth } from "../auth/AuthContext.jsx";
 import { can } from "../auth/permissions.js";
 import { useToast } from "../components/Toast.jsx";
 import Logo from "../components/Logo.jsx";
-import { Button, ButtonLink, Card, ConfirmDialog, ErrorState, LoadingBlock, PageHeader, ProgressBar, StatusBadge } from "../components/ui.jsx";
+import { Button, ButtonLink, Card, ConfirmDialog, ErrorState, Field, LoadingBlock, PageHeader, ProgressBar, StatusBadge } from "../components/ui.jsx";
 import { formatDate, formatDateTime, formatMAD, formatNumber, percent } from "../utils/format.js";
-import { INSTALLMENT_STATUS, PAYMENT_STATUS, RESERVATION_STATUS } from "../utils/status.js";
+import { DOSSIER_CLIENT_TYPE, INSTALLMENT_STATUS, LOT_TYPE, PAYMENT_METHOD, PAYMENT_STATUS, RESERVATION_END_STATUSES, RESERVATION_STATUS } from "../utils/status.js";
+
+const SIGNED = ["active", "cloturee"];
+const END_HINTS = {
+  cloturee: "Solde réglé : le lot passe en « Vendu » et le client en « Clôturé ».",
+  desistement: "Le client renonce : le lot est remis en vente, les échéances restantes sont annulées.",
+  change_ref: "Le client change de bien : le lot est remis en vente et le lead revient en négociation.",
+  resiliation: "Résiliation du contrat : le lot est remis en vente, les échéances restantes sont annulées.",
+};
+
+const lotDesignation = (lot) => [LOT_TYPE[lot?.type]?.label ?? lot?.type, lot?.tranche?.name, lot?.building?.name].filter(Boolean).join(" · ");
 
 function Bulletin({ reservation }) {
   const { lead, lot, project, installments } = reservation;
+  const promoter = project?.promoter;
+  const legal = [promoter?.rc && `RC ${promoter.rc}`, promoter?.ifNumber && `IF ${promoter.ifNumber}`, promoter?.ice && `ICE ${promoter.ice}`].filter(Boolean).join(" · ");
   return (
     <section className="bulletin" aria-label="Bulletin de réservation">
       <header className="bulletin__head">
-        <Logo tone="dark" />
+        <Logo tone="dark" size={72} />
         <div className="bulletin__ref">
           <p className="bulletin__title">Bulletin de réservation</p>
           <p className="num">N° {reservation.bulletinNumber}</p>
-          <p className="xsmall muted">Édité le {formatDateTime(reservation.bulletinGeneratedAt)}</p>
+          <p className="xsmall muted">
+            Réservation {reservation.number} · édité le {formatDateTime(reservation.bulletinGeneratedAt)}
+          </p>
         </div>
       </header>
 
       <div className="bulletin__parties">
         <div>
           <p className="bulletin__label">Le réservant</p>
-          <p className="strong">{project?.promoter?.name ?? "Konouz Immobilier"}</p>
-          {project?.promoter?.address && <p>{project.promoter.address}</p>}
-          {project?.promoter?.ice && <p className="xsmall muted">ICE {project.promoter.ice}</p>}
+          <p className="strong">{promoter?.name ?? "Konouz Immobilier"}</p>
+          {promoter?.group && <p className="xsmall muted">{promoter.group}</p>}
+          {promoter?.address && <p>{promoter.address}</p>}
+          {legal && <p className="xsmall muted">{legal}</p>}
         </div>
         <div>
           <p className="bulletin__label">Le réservataire</p>
-          <p className="strong">
-            {lead?.lastName?.toUpperCase()} {lead?.firstName}
-          </p>
+          <p className="strong">{lead?.name}</p>
           <p>{lead?.phone}</p>
           {lead?.email && <p>{lead.email}</p>}
-          {lead?.city && <p>{lead.city}</p>}
+          {lead?.address && <p>{lead.address}</p>}
         </div>
       </div>
 
@@ -56,18 +69,28 @@ function Bulletin({ reservation }) {
               <td>{lot?.ref}</td>
             </tr>
             <tr>
-              <th>Type</th>
+              <th>Désignation</th>
               <td>
-                {lot?.type}, {lot?.rooms} pièces
+                {lotDesignation(lot)}
+                {lot?.floor != null ? `, étage ${lot.floor}` : ""}
               </td>
               <th>Surface</th>
               <td className="num">{formatNumber(lot?.surface)} m²</td>
             </tr>
             <tr>
+              <th>Titre foncier mère</th>
+              <td className="num">{project?.tfMere || "—"}</td>
               <th>Livraison prévue</th>
               <td>{formatDate(project?.deliveryDate)}</td>
+            </tr>
+            <tr>
+              <th>Prix catalogue</th>
+              <td className="num">{formatMAD(reservation.listPrice)}</td>
               <th>Prix de vente</th>
-              <td className="num strong">{formatMAD(reservation.price)}</td>
+              <td className="num strong">
+                {formatMAD(reservation.price)}
+                {reservation.discount > 0 && <span className="xsmall muted"> (remise {formatMAD(reservation.discount)})</span>}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -75,6 +98,7 @@ function Bulletin({ reservation }) {
 
       <div className="bulletin__section">
         <p className="bulletin__label">Modalités de paiement</p>
+        {reservation.paymentTerms && <p className="small" style={{ marginBottom: 10 }}>{reservation.paymentTerms}</p>}
         <table className="bulletin__table bulletin__table--list">
           <thead>
             <tr>
@@ -84,13 +108,15 @@ function Bulletin({ reservation }) {
             </tr>
           </thead>
           <tbody>
-            {installments.map((item) => (
-              <tr key={item.id}>
-                <td>{item.label}</td>
-                <td>{formatDate(item.dueDate)}</td>
-                <td className="align-right num">{formatMAD(item.amount)}</td>
-              </tr>
-            ))}
+            {installments
+              .filter((item) => !item.cancelled)
+              .map((item) => (
+                <tr key={item.id}>
+                  <td>{item.label}</td>
+                  <td>{formatDate(item.dueDate)}</td>
+                  <td className="align-right num">{formatMAD(item.amount)}</td>
+                </tr>
+              ))}
           </tbody>
           <tfoot>
             <tr>
@@ -125,19 +151,30 @@ export default function ReservationDetailPage() {
   const { user } = useAuth();
   const toast = useToast();
   const reservation = useAsync(() => api.reservations.get(id), [id]);
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [dialog, setDialog] = useState(null);
+  const [reason, setReason] = useState("");
+  const [endStatus, setEndStatus] = useState("cloturee");
   const [busy, setBusy] = useState(null);
   const [error, setError] = useState(null);
-  const canConfirm = can(user, "reservations.confirm");
+  const canSign = can(user, "reservations.confirm");
+  const canApprove = can(user, "reservations.approveDiscount");
+  const canClose = can(user, "reservations.close");
 
-  async function confirm() {
-    setBusy("confirm");
+  function open(kind) {
+    setError(null);
+    setReason("");
+    if (kind === "close") setEndStatus(reservation.data.totals.remaining > 0 ? "desistement" : "cloturee");
+    setDialog(kind);
+  }
+
+  async function act(kind, action, message) {
+    setBusy(kind);
     setError(null);
     try {
-      const updated = await api.reservations.confirm(id);
+      const updated = await action();
       reservation.setData(updated);
-      setConfirmOpen(false);
-      toast.success("Réservation confirmée. L'échéancier a été généré.");
+      setDialog(null);
+      toast.success(typeof message === "function" ? message(updated) : message);
     } catch (err) {
       setError(errorMessage(err));
     } finally {
@@ -179,9 +216,12 @@ export default function ReservationDetailPage() {
   }
 
   const data = reservation.data;
-  const confirmed = data.status === "confirmee";
+  const pending = data.status === "en_attente";
+  const signed = SIGNED.includes(data.status);
+  const ended = Boolean(data.endedAt);
   const paidPct = percent(data.totals.paid, data.price);
   const docsToValidate = data.dossier ? data.dossier.state.required - data.dossier.state.validated : 0;
+  const canGenerate = canSign && signed;
 
   return (
     <>
@@ -193,31 +233,39 @@ export default function ReservationDetailPage() {
           <>
             <StatusBadge map={RESERVATION_STATUS} value={data.status} />
             <span className="xsmall faint">
-              {confirmed ? `Confirmée le ${formatDate(data.confirmedAt)}${data.confirmedByUser ? ` par ${data.confirmedByUser.name}` : ""}` : `Créée le ${formatDate(data.createdAt)}`}
+              {data.signedAt ? `Signée le ${formatDate(data.signedAt)}${data.signedByUser ? ` par ${data.signedByUser.name}` : ""}` : `Créée le ${formatDate(data.createdAt)}`}
+              {data.agent ? ` · commercial ${data.agent.name}` : ""}
             </span>
           </>
         }
         actions={
           <>
-            {data.status === "en_attente" && canConfirm && (
-              <Button
-                variant="primary"
-                icon={BadgeCheck}
-                disabled={docsToValidate > 0}
-                onClick={() => {
-                  setError(null);
-                  setConfirmOpen(true);
-                }}
-              >
-                Confirmer la réservation
+            {pending && canApprove && data.discountPending && (
+              <>
+                <Button variant="danger-ghost" icon={X} onClick={() => open("rejectDiscount")}>
+                  Refuser la remise
+                </Button>
+                <Button variant="dark" icon={Percent} onClick={() => open("approveDiscount")}>
+                  Approuver la remise
+                </Button>
+              </>
+            )}
+            {pending && canSign && (
+              <Button variant="primary" icon={BadgeCheck} disabled={docsToValidate > 0 || data.discountPending} onClick={() => open("sign")}>
+                Signer la réservation
               </Button>
             )}
-            {confirmed && canConfirm && (
+            {data.status === "active" && canClose && (
+              <Button variant="secondary" icon={Flag} onClick={() => open("close")}>
+                Clôturer / interrompre
+              </Button>
+            )}
+            {canGenerate && (
               <Button variant={data.bulletinNumber ? "secondary" : "primary"} icon={FileText} onClick={generateBulletin} loading={busy === "bulletin"} disabled={data.blocked}>
                 {data.bulletinNumber ? "Régénérer le bulletin" : "Générer le bulletin"}
               </Button>
             )}
-            {data.bulletinNumber && (
+            {data.bulletinNumber && signed && (
               <Button variant="dark" icon={Printer} onClick={() => window.print()}>
                 Imprimer / PDF
               </Button>
@@ -226,13 +274,25 @@ export default function ReservationDetailPage() {
         }
       />
 
-      {data.status === "en_attente" && (
+      {pending && (
         <div className="callout callout--warning" style={{ marginBottom: 20 }}>
           <BadgeCheck size={16} />
           <span>
-            {docsToValidate > 0
-              ? `Confirmation impossible : ${docsToValidate} pièce(s) obligatoire(s) du dossier doivent encore être validées par la comptabilité.`
-              : `Cette réservation attend sa confirmation. La confirmation passe le lot ${data.lot?.ref} en « Réservé », le client en « Gagné », génère l'échéancier et transmet l'acompte à la comptabilité pour validation.`}
+            {data.discountPending
+              ? `Signature impossible : la remise de ${formatMAD(data.discount)} (${data.discountReason}) doit d'abord être approuvée par la direction.`
+              : docsToValidate > 0
+                ? `Signature impossible : ${docsToValidate} pièce(s) obligatoire(s) du dossier doivent encore être validées par la comptabilité.`
+                : `Cette réservation attend sa signature. La signature passe le lot ${data.lot?.ref} en « Réservé », le client en « Signé », génère l'échéancier et transmet l'acompte à la comptabilité.`}
+          </span>
+        </div>
+      )}
+
+      {ended && (
+        <div className={`callout ${data.status === "cloturee" ? "callout--success" : "callout--danger"}`} style={{ marginBottom: 20 }}>
+          {data.status === "cloturee" ? <Check size={16} /> : <Ban size={16} />}
+          <span>
+            {RESERVATION_STATUS[data.status]?.label} le {formatDate(data.endedAt)}
+            {data.endedByUser ? ` par ${data.endedByUser.name}` : ""} — {data.endReason}
           </span>
         </div>
       )}
@@ -261,11 +321,13 @@ export default function ReservationDetailPage() {
                 )}
               </dd>
               <dt>Téléphone</dt>
-              <dd>{data.lead?.phone}</dd>
+              <dd className="num">{data.lead?.phone}</dd>
               <dt>Email</dt>
               <dd>{data.lead?.email || <span className="faint">—</span>}</dd>
-              <dt>Ville</dt>
-              <dd>{data.lead?.city || <span className="faint">—</span>}</dd>
+              <dt>Adresse</dt>
+              <dd>{data.lead?.address || <span className="faint">—</span>}</dd>
+              <dt>Type de dossier</dt>
+              <dd>{DOSSIER_CLIENT_TYPE[data.dossier?.clientType]?.label ?? "—"}</dd>
             </dl>
           </Card>
           <Card title="Bien réservé">
@@ -276,12 +338,16 @@ export default function ReservationDetailPage() {
               </dd>
               <dt>Lot</dt>
               <dd>
-                {data.lot?.ref} · {data.lot?.type}, {data.lot?.rooms} pièces
+                {data.lot?.ref} · {lotDesignation(data.lot)}
               </dd>
               <dt>Surface</dt>
               <dd className="num">{formatNumber(data.lot?.surface)} m²</dd>
+              <dt>TF mère</dt>
+              <dd className="num">{data.project?.tfMere || <span className="faint">—</span>}</dd>
               <dt>Livraison</dt>
               <dd>{formatDate(data.project?.deliveryDate)}</dd>
+              <dt>Promoteur</dt>
+              <dd>{data.project?.promoter?.name ?? "—"}</dd>
               <dt>Dossier</dt>
               <dd>
                 {data.dossier ? (
@@ -294,6 +360,11 @@ export default function ReservationDetailPage() {
               </dd>
             </dl>
           </Card>
+          {data.paymentTerms && (
+            <Card title="Modalités de paiement">
+              <p className="small">{data.paymentTerms}</p>
+            </Card>
+          )}
         </div>
 
         <div className="stack">
@@ -302,6 +373,7 @@ export default function ReservationDetailPage() {
               <div>
                 <p className="xsmall muted">Prix de vente</p>
                 <p className="finance-strip__value num">{formatMAD(data.price)}</p>
+                {data.discount > 0 && <p className="xsmall faint num">catalogue {formatMAD(data.listPrice)}</p>}
               </div>
               <div>
                 <p className="xsmall muted">Encaissé (validé)</p>
@@ -319,6 +391,12 @@ export default function ReservationDetailPage() {
               <span className="xsmall muted">{paidPct} % encaissé</span>
               {data.totals.pending > 0 && <span className="xsmall" style={{ color: "var(--warning)" }}>{formatMAD(data.totals.pending)} en attente de validation</span>}
             </div>
+            {data.discount > 0 && (
+              <p className="note small" style={{ marginTop: 14 }}>
+                Remise de <strong className="num">{formatMAD(data.discount)}</strong> ({percent(data.discount, data.listPrice)} %) — {data.discountReason.replace(/[.\s]+$/, "")}.{" "}
+                {data.approvedByUser ? `Approuvée par ${data.approvedByUser.name} le ${formatDate(data.approvedAt)}.` : "En attente d'approbation."}
+              </p>
+            )}
             {data.totals.overdue > 0 && (
               <div className="callout callout--danger" style={{ marginTop: 14 }}>
                 <CalendarClock size={16} />
@@ -327,12 +405,8 @@ export default function ReservationDetailPage() {
             )}
           </Card>
 
-          {confirmed && (
-            <Card
-              title="Échéancier"
-              actions={can(user, "schedule") && <Link to={`/echeancier?reservationId=${data.id}`} className="link small">Suivi détaillé</Link>}
-              flush
-            >
+          {data.installments.length > 0 && (
+            <Card title="Échéancier" actions={can(user, "schedule") && <Link to={`/echeancier?reservationId=${data.id}`} className="link small">Suivi détaillé</Link>} flush>
               <div className="table-wrap">
                 <table className="table">
                   <tbody>
@@ -342,7 +416,10 @@ export default function ReservationDetailPage() {
                           <div className="cell-primary">{item.label}</div>
                           <div className="cell-secondary">{formatDate(item.dueDate)}</div>
                         </td>
-                        <td className="align-right num nowrap">{formatMAD(item.amount)}</td>
+                        <td className="align-right nowrap">
+                          <div className="num">{formatMAD(item.amount)}</div>
+                          {item.balance > 0 && item.balance < item.amount && <div className="cell-secondary num">reste {formatMAD(item.balance)}</div>}
+                        </td>
                         <td className="cell-actions">
                           <StatusBadge map={INSTALLMENT_STATUS} value={item.status} />
                         </td>
@@ -354,10 +431,10 @@ export default function ReservationDetailPage() {
             </Card>
           )}
 
-          {confirmed && (
+          {signed && (
             <Card
               title="Paiements"
-              actions={can(user, "payments.create") && <ButtonLink to={`/paiements?reservationId=${data.id}`} size="sm" icon={Wallet}>Enregistrer</ButtonLink>}
+              actions={data.status === "active" && can(user, "payments.create") && <ButtonLink to={`/paiements?reservationId=${data.id}`} size="sm" icon={Wallet}>Enregistrer</ButtonLink>}
               flush
             >
               {data.payments.length === 0 ? (
@@ -371,7 +448,8 @@ export default function ReservationDetailPage() {
                           <td>
                             <div className="cell-primary">{payment.reference}</div>
                             <div className="cell-secondary">
-                              {payment.method} · {formatDate(payment.date)}
+                              {PAYMENT_METHOD[payment.method]?.label ?? payment.method} · {formatDate(payment.date)}
+                              {payment.installment ? ` · ${payment.installment.label}` : ""}
                             </div>
                           </td>
                           <td className="align-right num nowrap">{formatMAD(payment.amount)}</td>
@@ -389,7 +467,7 @@ export default function ReservationDetailPage() {
         </div>
       </div>
 
-      {confirmed &&
+      {signed &&
         (data.bulletinNumber ? (
           <div className="bulletin-wrap">
             <div className="row-between bulletin-wrap__bar">
@@ -406,14 +484,15 @@ export default function ReservationDetailPage() {
         ))}
 
       <ConfirmDialog
-        open={confirmOpen}
-        title="Confirmer la réservation ?"
-        confirmLabel="Confirmer"
+        open={dialog === "sign"}
+        title="Signer la réservation ?"
+        description="L'échéancier est généré automatiquement à la signature."
+        confirmLabel="Signer"
         tone="primary"
-        busy={busy === "confirm"}
+        busy={busy === "sign"}
         error={error}
-        onClose={() => setConfirmOpen(false)}
-        onConfirm={confirm}
+        onClose={() => setDialog(null)}
+        onConfirm={() => act("sign", () => api.reservations.confirm(id), "Réservation signée. L'échéancier a été généré.")}
       >
         <dl className="dl">
           <dt>Client</dt>
@@ -427,6 +506,68 @@ export default function ReservationDetailPage() {
           <dt>Acompte</dt>
           <dd className="num">{formatMAD(data.deposit)}</dd>
         </dl>
+      </ConfirmDialog>
+
+      <ConfirmDialog
+        open={dialog === "approveDiscount"}
+        title="Approuver la remise ?"
+        description={`Remise de ${formatMAD(data.discount)} (${percent(data.discount, data.listPrice)} % du prix catalogue) — ${data.discountReason}. Prix de vente : ${formatMAD(data.price)}.`}
+        confirmLabel="Approuver"
+        tone="dark"
+        busy={busy === "approveDiscount"}
+        error={error}
+        onClose={() => setDialog(null)}
+        onConfirm={() => act("approveDiscount", () => api.reservations.decideDiscount(id, "approve"), "Remise approuvée.")}
+      />
+
+      <ConfirmDialog
+        open={dialog === "rejectDiscount"}
+        title="Refuser la remise ?"
+        description={`La réservation repassera au prix catalogue de ${formatMAD(data.listPrice)}.`}
+        confirmLabel="Refuser la remise"
+        tone="danger"
+        busy={busy === "rejectDiscount"}
+        error={error}
+        onClose={() => setDialog(null)}
+        onConfirm={() => (reason.trim() ? act("rejectDiscount", () => api.reservations.decideDiscount(id, "reject", reason.trim()), "Remise refusée.") : setError("Indiquez le motif du refus."))}
+      >
+        <Field label="Motif du refus" required>
+          {(fieldId) => <textarea id={fieldId} className="textarea" rows={2} value={reason} onChange={(event) => setReason(event.target.value)} />}
+        </Field>
+      </ConfirmDialog>
+
+      <ConfirmDialog
+        open={dialog === "close"}
+        title="Issue de la réservation"
+        description={END_HINTS[endStatus]}
+        confirmLabel={`Confirmer : ${RESERVATION_STATUS[endStatus]?.label.toLowerCase()}`}
+        tone={endStatus === "cloturee" ? "primary" : "danger"}
+        busy={busy === "close"}
+        error={error}
+        onClose={() => setDialog(null)}
+        onConfirm={() =>
+          reason.trim()
+            ? act("close", () => api.reservations.close(id, endStatus, reason.trim()), (updated) => `Réservation ${updated.number} : ${RESERVATION_STATUS[updated.status].label.toLowerCase()}.`)
+            : setError("Indiquez le motif.")
+        }
+      >
+        <div className="stack">
+          <Field label="Issue" required>
+            {(fieldId) => (
+              <select id={fieldId} className="select" value={endStatus} onChange={(event) => setEndStatus(event.target.value)}>
+                {RESERVATION_END_STATUSES.map((status) => (
+                  <option key={status} value={status} disabled={status === "cloturee" && data.totals.remaining > 0}>
+                    {RESERVATION_STATUS[status].label}
+                    {status === "cloturee" && data.totals.remaining > 0 ? ` (solde de ${formatMAD(data.totals.remaining)} non réglé)` : ""}
+                  </option>
+                ))}
+              </select>
+            )}
+          </Field>
+          <Field label="Motif" required>
+            {(fieldId) => <textarea id={fieldId} className="textarea" rows={2} value={reason} onChange={(event) => setReason(event.target.value)} />}
+          </Field>
+        </div>
       </ConfirmDialog>
     </>
   );

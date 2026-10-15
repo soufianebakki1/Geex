@@ -131,6 +131,14 @@ svg {
   text-decoration-color: var(--c-espresso-800);
 }
 
+button.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
 .stack {
   display: flex;
   flex-direction: column;
@@ -141,6 +149,12 @@ svg {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.stack-xs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .row {
