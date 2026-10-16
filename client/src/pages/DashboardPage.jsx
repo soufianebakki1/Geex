@@ -116,12 +116,11 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const { data, loading, error, reload } = useAsync(() => api.dashboard.summary(), []);
   const firstName = user.name.split(" ")[0];
-  const greeting = new Date().getHours() < 18 ? "Bonjour" : "Bonsoir";
+  const greeting = new Date().getHours ? "Bonjour" : "Bonsoir";
 
   return (
     <>
       <PageHeader
-        eyebrow={formatLongDate(new Date())}
         title={`${greeting}, ${firstName}`}
         description="Voici l'état de l'activité commerciale et des encaissements."
         actions={

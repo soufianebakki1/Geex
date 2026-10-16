@@ -473,7 +473,7 @@ export default function PaymentsPage() {
         }
       />
 
-      <div className="stat-grid" style={{ marginBottom: 20 }}>
+      <div className="stat-grid" style={{ marginBottom: 16 }}>
         <div className={`stat ${counts.pending ? "stat--warning" : ""}`}>
           <p className="stat__label">À traiter</p>
           <p className="stat__value">{formatMAD(summary.pendingAmount)}</p>

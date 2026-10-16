@@ -5,8 +5,8 @@ import {
   Building2,
   CalendarClock,
   ChevronDown,
-  ChevronsLeft,
   FilePen,
+  Pin,
   FolderCheck,
   HardHat,
   Landmark,
@@ -19,17 +19,16 @@ import {
   UsersRound,
   Wallet,
   X,
-  FlaskConical,
 } from "lucide-react";
 import { api } from "../api/index.js";
-import { USE_MOCKS } from "../api/client.js";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { AREA_LABELS, ROLE_LABEL, areaForPath, can } from "../auth/permissions.js";
 import Logo from "./Logo.jsx";
 import { Avatar, Button } from "./ui.jsx";
+import { formatLongDate } from "../utils/format.js";
 
 export const NOTIFICATIONS_CHANGED = "konouz:notifications-changed";
-const SIDEBAR_KEY = "konouz.sidebar-expanded";
+const SIDEBAR_KEY = "konouz.sidebar-pinned";
 const DESKTOP_QUERY = "(min-width: 1081px)";
 
 const NAV = [
@@ -142,12 +141,26 @@ export default function AppShell() {
   const navigate = useNavigate();
   const location = useLocation();
   const [navOpen, setNavOpen] = useState(false);
-  const [expanded, setExpanded] = useState(() => localStorage.getItem(SIDEBAR_KEY) === "1");
+  const [pinned, setPinned] = useState(() => localStorage.getItem(SIDEBAR_KEY) === "1");
+  const [peek, setPeek] = useState(false);
+  const leaveTimer = useRef(null);
   const unread = useUnreadCount();
   const area = areaForPath(location.pathname);
+  const open = pinned || peek;
 
   useEffect(() => setNavOpen(false), [location.pathname]);
-  useEffect(() => localStorage.setItem(SIDEBAR_KEY, expanded ? "1" : "0"), [expanded]);
+  useEffect(() => localStorage.setItem(SIDEBAR_KEY, pinned ? "1" : "0"), [pinned]);
+  useEffect(() => () => clearTimeout(leaveTimer.current), []);
+
+  function enterSidebar() {
+    clearTimeout(leaveTimer.current);
+    setPeek(true);
+  }
+
+  function leaveSidebar() {
+    clearTimeout(leaveTimer.current);
+    leaveTimer.current = setTimeout(() => setPeek(false), 140);
+  }
 
   async function handleLogout() {
     await logout();
@@ -157,17 +170,18 @@ export default function AppShell() {
   const groups = NAV.map((group) => ({ ...group, items: group.items.filter((item) => can(user, item.area)) })).filter((group) => group.items.length);
 
   return (
-    <div className={`shell ${navOpen ? "is-nav-open" : ""} ${expanded ? "" : "is-collapsed"}`}>
-      <aside className="sidebar" aria-label="Navigation principale">
+    <div className={`shell ${navOpen ? "is-nav-open" : ""} ${pinned ? "is-pinned" : "is-rail"} ${open ? "" : "is-collapsed"} ${peek && !pinned ? "is-peek" : ""}`}>
+      <aside className="sidebar" aria-label="Navigation principale" onMouseEnter={enterSidebar} onMouseLeave={leaveSidebar}>
+        <div className="sidebar__aura" aria-hidden="true" />
         <button
           type="button"
-          className="sidebar__toggle"
-          onClick={() => setExpanded((value) => !value)}
-          aria-expanded={expanded}
-          aria-label={expanded ? "Réduire le menu" : "Développer le menu"}
-          title={expanded ? "Réduire le menu" : "Développer le menu"}
+          className={`sidebar__toggle ${pinned ? "is-pinned" : ""}`}
+          onClick={() => setPinned((value) => !value)}
+          aria-pressed={pinned}
+          aria-label={pinned ? "Détacher le menu" : "Épingler le menu ouvert"}
+          title={pinned ? "Détacher le menu" : "Épingler le menu ouvert"}
         >
-          <ChevronsLeft size={15} />
+          <Pin size={14} />
         </button>
         <div className="sidebar__brand">
           <Link to="/" aria-label="Konouz Immobilier — accueil">
@@ -183,7 +197,7 @@ export default function AppShell() {
             <div key={group.label} className="nav-group">
               <p className="nav-group__label">{group.label}</p>
               {group.items.map((item) => (
-                <NavLink key={item.to} to={item.to} end={item.end} className="nav-link" title={expanded ? undefined : AREA_LABELS[item.area]}>
+                <NavLink key={item.to} to={item.to} end={item.end} className="nav-link" title={open ? undefined : AREA_LABELS[item.area]}>
                   <item.icon size={18} />
                   <span className="nav-link__label">{AREA_LABELS[item.area]}</span>
                   {item.badge === "notifications" && unread > 0 && <span className="nav-link__count">{unread}</span>}
@@ -215,25 +229,22 @@ export default function AppShell() {
             iconOnly
             icon={Menu}
             className="topbar__menu"
-            onClick={() => (window.matchMedia(DESKTOP_QUERY).matches ? setExpanded((value) => !value) : setNavOpen(true))}
+            onClick={() => (window.matchMedia(DESKTOP_QUERY).matches ? setPinned((value) => !value) : setNavOpen(true))}
             aria-label="Menu"
           />
-          <div className="topbar__crumbs">
-            <span>Konouz Immobilier</span>
+          <div className="topbar__left">
+            <time className="topbar__date" dateTime={new Date().toISOString().slice(0, 10)}>
+              <CalendarClock size={16} aria-hidden="true" />
+              <span>{formatLongDate(new Date())}</span>
+            </time>
             {area && (
-              <>
-                <span aria-hidden="true">/</span>
-                <strong>{AREA_LABELS[area]}</strong>
-              </>
+              <span className="topbar__area">
+                <span className="topbar__dot" aria-hidden="true" />
+                {AREA_LABELS[area]}
+              </span>
             )}
           </div>
           <div className="topbar__actions">
-            {USE_MOCKS && (
-              <span className="demo-flag" title="Les données affichées proviennent du serveur de démonstration local.">
-                <FlaskConical size={13} />
-                <span>Données de démonstration</span>
-              </span>
-            )}
             <Link to="/notifications" className="btn btn--ghost btn--icon topbar__bell" aria-label={`Notifications${unread ? ` (${unread} non lues)` : ""}`}>
               <Bell size={18} />
               {unread > 0 && <span className="topbar__bell-dot">{unread > 9 ? "9+" : unread}</span>}

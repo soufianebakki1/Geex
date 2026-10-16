@@ -1039,8 +1039,8 @@
 /* ---------- Stat ---------- */
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
 }
 
 .stat {
@@ -1071,6 +1071,34 @@
   margin-top: 4px;
   font-size: var(--fs-xs);
   color: var(--text-faint);
+}
+
+/* Summary cards (payments, etc.) — between compact and dashboard hero size */
+.stat-grid .stat {
+  min-height: 172px;
+  padding: 28px 28px 30px;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-grid .stat__label {
+  margin-top: 0;
+  font-size: var(--fs-md);
+}
+
+.stat-grid .stat__value {
+  margin-top: 16px;
+  font-size: 2.85rem;
+  line-height: 1;
+  white-space: normal;
+}
+
+.stat-grid .stat__hint {
+  flex: none;
+  margin-top: 14px;
+  padding-bottom: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.4;
 }
 
 .stat--danger .stat__value { color: var(--danger); }
@@ -1169,6 +1197,13 @@
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--bg-surface);
+  box-shadow: var(--shadow-xs);
+  transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+
+.user-chip:hover {
+  border-color: var(--c-sand-300);
+  box-shadow: var(--shadow-sm);
 }
 
 .user-chip__name {

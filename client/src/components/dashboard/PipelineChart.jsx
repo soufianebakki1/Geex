@@ -4,10 +4,6 @@ import { percent } from "../../utils/format.js";
 const TICKS = 4;
 const TIP_CEILING = 58;
 
-function busiestStage(stages) {
-  return stages.reduce((best, stage, index) => (stage.current > stages[best].current ? index : best), 0);
-}
-
 export function PipelineLegend() {
   return (
     <div className="pipeline-legend" aria-hidden="true">
@@ -24,7 +20,7 @@ export function PipelineLegend() {
 }
 
 export default function PipelineChart({ stages }) {
-  const [active, setActive] = useState(() => busiestStage(stages));
+  const [active, setActive] = useState(null);
   const step = Math.max(1, Math.ceil(Math.max(...stages.map((stage) => stage.count), 1) / TICKS));
   const max = step * TICKS;
   const ticks = Array.from({ length: TICKS + 1 }, (_, index) => max - index * step);
@@ -45,7 +41,7 @@ export default function PipelineChart({ stages }) {
           ))}
         </div>
 
-        <ol className="pipeline__groups">
+        <ol className="pipeline__groups" onMouseLeave={() => setActive(null)}>
           {stages.map((stage, index) => {
             const previous = stages[index - 1];
             const edge = index < 2 ? "start" : index > stages.length - 3 ? "end" : "center";
@@ -56,6 +52,9 @@ export default function PipelineChart({ stages }) {
                 tabIndex={0}
                 onMouseEnter={() => setActive(index)}
                 onFocus={() => setActive(index)}
+                onBlur={(event) => {
+                  if (!event.currentTarget.parentElement?.contains(event.relatedTarget)) setActive(null);
+                }}
                 aria-label={`${stage.label} : ${stage.count} leads ont atteint l'étape, ${stage.current} actuellement`}
               >
                 <div className="pipeline__bars">
